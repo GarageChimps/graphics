@@ -1,80 +1,38 @@
+/**
+ * Raytracer functions
+ */
 
-function createScene()
+//Main raytracing function, recieves a scene and image size, and returns a rendered image
+function rayTrace(scene, width, height)
 {
-	var scene = {
-		maxReflectionRecursions: 3,
-		camera : {
-			fov: 90.0,
-			position: [0,0,15],
-			up: [0,1,0],
-			target: [0,0,0],
-			near: 0.1
-		},
-		background: [1,1,1],
-		spheres: [
-		 {
-			 radius: 1,
-			 position: [0,6,5],
-			 materials: ["red_lambert", "white_bph_100"]
-		 },
-		 {
-			 radius: 5,
-			 position: [0,0,0],
-			 materials: ["green_lambert"]
-		 }
-		],
-		pointLights: [
-		 {
-			position: [0, 10, 10],
-			color: [0.7, 0.7, 0.7]
-		 }
-		],
-		directionalLights: [],
-		ambientLights: [
-		 {
-			 color: [0.2, 0.2, 0.2]
-		 }
-		]
-	};
-	return scene;
+	var image = createImage(scene, width, height);
+	for(var i=0; i<width; i++)
+	{
+		for(var j=0; j<height; j++)
+		{
+			var ray = generatePixelRay(scene.camera, i, j, width, height);
+			image[i][j] = intersectAndShade(ray, scene, 0);
+		}
+	}
+	return image;
 }
 
-function getCameraBounds(camera, width, height)
+//Initialize a matrix to store the image to be rendered
+function createImage(scene, width, height)
 {
-	var bounds = new Object();
-	bounds.t = (Math.abs(camera.near) * Math.tan(((camera.fov / 2) / 180.0) * Math.PI));
-	bounds.b = -bounds.t;
-	bounds.r = bounds.t * width / height;
-	bounds.l = -bounds.r;
-	return bounds;
+	var image = new Array(width);
+	for(var i=0; i<width; i++)
+	{
+		image[i] = new Array(height);
+		for(var j=0; j<height; j++)
+		{
+			image[i][j] = scene.background;
+		}
+	}
+	return image;
 }
 
-function pixelToCameraCoords(camera, i, j, width, height)
-{
-	var bounds = getCameraBounds(camera, width, height);
-	var u = bounds.l + (bounds.r - bounds.l) * (i + 0.5) / width;
-	var v = bounds.b + (bounds.t - bounds.b) * (j + 0.5) / height;
-	var w = -camera.near;
-	return [u,v,w];
-}
-
-function getCameraCoordinatesBasis(camera)
-{
-    var w = normalize(sub(camera.position, camera.target));
-    var u = normalize(cross(camera.up, w));
-    var v = normalize(cross(w, u));
-	  return [u,v,w];
-}
-
-function cameraToWorldCoords(cameraCoords, camera)
-{
-	var basis = getCameraCoordinatesBasis(camera);
-	var worldCoords = camera.position;
-	for(var i=0; i<3; i++)
-		worldCoords = add(worldCoords, ponder(cameraCoords[i], basis[i]));
-	return worldCoords;
-}
-
+//Generates a pixel view ray from the pixel coordinates
 function generatePixelRay(camera, i, j, width, height)
 {
 	var cameraCoords = pixelToCameraCoords(camera, i, j, width, height);
@@ -86,7 +44,37 @@ function generatePixelRay(camera, i, j, width, height)
 	}
 }
 
+//For a given ray, tests objects intersection and calculate corresponding color
+function intersectAndShade(ray, scene, recursion)
+{
+	if(recursion > scene.maxReflectionRecursions)
+		return scene.background;
+	var intersectResult = intersectAllObjects(ray, scene);
+	var tIntersect = intersectResult[0];
+	var indexIntersect = intersectResult[1];
+	if(tIntersect < Infinity)
+	 return getRayColor(ray, tIntersect, scene.spheres[indexIntersect], scene, recursion);
+	return scene.background;
+}
 
+//Check intersection between ray and all objects of the scene
+function intersectAllObjects(ray, scene)
+{
+	var tMin = Infinity;
+	var indexMin = -1;
+	for(var index = 0; index < scene.spheres.length; index++)
+	{
+		var t = intersectSphere(ray, scene.spheres[index]);
+		if (t < tMin)
+		{
+			tMin = t;
+			indexMin = index;
+		}
+	}
+	return [tMin, indexMin];
+}
+
+//Checks intersection between ray and specific sphere
 function intersectSphere(ray, sphere)
 {
 	  var a = dot(ray.direction, ray.direction);
@@ -108,44 +96,15 @@ function intersectSphere(ray, sphere)
 	  return tMin;
 }
 
-function getAmbientColor(baseMaterial, scene)
+//Calculates the color gathered by this ray after intersecting an object
+function getRayColor(ray, tIntersection, object, scene, recursion)
 {
-	var color = [0,0,0];
-	for(var i=0; i<scene.ambientLights.length; i++)
-	{
-		var ambientColor = mult(scene.ambientLights[i].color, baseMaterial.color);
-		color = add(color, ambientColor);
-	}
-	return color;
+	var p = add(ray.position, mult_scalar(tIntersection, ray.direction));
+	var n = normalize(sub(p, object.position));
+	return shade(p, n, ray.direction, object.materials, scene, recursion);
 }
 
-function generateShadowRay(p, l)
-{
-	var q = add(p, ponder(0.001, l));
-	return {
-		position : q,
-		direction : l
-	}
-}
-
-function isInShadow(p, l, scene)
-{
-	var ray = generateShadowRay(p, l);
-	var intersectResult = intersectAllObjects(ray, scene);
-	var tIntersect = intersectResult[0];
-	return tIntersect < Infinity;
-}
-
-function getReflectionRay(p, n, d)
-{
-	var r = normalize(sub(d, ponder(dot(d,n)*2, n)));
-	var q = add(p, ponder(0.001, r));
-	return {
-		position : q,
-		direction : r
-	}
-}
-
+//Performs the shading calculation for a point, based on material reflectances and lights illumination
 function shade(p, n, d, materials, scene, recursion)
 {
 	var color = getAmbientColor(resources.materials[materials[0]], scene)
@@ -165,7 +124,7 @@ function shade(p, n, d, materials, scene, recursion)
 			if(material.type == "brdf")
 			{
 				var brdfVal = material.brdf(n,l,v, material.brdfParams);
-				var materialColor = mult(lightColor, ponder(brdfVal, material.color));
+				var materialColor = mult(lightColor, mult_scalar(brdfVal, material.color));
 			}
 			else if(material.type == "mirror")
 			{
@@ -179,157 +138,60 @@ function shade(p, n, d, materials, scene, recursion)
 	return color;
 }
 
-
-
-function calculatePixelColor(ray, tIntersection, sphere, scene, recursion)
+//Returns the ambient color generated by the ambient illumination of the scene for a material
+function getAmbientColor(material, scene)
 {
-	var p = add(ray.position, ponder(tIntersection, ray.direction));
-	var n = normalize(sub(p, sphere.position));
-	return shade(p, n, ray.direction, sphere.materials, scene, recursion);
-}
-
-function createImage(scene, width, height)
-{
-	var image = new Array(width);
-	for(var i=0; i<width; i++)
+	var color = [0,0,0];
+	for(var i=0; i<scene.ambientLights.length; i++)
 	{
-		image[i] = new Array(height);
-		for(var j=0; j<height; j++)
-		{
-			image[i][j] = scene.background;
-		}
+		var ambientColor = mult(scene.ambientLights[i].color, material.color);
+		color = add(color, ambientColor);
 	}
-	return image;
+	return color;
 }
 
-function intersectAllObjects(ray, scene)
+//Generates a shadow ray for a given point p for light l
+function generateShadowRay(p, l)
 {
-	var tMin = Infinity;
-	var indexMin = -1;
-	for(var index = 0; index < scene.spheres.length; index++)
-	{
-		var t = intersectSphere(ray, scene.spheres[index]);
-		if (t < tMin)
-		{
-			tMin = t;
-			indexMin = index;
-		}
+	var q = add(p, mult_scalar(0.001, l));
+	return {
+		position : q,
+		direction : l
 	}
-	return [tMin, indexMin];
 }
 
-function intersectAndShade(ray, scene, recursion)
+//Tests if a point p is in shadow for a given light l in the given scene
+function isInShadow(p, l, scene)
 {
-	if(recursion > scene.maxReflectionRecursions)
-		return scene.background;
+	var ray = generateShadowRay(p, l);
 	var intersectResult = intersectAllObjects(ray, scene);
 	var tIntersect = intersectResult[0];
-	var indexIntersect = intersectResult[1];
-	if(tIntersect < Infinity)
-	 return calculatePixelColor(ray, tIntersect, scene.spheres[indexIntersect], scene, recursion);
-	return scene.background;
+	return tIntersect < Infinity;
 }
 
-function rayTrace(scene, width, height)
+//Gets the reflection ray in a point p with normal n based on original viewing direction d
+function getReflectionRay(p, n, d)
 {
-	var image = createImage(scene, width, height);
-	for(var i=0; i<width; i++)
-	{
-		for(var j=0; j<height; j++)
-		{
-			var ray = generatePixelRay(scene.camera, i, j, width, height);
-			image[i][j] = intersectAndShade(ray, scene, 0);
-		}
+	var r = normalize(sub(d, mult_scalar(dot(d,n)*2, n)));
+	var q = add(p, mult_scalar(0.001, r));
+	return {
+		position : q,
+		direction : r
 	}
-	return image;
 }
 
-function setColor(imageData, i, j, r, g, b)
-{
-	var index = (i * 4) + (imageData.height -  j - 1) * imageData.width * 4;
-	var rInt = Math.floor(255.0*r);
-	var gInt = Math.floor(255.0*g);
-	var bInt = Math.floor(255.0*b);
-	imageData.data[index + 0] = rInt;
-	imageData.data[index + 1] = gInt;
-	imageData.data[index + 2] = bInt;
-	imageData.data[index + 3] = 255;
-}
 
-function display(image, width, height)
-{
-	var canv = document.createElement("canvas");
-	canv.width = width;
-	canv.height = height;
-	document.body.appendChild(canv);
 
-	var ctx = canv.getContext("2d");
-	var imageData = ctx.getImageData(0, 0, width, height);
 
-	for(var i=0; i<width; i++)
-	{
-		for(var j=0; j<height; j++)
-		{
-			var color = image[i][j];
-			setColor(imageData, i, j, color[0], color[1], color[2]);
-		}
-	}
-	ctx.putImageData(imageData, 0, 0);
-}
 
-function reverse_string(string)
-{
-	var reverse = "";
-	for (var i=string.length - 1; i>=0; i--)
-		reverse += string.charAt(i);
-	return reverse;
-}
 
-function display_ascii(image, width, height)
-{
-	var characterMap = reverse_string(" .:-=+*#%@");
-	//var characterMap = reverse_string("$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,^`'. ");
-	var canv = document.createElement("canvas");
-	canv.width = width;
-	canv.height = height;
-	document.body.appendChild(canv);
 
-	var charI = 0;
-	var charJ = 0;
-	var charHeight = 8;
-	var ctx = canv.getContext("2d");
-	ctx.font = "" + charHeight + "px Courier New";
-	var charWidth = ctx.measureText('A').width;
-	canv.width = width * charWidth;
-	canv.height = height * charHeight;
-		
-	for(var i=0; i<width; i++)
-	{
-		for(var j=height - 1; j>=0; j-=2)
-		{
-			var color = image[i][j];
-			var grayScale = (color[0] + color[1] + color[2])/3;
-			var charIndex = Math.floor(characterMap.length*grayScale);
-			var character = characterMap.charAt(charIndex); 
-			charJ += charHeight;
-			ctx.fillStyle = 'rgb(' + Math.floor(255*color[0]) + ',' +
-									 Math.floor(255*color[1]) + ',' + 
-									 Math.floor(255*color[2]) + ')';
-			ctx.fillText(character, charI, charJ);
-		}
-		charI += charWidth;
-		charJ = 0;
-	}
-	
-}
 
-function render()
-{
-	var width = 512;
-	var height = 512;
-	var scene = createScene();
-	var image = rayTrace(scene, width, height);
-	display_ascii(image, width, height);
-}
 
-render();
+
+
+
+
+
+
+
