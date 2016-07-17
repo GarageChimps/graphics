@@ -1,4 +1,3 @@
-var scene = 
 {
     "maxReflectionRecursions": 3,
     "camera": {

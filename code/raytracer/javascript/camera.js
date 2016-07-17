@@ -6,7 +6,7 @@
 function getCameraBounds(camera, width, height)
 {
 	var bounds = new Object();
-	bounds.t = (Math.abs(camera.near) * Math.tan(((camera.fov / 2) / 180.0) * Math.PI));
+	bounds.t = (Math.abs(camera.near) * Math.tan(((camera.fov / 2.0) / 180.0) * Math.PI));
 	bounds.b = -bounds.t;
 	bounds.r = bounds.t * width / height;
 	bounds.l = -bounds.r;
@@ -29,7 +29,7 @@ function getCameraCoordinatesBasis(camera)
     var w = normalize(sub(camera.position, camera.target));
     var u = normalize(cross(camera.up, w));
     var v = normalize(cross(w, u));
-	  return [u,v,w];
+    return [u,v,w];
 }
 
 //Convert vector in camera space (cameraCoords) into world space for camera
