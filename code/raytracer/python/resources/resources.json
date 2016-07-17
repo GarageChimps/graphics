@@ -1,38 +1,44 @@
 {
-    "materials": {
-        "red_lambert":
+  "__type__": "resources",
+  "materials": [
         {
+            "__type__": "material",
+            "name": "red_lambert",
             "type": "brdf",
             "color": [1,0,0],
             "brdfParams":{},
             "brdf": "lambert"
         },
-        "green_lambert":
         {
+            "__type__": "material",
+            "name": "green_lambert",
             "type": "brdf",
             "color": [0,1,0],
             "brdfParams":{},
             "brdf": "lambert"
         },
-        "white_lambert":
         {
+            "__type__": "material",
+            "name": "white_lambert",
             "type": "brdf",
             "color": [1,1,1],
             "brdfParams":{},
             "brdf": "lambert"
         },
-        "white_bph_100":
         {
+            "__type__": "material",
+            "name" : "white_bph_100",
             "type": "brdf",
             "color": [1,1,1],
             "brdfParams":{"shininess": 100},
             "brdf": "blinnPhong"
         },
-        "mirror_03":
         {
+            "__type__": "material",
+            "name": "mirror_03",
             "color": [1,1,1],
             "type": "mirror",
             "reflectivity": 0.3
         }
-    }
-};
+    ]
+}

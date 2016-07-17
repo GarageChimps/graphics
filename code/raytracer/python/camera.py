@@ -1,18 +1,20 @@
 from math import *
+from collections import namedtuple
 
 from linearAlgebra import *
 #
 # Camera defs
 #
 
+CameraBounds = namedtuple('CameraBounds', ['t', 'b', 'r', 'l'])
+
 # Returns the left,right,top,bottom bounds of the near plane in camera space
 def getCameraBounds(camera, width, height):
-    bounds = object()
-    bounds.t = (abs(camera.near) * tan(((camera.fov / 2.0) / 180.0) * pi))
-    bounds.b = -bounds.t
-    bounds.r = bounds.t * width / height
-    bounds.l = -bounds.r
-    return bounds
+    t = (abs(camera.near) * tan(((camera.fov / 2.0) / 180.0) * pi))
+    b = -t
+    r = t * width / height
+    l = -r
+    return CameraBounds(t, b, r, l)
 
 
 # Transforms pixel coordinate from image space to camera space

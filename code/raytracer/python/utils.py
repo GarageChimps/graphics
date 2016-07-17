@@ -1,19 +1,18 @@
-function loadJSON(callback, file) 
-{   
+import json
+from collections import namedtuple
 
-    var xobj = new XMLHttpRequest();
-        xobj.overrideMimeType("application/json");
-    xobj.open('GET', file, true); // Replace 'my_data' with the path to your file
-    xobj.onreadystatechange = function () {
-          if (xobj.readyState == 4 && xobj.status == "200") {
-            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
-            callback(xobj.responseText);
-          }
-    };
-    xobj.send(null);  
- }
 
- function parseJSON(json_string)
- {
-     return JSON.parse(json_string);
- }
+def _json_object_hook(d):
+    return namedtuple('X', d.keys())(*d.values())
+
+
+def json2obj(data, object_hook=None):
+    if object_hook is None:
+        object_hook = _json_object_hook
+    return json.loads(data, object_hook=object_hook)
+
+
+def jsonfile2obj(file, object_hook=None):
+    with open(file, 'r') as myfile:
+        data = myfile.read()
+        return json2obj(data, object_hook)
