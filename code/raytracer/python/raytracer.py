@@ -10,7 +10,7 @@ from math import sqrt
 
 Ray = namedtuple('Ray', ['position', 'direction'])
 
-#Main raytracing def, recieves a scene and image size, and returns a rendered image
+#Main raytracing function, recieves a scene and image size, and returns a rendered image
 def rayTrace(scene, resources, width, height):
     image = createImage(scene, width, height)
     for i in range(width):
@@ -41,12 +41,12 @@ def generatePixelRay(camera, i, j, width, height):
 
 #For a given ray, tests objects intersection and calculate corresponding color
 def intersectAndShade(ray, scene, resources, recursion):
-    if(recursion > scene.maxReflectionRecursions):
+    if recursion > scene.maxReflectionRecursions:
         return scene.background
     intersectResult = intersectAllObjects(ray, scene)
     tIntersect = intersectResult[0]
     indexIntersect = intersectResult[1]
-    if(tIntersect < float("inf")):
+    if tIntersect < float("inf"):
         return getRayColor(ray, tIntersect, scene.spheres[indexIntersect], scene, resources, recursion)
     return scene.background
 
@@ -57,9 +57,9 @@ def intersectAllObjects(ray, scene):
     indexMin = -1
     for index  in range(len(scene.spheres)):
         t = intersectSphere(ray, scene.spheres[index])
-        if (t < tMin):
+        if t < tMin:
             tMin = t
-    indexMin = index
+            indexMin = index
 
     return [tMin, indexMin]
 
@@ -71,7 +71,7 @@ def intersectSphere(ray, sphere):
     c = dot(sub(ray.position, sphere.position), sub(ray.position, sphere.position)) - sphere.radius*sphere.radius
 
     discr = b*b - 4*a*c
-    if(discr < 0.0):
+    if discr < 0.0:
         return float("inf")
 
     discr = sqrt(discr)
@@ -79,7 +79,7 @@ def intersectSphere(ray, sphere):
     t1 = (-b + discr) / (2*a)
 
     tMin = min(t0, t1)
-    if(tMin < 0.0):
+    if tMin < 0.0:
         return float("inf")
 
     return tMin
@@ -102,20 +102,20 @@ def shade(p, n, d, materials, scene, resources, recursion):
         lightColor = scene.pointLights[i].color
         lightPos = scene.pointLights[i].position
         l = normalize(sub(lightPos, p))
-        if(isInShadow(p, l, scene)):
+        if isInShadow(p, l, scene):
             lightColor = [0,0,0]
 
         for j in range(len(materials)):
 
             material = resources.materials[materials[j]]
-            if(material.type == "brdf"):
+            if material.type == "brdf":
                 brdfVal = material.brdf(n,l,v, material.brdfParams)
                 materialColor = mult(lightColor, mult_scalar(brdfVal, material.color))
-            elif(material.type == "mirror"):
+            elif material.type == "mirror":
                 reflectionRay = getReflectionRay(p, n, d)
                 materialColor = intersectAndShade(reflectionRay, scene, recursion + 1)
 
-        color = add(color, materialColor)
+            color = add(color, materialColor)
 
     return color
 

@@ -31,7 +31,6 @@
           "color": [0.7, 0.7, 0.7]
         }
     ],
-    "directionalLights": [],
     "ambientLights": [
         {
           "__type__": "ambientLight",

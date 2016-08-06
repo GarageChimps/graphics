@@ -20,6 +20,7 @@ class Camera(object):
         self.target = target
         self.near = near
 
+
 class Sphere(object):
     def __init__(self, radius, position, materials):
         self.radius = radius
@@ -31,6 +32,7 @@ class PointLight(object):
     def __init__(self, position, color):
         self.position = position
         self.color = color
+
 
 class AmbientLight(object):
     def __init__(self, color):
@@ -50,6 +52,7 @@ def sceneHook(obj):
             return PointLight(obj["position"], obj["color"])
         if obj['__type__'] == "ambientLight":
             return AmbientLight(obj["color"])
+    return obj
 
 
 def loadScene(sceneFile):

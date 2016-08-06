@@ -1,6 +1,6 @@
 from linearAlgebra import *
 #
-# List of avilable BRDFs functions
+# List of available BRDFs functions
 #
 
 
@@ -9,7 +9,7 @@ def constant(n, l, v, params):
     return 1.0
 
 
-# Lambert BRDF, models diffuse reflectance
+# Lambert BRDF, models diffuse reflectance using lambertian model
 def lambert(n, l, v, params):
     return max(0,dot(n,l))
 
@@ -17,4 +17,4 @@ def lambert(n, l, v, params):
 # BlinnPhong BRDF, models specular reflectance using Blinn-Phong aproximation
 def blinnPhong(n, l, v, params):
     h = normalize(add(v, l))
-    return pow(max(0,dot(n,h)), params.shininess)
+    return pow(max(0,dot(n,h)), params["shininess"])

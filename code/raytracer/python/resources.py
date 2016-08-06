@@ -19,7 +19,7 @@ class Material(object):
         self.reflectivity = reflectivity
 
 
-def materialHook(obj):
+def resourcesHook(obj):
     if '__type__' in obj:
         if obj['__type__'] == "material":
             if 'reflectivity' in obj:
@@ -28,6 +28,7 @@ def materialHook(obj):
             return Material(obj['type'], obj['name'], obj['color'], obj['brdfParams'], brdfFunc)
         if obj['__type__'] == "resources":
             return Resources(obj['materials'])
+    return obj
 
 def loadResources(resourcesFile):
-    return jsonfile2obj(resourcesFile, object_hook=materialHook)
+    return jsonfile2obj(resourcesFile, object_hook=resourcesHook)

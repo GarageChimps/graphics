@@ -6,7 +6,7 @@
             "name": "red_lambert",
             "type": "brdf",
             "color": [1,0,0],
-            "brdfParams":{},
+            "brdfParams": {},
             "brdf": "lambert"
         },
         {
@@ -30,7 +30,10 @@
             "name" : "white_bph_100",
             "type": "brdf",
             "color": [1,1,1],
-            "brdfParams":{"shininess": 100},
+            "brdfParams":
+            {
+              "shininess": 100
+            },
             "brdf": "blinnPhong"
         },
         {
