@@ -3,8 +3,8 @@
     "maxReflectionRecursions": 3,
     "camera": {
         "__type__": "camera",
-        "fov": 90.0,
-        "position": [0,0,15],
+        "fov": 45.0,
+        "position": [0,0,25],
         "up": [0,1,0],
         "target": [0,0,0],
         "near": 0.1
@@ -14,20 +14,20 @@
         {
             "__type__": "sphere",
             "radius": 1,
-            "position": [6,0,5],
+            "position": [0,6,5],
             "materials": ["red_lambert", "white_bph_100"]
         },
         {
             "__type__": "sphere",
             "radius": 5,
             "position": [0,0,0],
-            "materials": ["green_lambert"]
+            "materials": ["green_lambert", "mirror_03"]
         }
     ],
     "pointLights": [
         {
           "__type__": "pointLight",
-          "position": [0, 10, 10],
+          "position": [0, 0, 10],
           "color": [0.7, 0.7, 0.7]
         }
     ],

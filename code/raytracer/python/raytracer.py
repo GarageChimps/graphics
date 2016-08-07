@@ -81,14 +81,14 @@ def shade(p, n, d, materials, scene, resources, recursion):
             lightColor = [0,0,0]
 
         for j in range(len(materials)):
-
             material = resources.materials[materials[j]]
             if material.type == "brdf":
                 brdfVal = material.brdf(n,l,v, material.brdfParams)
                 materialColor = mult(lightColor, mult_scalar(brdfVal, material.color))
             elif material.type == "mirror":
                 reflectionRay = getReflectionRay(p, n, d)
-                materialColor = intersectAndShade(reflectionRay, scene, recursion + 1)
+                rayColor = intersectAndShade(reflectionRay, scene, resources, recursion + 1)
+                materialColor = mult_scalar(material.reflectivity, rayColor)
 
             color = add(color, materialColor)
 
