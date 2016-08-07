@@ -24,7 +24,7 @@ def createImage(scene, width, height):
     for i in range(width):
         image.append([])
         for j in range(height):
-            image[i].append(scene.background)
+            image[i].append(scene.get_background_color())
     return image
 
 
@@ -39,14 +39,14 @@ def generatePixelRay(camera, i, j, width, height):
 
 #For a given ray, tests objects intersection and calculate corresponding color
 def intersectAndShade(ray, scene, resources, recursion):
-    if recursion > scene.maxReflectionRecursions:
-        return scene.background
+    if recursion > scene.get_param("maxReflectionRecursions"):
+        return scene.get_background_color()
     intersectResult = intersectAllObjects(ray, scene)
     tIntersect = intersectResult[0]
     indexIntersect = intersectResult[1]
     if tIntersect < float("inf"):
-        return getRayColor(ray, tIntersect, scene.spheres[indexIntersect], scene, resources, recursion)
-    return scene.background
+        return getRayColor(ray, tIntersect, scene.objects[indexIntersect], scene, resources, recursion)
+    return scene.get_background_color()
 
 
 #Check intersection between ray and all objects of the scene

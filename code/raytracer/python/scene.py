@@ -6,21 +6,28 @@ from lights import *
 
 
 class Scene(object):
-    def __init__(self, maxReflectionRecursions, camera, background, spheres, pointLights, ambientLights):
-        self.maxReflectionRecursions = maxReflectionRecursions
+    def __init__(self, params, camera, objects, pointLights, ambientLights):
+        self.params = params
         self.camera = camera
-        self.background = background
-        self.spheres = spheres
-        self.objects = spheres
+        self.objects = objects
         self.pointLights = pointLights
         self.lights = pointLights
         self.ambientLights = ambientLights
 
+    def get_background_color(self):
+        if "background_color" in self.params:
+            return self.params["background_color"]
+        return [0, 0, 0]
+
+    def get_param(self, param_name):
+        if param_name in self.params:
+            return self.params[param_name]
+        return None
 
 def sceneHook(obj):
     if '__type__' in obj:
         if obj['__type__'] == "scene":
-            return Scene(obj["maxReflectionRecursions"], obj["camera"], obj["background"], obj["spheres"],
+            return Scene(obj["params"], obj["camera"], obj["objects"],
                          obj["pointLights"], obj["ambientLights"])
         if obj['__type__'] == "camera":
             return Camera(obj["fov"], obj["position"], obj["up"], obj["target"], obj["near"])

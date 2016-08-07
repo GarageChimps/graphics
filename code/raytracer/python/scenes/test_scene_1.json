@@ -1,6 +1,5 @@
 {
     "__type__": "scene",
-    "maxReflectionRecursions": 3,
     "camera": {
         "__type__": "camera",
         "fov": 45.0,
@@ -9,8 +8,7 @@
         "target": [0,0,0],
         "near": 0.1
     },
-    "background": [1,1,1],
-    "spheres": [
+    "objects": [
         {
             "__type__": "sphere",
             "radius": 1,
@@ -36,5 +34,9 @@
           "__type__": "ambientLight",
           "color": [0.2, 0.2, 0.2]
         }
-    ]
+    ],
+    "params": {
+        "background_color": [1,1,1],
+        "maxReflectionRecursions": 3
+    }
 }
