@@ -1,6 +1,6 @@
 from math import sqrt
 #
-# Linear algenra defs
+# Linear algebra lib
 #
 
 
@@ -30,6 +30,8 @@ def magnitude(vector1):
 
 def normalize(vector1):
     mag = magnitude(vector1)
+    if mag == 0:
+        return [0,0,0]
     return [vector1[0]/mag, vector1[1]/mag, vector1[2]/mag]
 
 
