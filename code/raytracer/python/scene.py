@@ -6,13 +6,11 @@ from lights import *
 
 
 class Scene(object):
-    def __init__(self, params, camera, objects, pointLights, ambientLights):
+    def __init__(self, params, camera, objects, lights):
         self.params = params
         self.camera = camera
         self.objects = objects
-        self.pointLights = pointLights
-        self.lights = pointLights
-        self.ambientLights = ambientLights
+        self.lights = lights
 
     def get_background_color(self):
         if "background_color" in self.params:
@@ -24,11 +22,22 @@ class Scene(object):
             return self.params[param_name]
         return None
 
+    def get_ambient_lights(self):
+        return [l for l in self.lights if isinstance(l, AmbientLight)]
+
+    def get_shading_lights(self):
+        return [l for l in self.lights if not isinstance(l, AmbientLight)]
+
+
+def loadScene(sceneFile):
+    return jsonfile2obj(sceneFile, object_hook=sceneHook)
+
+
 def sceneHook(obj):
     if '__type__' in obj:
         if obj['__type__'] == "scene":
             return Scene(obj["params"], obj["camera"], obj["objects"],
-                         obj["pointLights"], obj["ambientLights"])
+                         obj["lights"])
         if obj['__type__'] == "camera":
             return Camera(obj["fov"], obj["position"], obj["up"], obj["target"], obj["near"])
         if obj['__type__'] == "sphere":
@@ -42,5 +51,3 @@ def sceneHook(obj):
     return obj
 
 
-def loadScene(sceneFile):
-    return jsonfile2obj(sceneFile, object_hook=sceneHook)
