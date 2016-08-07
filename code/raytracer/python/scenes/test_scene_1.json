@@ -42,22 +42,22 @@
     ],
     "lights": [
         {
-          "__type__": "pointLight",
+          "__type__": "point_light",
           "position": [0, 10, 10],
           "color": [0.5, 0.5, 0.5]
         },
         {
-          "__type__": "directionalLight",
+          "__type__": "directional_light",
           "direction": [0, 0, 1],
           "color": [0.3, 0.3, 0.3]
         },
         {
-          "__type__": "directionalLight",
+          "__type__": "directional_light",
           "direction": [1, 1, 1],
           "color": [0.1, 0.1, 0.1]
         },
         {
-          "__type__": "ambientLight",
+          "__type__": "ambient_light",
           "color": [0.2, 0.2, 0.2]
         }
     ],

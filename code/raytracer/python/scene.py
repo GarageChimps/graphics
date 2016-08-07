@@ -1,7 +1,7 @@
 from utils import jsonfile2obj
 
 from camera import *
-from sphere import *
+from objects import *
 from lights import *
 
 
@@ -42,11 +42,11 @@ def sceneHook(obj):
             return Camera(obj["fov"], obj["position"], obj["up"], obj["target"], obj["near"])
         if obj['__type__'] == "sphere":
             return Sphere(obj["radius"], obj["position"], obj["materials"])
-        if obj['__type__'] == "pointLight":
+        if obj['__type__'] == "point_light":
             return PointLight(obj["position"], obj["color"])
-        if obj['__type__'] == "directionalLight":
+        if obj['__type__'] == "directional_light":
             return DirectionalLight(obj["direction"], obj["color"])
-        if obj['__type__'] == "ambientLight":
+        if obj['__type__'] == "ambient_light":
             return AmbientLight(obj["color"])
     return obj
 

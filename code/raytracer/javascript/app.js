@@ -1,11 +1,12 @@
 
 function render()
 {
-    resources = loadResources(resources);
+    loadResources(resources);
+	loadScene(scene);
 	
-	var width = 128.0;
-	var height = 128.0;
-    var image = rayTrace(scene, width, height);
+	var width = 512.0;
+	var height = 512.0;
+    var image = rayTrace(scene, resources, width, height);
 
 	display(image, width, height);
 }
