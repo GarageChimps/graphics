@@ -1,0 +1,88 @@
+{
+  "__type__": "resources",
+  "materials": [
+        {
+            "__type__": "brdf_material",
+            "name": "red_lambert",
+            "type": "brdf",
+            "color": [1,0,0],
+            "brdfParams": {},
+            "brdf": "lambert",
+            "use_for_ambient": true
+        },
+        {
+            "__type__": "brdf_material",
+            "name": "blue_lambert",
+            "type": "brdf",
+            "color": [0,0,1],
+            "brdfParams": {},
+            "brdf": "lambert",
+            "use_for_ambient": true
+        },
+        {
+            "__type__": "brdf_material",
+            "name": "green_lambert",
+            "type": "brdf",
+            "color": [0,1,0],
+            "brdfParams":{},
+            "brdf": "lambert",
+            "use_for_ambient": true
+        },
+        {
+            "__type__": "brdf_material",
+            "name": "yellow_lambert",
+            "type": "brdf",
+            "color": [1,1,0],
+            "brdfParams":{},
+            "brdf": "lambert",
+            "use_for_ambient": true
+        },
+        {
+            "__type__": "brdf_material",
+            "name": "white_lambert",
+            "type": "brdf",
+            "color": [1,1,1],
+            "brdfParams":{},
+            "brdf": "lambert",
+            "use_for_ambient": true
+        },
+        {
+            "__type__": "brdf_material",
+            "name": "gray_lambert",
+            "type": "brdf",
+            "color": [0.2,0.2,0.2],
+            "brdfParams":{},
+            "brdf": "lambert",
+            "use_for_ambient": true
+        },
+        {
+            "__type__": "brdf_material",
+            "name" : "white_bph_100",
+            "type": "brdf",
+            "color": [1,1,1],
+            "brdfParams":
+            {
+              "shininess": 100
+            },
+            "brdf": "blinnPhong"
+        },
+        {
+            "__type__": "brdf_material",
+            "name" : "white_bph_1000",
+            "type": "brdf",
+            "color": [1,1,1],
+            "brdfParams":
+            {
+              "shininess": 1000
+            },
+            "brdf": "blinnPhong"
+        },
+        {
+            "__type__": "reflective_material",
+            "name": "mirror_03",
+            "color": [1,1,1],
+            "type": "mirror",
+            "reflectivity": 0.5
+        }
+    ]
+}
