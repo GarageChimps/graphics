@@ -44,7 +44,7 @@ def sceneHook(obj):
             return Scene(obj["params"], obj["camera"], obj["objects"],
                          obj["lights"])
         if obj['__type__'] == "camera":
-            return Camera(obj["fov"], obj["position"], obj["up"], obj["target"], obj["near"])
+            return Camera(obj["fov"], obj["position"], obj["up"], obj["target"])
         if obj['__type__'] == "sphere":
             return Sphere(obj["radius"], obj["position"], obj["materials"])
         if obj['__type__'] == "point_light":

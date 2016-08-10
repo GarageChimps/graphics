@@ -103,11 +103,11 @@ namespace raytracer
             else if (dic["__type__"].ToString() == "camera")
             {
               var fov = Convert.ToSingle(dic["fov"]);
-              var near = Convert.ToSingle(dic["near"]);
+              //var near = Convert.ToSingle(dic["near"]);
               var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
               var target = ((List<object>)dic["target"]).Select(Convert.ToSingle).ToList();
               var up = ((List<object>)dic["up"]).Select(Convert.ToSingle).ToList();
-              return new Camera(fov, position, up, target, near);
+              return new Camera(fov, position, up, target);
             }
             else if (dic["__type__"].ToString() == "sphere")
             {

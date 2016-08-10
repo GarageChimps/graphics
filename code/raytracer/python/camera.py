@@ -9,7 +9,7 @@ CameraBounds = namedtuple('CameraBounds', ['t', 'b', 'r', 'l'])
 
 
 class Camera(object):
-    def __init__(self, fov, position, up, target, near):
+    def __init__(self, fov, position, up, target, near=0.1):
         self.fov = fov
         self.position = position
         self.up = up

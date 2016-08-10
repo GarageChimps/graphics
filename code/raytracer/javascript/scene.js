@@ -1,5 +1,6 @@
 function loadScene(scene)
 {
+	scene.camera.near = 0.1;
     setCameraCoordinatesBasis(scene.camera);
     scene.getBackgroundColor = function(){
         if ("background_color" in this.params)

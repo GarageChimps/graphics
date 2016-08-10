@@ -6,7 +6,7 @@ from display import display
 
 def render():
     resources = loadResources("resources/resources.json")
-    scene = loadScene("scenes/test_scene_2.json")
+    scene = loadScene("scenes/test_scene_1.json")
     width = 512
     height = 512
     image = rayTrace(scene, resources, width, height)
