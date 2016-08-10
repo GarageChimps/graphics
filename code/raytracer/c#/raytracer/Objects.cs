@@ -15,7 +15,7 @@ namespace raytracer
     public float Radius { get; set; }
     public List<float> Position { get; set; }
     public List<string> Materials { get; set; }
-    Sphere(float radius, List<float> position, List<string> materials)
+    public Sphere(float radius, List<float> position, List<string> materials)
     {
       Radius = radius;
       Position = position;

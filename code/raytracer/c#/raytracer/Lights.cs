@@ -17,7 +17,7 @@ namespace raytracer
   {
     public List<float> Position { get; set; }
     public List<float> Color { get; set; }
-    PointLight(List<float> position, List<float> color)
+    public PointLight(List<float> position, List<float> color)
     {
       Position = position;
       Color = color;
@@ -34,7 +34,7 @@ namespace raytracer
   {
     public List<float> Direction { get; set; }
     public List<float> Color { get; set; }
-    DirectionalLight(List<float> direction, List<float> color)
+    public DirectionalLight(List<float> direction, List<float> color)
     {
       Direction = direction;
       Color = color;
@@ -50,7 +50,7 @@ namespace raytracer
   class AmbientLight : ILight
   {
     public List<float> Color { get; set; }
-    AmbientLight(List<float> color)
+    public AmbientLight(List<float> color)
     {
       Color = color;
     }

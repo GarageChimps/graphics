@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace raytracer
 {
@@ -20,11 +23,7 @@ namespace raytracer
 
     public List<float> GetBackgroundColor()
     {
-      if (Parameters.ContainsKey("background_color"))
-      {
-        return (List<float>)Parameters["background_color"];
-      }
-      return new List<float> { 0, 0, 0 };
+      return GetFloatListParam("background_color");
     }
 
     public object GetParam(string paramName)
@@ -34,6 +33,25 @@ namespace raytracer
         return Parameters[paramName];
       }
       return null;
+    }
+
+    public List<float> GetFloatListParam(string paramName)
+    {
+      if (Parameters.ContainsKey("background_color"))
+      {
+        return ((List<object>)Parameters["background_color"]).Select(Convert.ToSingle).ToList();
+      }
+      return new List<float> { 0, 0, 0 };
+    }
+
+
+    public int GetIntParam(string paramName)
+    {
+      if (Parameters.ContainsKey(paramName))
+      {
+        return Convert.ToInt32(Parameters[paramName]);
+      }
+      return 0;
     }
 
     public IEnumerable<AmbientLight> GetAmbientLights()
@@ -48,7 +66,82 @@ namespace raytracer
 
     public static Scene LoadScene(string fileName)
     {
-      return null;
+      var jsonString = File.ReadAllText(fileName);
+      var scene = ObjectHook(JToken.Parse(jsonString));
+      return (Scene)scene;
+    }
+
+    private static object ObjectHook(JToken token)
+    {
+      switch (token.Type)
+      {
+        case JTokenType.Object:
+
+          var children = token.Children<JProperty>();
+          var dic = children
+                      .ToDictionary(prop => prop.Name,
+                                    prop => ObjectHook(prop.Value));
+          if (dic.ContainsKey("__type__"))
+          {
+            if (dic["__type__"].ToString() == "scene")
+            {
+              var camera = (Camera)dic["camera"];
+              var objects = new List<IObject>();
+              var objectsObj = (List<object>)dic["objects"];
+              foreach (var obj in objectsObj)
+              {
+                objects.Add((IObject)obj);
+              }
+              var lights = new List<ILight>();
+              var lightsObj = (List<object>)dic["lights"];
+              foreach (var l in lightsObj)
+              {
+                lights.Add((ILight)l);
+              }
+              return new Scene((Dictionary<string, object>)dic["params"], camera, objects, lights);
+            }
+            else if (dic["__type__"].ToString() == "camera")
+            {
+              var fov = Convert.ToSingle(dic["fov"]);
+              var near = Convert.ToSingle(dic["near"]);
+              var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
+              var target = ((List<object>)dic["target"]).Select(Convert.ToSingle).ToList();
+              var up = ((List<object>)dic["up"]).Select(Convert.ToSingle).ToList();
+              return new Camera(fov, position, up, target, near);
+            }
+            else if (dic["__type__"].ToString() == "sphere")
+            {
+              var radius = Convert.ToSingle(dic["radius"]);
+              var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
+              var materials = ((List<object>)dic["materials"]).Select(c => c.ToString()).ToList();
+              return new Sphere(radius, position, materials);
+            }
+            else if (dic["__type__"].ToString() == "point_light")
+            {
+              var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
+              var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
+              return new PointLight(position, color);
+            }
+            else if (dic["__type__"].ToString() == "directional_light")
+            {
+              var direction = ((List<object>)dic["direction"]).Select(Convert.ToSingle).ToList();
+              var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
+              return new DirectionalLight(direction, color);
+            }
+            else if (dic["__type__"].ToString() == "ambient_light")
+            {
+              var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
+              return new AmbientLight(color);
+            }
+          }
+          return dic;
+
+        case JTokenType.Array:
+          return token.Select(ObjectHook).ToList();
+
+        default:
+          return ((JValue)token).Value;
+      }
     }
   }
 }

@@ -20,8 +20,7 @@ class Resources(object):
 
 
 class BRDFMaterial(object):
-    def __init__(self, type, name, color, brdfParams, brdf, use_for_ambient):
-        self.type = type
+    def __init__(self, name, color, brdfParams, brdf, use_for_ambient):
         self.name = name
         self.color = color
         self.brdfParams = brdfParams
@@ -30,8 +29,7 @@ class BRDFMaterial(object):
 
 
 class ReflectiveMaterial(object):
-    def __init__(self, type, name, reflectivity):
-        self.type = type
+    def __init__(self, name, reflectivity):
         self.name = name
         self.reflectivity = reflectivity
 
@@ -47,9 +45,9 @@ def resourcesHook(obj):
             use_for_ambient = False
             if 'use_for_ambient' in obj:
                 use_for_ambient = obj['use_for_ambient']
-            return BRDFMaterial(obj['type'], obj['name'], obj['color'], obj['brdfParams'], brdfFunc, use_for_ambient)
+            return BRDFMaterial(obj['name'], obj['color'], obj['brdfParams'], brdfFunc, use_for_ambient)
         if obj['__type__'] == "reflective_material":
-            return ReflectiveMaterial(obj['type'], obj['name'], obj['reflectivity'])
+            return ReflectiveMaterial(obj['name'], obj['reflectivity'])
         if obj['__type__'] == "resources":
             return Resources(obj['materials'])
     return obj
