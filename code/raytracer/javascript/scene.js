@@ -4,12 +4,17 @@ function loadScene(scene)
     scene.getBackgroundColor = function(){
         if ("background_color" in this.params)
             return this.params["background_color"]
-        return [0,0,0]
+        return [0,0,0];
     };
     scene.getParam = function(paramName){
         if (paramName in this.params)
             return this.params[paramName]
-        return None
+        return None;
+    };
+	scene.getIntParam = function(paramName){
+        if (paramName in this.params)
+            return this.params[paramName]
+        return 0;
     };
     scene.getAmbientLights = function(){
         var ambientLights = [];

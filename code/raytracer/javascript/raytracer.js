@@ -48,7 +48,7 @@ function generatePixelRay(camera, i, j, width, height)
 //For a given ray, tests objects intersection and calculate corresponding color
 function intersectAndShade(ray, scene, resources, recursion)
 {
-	if(recursion > scene.getParam("maxReflectionRecursions"))
+	if(recursion > scene.getIntParam("maxReflectionRecursions"))
 		return scene.getBackgroundColor();
 	var intersectResult = intersectAllObjects(ray, scene);
 	var tIntersect = intersectResult[0];

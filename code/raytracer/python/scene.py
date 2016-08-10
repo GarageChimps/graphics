@@ -22,6 +22,11 @@ class Scene(object):
             return self.params[param_name]
         return None
 
+    def get_int_param(self, param_name):
+        if param_name in self.params:
+            return self.params[param_name]
+        return 0
+
     def get_ambient_lights(self):
         return [l for l in self.lights if isinstance(l, AmbientLight)]
 
