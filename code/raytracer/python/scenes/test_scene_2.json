@@ -11,58 +11,24 @@
     "objects": [
         {
             "__type__": "sphere",
-            "radius": 1000,
-            "position": [0,1008,5],
-            "materials": ["red_lambert", "white_bph_100", "mirror_03"]
-        },
-        {
-            "__type__": "sphere",
-            "radius": 1,
-            "position": [8,0,5],
-            "materials": ["blue_lambert", "white_bph_1000", "mirror_03"]
-        },
-        {
-            "__type__": "sphere",
-            "radius": 1,
-            "position": [0,-8,5],
-            "materials": ["green_lambert", "white_bph_1000", "mirror_03"]
-        },
-        {
-            "__type__": "sphere",
-            "radius": 1,
-            "position": [-8,0,5],
-            "materials": ["yellow_lambert", "mirror_03"]
-        },
-        {
-            "__type__": "sphere",
             "radius": 5,
             "position": [0,0,0],
-            "materials": ["gray_lambert", "mirror_03"]
+            "materials": ["red_lambert"]
         }
     ],
     "lights": [
         {
-          "__type__": "pointLight",
+          "__type__": "point_light",
           "position": [0, 10, 10],
           "color": [0.5, 0.5, 0.5]
         },
         {
-          "__type__": "directionalLight",
-          "direction": [0, 0, 1],
-          "color": [0.3, 0.3, 0.3]
-        },
-        {
-          "__type__": "directionalLight",
-          "direction": [1, 1, 1],
-          "color": [0.1, 0.1, 0.1]
-        },
-        {
-          "__type__": "ambientLight",
+          "__type__": "ambient_light",
           "color": [0.2, 0.2, 0.2]
         }
     ],
     "params": {
         "background_color": [0,0,0],
-        "maxReflectionRecursions": 3
+        "maxReflectionRecursions": 1
     }
 }
