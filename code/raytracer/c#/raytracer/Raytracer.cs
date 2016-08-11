@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using static raytracer.LinearAlgebra;
+//using static raytracer.LinearAlgebra;
 
 namespace raytracer
 {
@@ -50,7 +50,7 @@ namespace raytracer
     {
       var cameraCoords = camera.PixelToCameraCoords(i, j, width, height);
       var worldCoords = camera.CameraToWorldCoords(cameraCoords);
-      var pixelDirection = Normalize(Sub(worldCoords, camera.Position));
+      var pixelDirection = LinearAlgebra.Normalize(LinearAlgebra.Sub(worldCoords, camera.Position));
       return new Ray { Position = camera.Position, Direction = pixelDirection };
     }
 
@@ -96,8 +96,8 @@ namespace raytracer
     // Calculates the color gathered by this ray after intersecting an object
     private static List<float> GetRayColor(Ray ray, float tIntersection, IObject obj, Scene scene, Resources resources, int recursion)
     {
-      var p = Add(ray.Position, MultScalar(tIntersection, ray.Direction));
-      var n = Normalize(Sub(p, obj.Position));
+      var p = LinearAlgebra.Add(ray.Position, LinearAlgebra.MultScalar(tIntersection, ray.Direction));
+      var n = LinearAlgebra.Normalize(LinearAlgebra.Sub(p, obj.Position));
       return Shade(p, n, ray.Direction, obj.Materials, scene, resources, recursion);
     }
 
@@ -106,8 +106,8 @@ namespace raytracer
     private static List<float> Shade(List<float> p, List<float> n, List<float> d, List<string> materials, Scene scene, Resources resources, int recursion)
     {
       var color = new List<float> { 0, 0, 0 };
-      color = Add(color, GetAmbientColor(materials, scene, resources));
-      color = Add(color, GetShadingColor(p, n, d, materials, scene, resources, recursion));
+      color = LinearAlgebra.Add(color, GetAmbientColor(materials, scene, resources));
+      color = LinearAlgebra.Add(color, GetShadingColor(p, n, d, materials, scene, resources, recursion));
       return color;
     }
 
@@ -121,8 +121,8 @@ namespace raytracer
       {
         foreach (var material in ambientMaterials)
         {
-          var ambientColor = Mult(light.Color, material.Color);
-          color = Add(color, ambientColor);
+          var ambientColor = LinearAlgebra.Mult(light.Color, material.Color);
+          color = LinearAlgebra.Add(color, ambientColor);
         }
       }
       return color;
@@ -136,7 +136,7 @@ namespace raytracer
       var brdfMaterials = resources.GetBrdfMaterials(materials);
       var reflectiveMaterials = resources.GetReflectiveMaterials(materials);
 
-      var v = Normalize(Sub(scene.Camera.Position, p));
+      var v = LinearAlgebra.Normalize(LinearAlgebra.Sub(scene.Camera.Position, p));
       foreach (var light in scene.GetShadingLights())
       {
         var l = light.GetDirection(p);
@@ -147,8 +147,8 @@ namespace raytracer
           foreach (var material in brdfMaterials)
           {
             var brdfVal = material.BRDF(n, l, v, material.BRDFParams);
-            var materialColor = Mult(lightColor, MultScalar(brdfVal, material.Color));
-            color = Add(color, materialColor);
+            var materialColor = LinearAlgebra.Mult(lightColor, LinearAlgebra.MultScalar(brdfVal, material.Color));
+            color = LinearAlgebra.Add(color, materialColor);
           }
         }
 
@@ -157,8 +157,8 @@ namespace raytracer
         {
           var reflectionRay = GetReflectionRay(p, n, d);
           var rayColor = IntersectAndShade(reflectionRay, scene, resources, recursion + 1);
-          var materialColor = MultScalar(material.Reflectivity, rayColor);
-          color = Add(color, materialColor);
+          var materialColor = LinearAlgebra.MultScalar(material.Reflectivity, rayColor);
+          color = LinearAlgebra.Add(color, materialColor);
         }
       }
 
@@ -169,7 +169,7 @@ namespace raytracer
     //Generates a shadow ray for a given point p for light l
     private static Ray GenerateShadowRay(List<float> p, List<float> l)
     {
-      var q = Add(p, MultScalar(0.001f, l));
+      var q = LinearAlgebra.Add(p, LinearAlgebra.MultScalar(0.001f, l));
       return new Ray { Position = q, Direction = l };
     }
 
@@ -187,8 +187,8 @@ namespace raytracer
     //Gets the reflection ray in a point p with normal n based on original viewing direction d
     private static Ray GetReflectionRay(List<float> p, List<float> n, List<float> d)
     {
-      var r = Normalize(Sub(d, MultScalar(Dot(d, n) * 2, n)));
-      var q = Add(p, MultScalar(0.001f, r));
+      var r = LinearAlgebra.Normalize(LinearAlgebra.Sub(d, LinearAlgebra.MultScalar(LinearAlgebra.Dot(d, n) * 2, n)));
+      var q = LinearAlgebra.Add(p, LinearAlgebra.MultScalar(0.001f, r));
       return new Ray { Position = q, Direction = r };
     }
   }

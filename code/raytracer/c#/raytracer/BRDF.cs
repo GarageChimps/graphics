@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using static raytracer.LinearAlgebra;
+//using static raytracer.LinearAlgebra;
 
 namespace raytracer
 {
@@ -24,13 +24,13 @@ namespace raytracer
 
     public static float lambert(List<float> n, List<float> l, List<float> v, Dictionary<string, float> parameters)
     {
-      return Math.Max(0.0f, Dot(n, l));
+      return Math.Max(0.0f, LinearAlgebra.Dot(n, l));
     }
 
     public static float blinnPhong(List<float> n, List<float> l, List<float> v, Dictionary<string, float> parameters)
     {
-      var h = Normalize(Add(v, l));
-      return (float)Math.Pow(Math.Max(0.0f, Dot(n, h)), parameters["shininess"]);
+      var h = LinearAlgebra.Normalize(LinearAlgebra.Add(v, l));
+      return (float)Math.Pow(Math.Max(0.0f, LinearAlgebra.Dot(n, h)), parameters["shininess"]);
     }
   }
 }

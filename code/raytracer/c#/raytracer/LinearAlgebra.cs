@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace raytracer
 {
   //Linear Algebra Lib
-  class LinearAlgebra
+  static class LinearAlgebra
   {
     public static List<float> Add(List<float>  vector1, List<float>  vector2)
     {

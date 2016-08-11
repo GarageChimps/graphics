@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using static raytracer.LinearAlgebra;
+//using static raytracer.LinearAlgebra;
 
 namespace raytracer
 {
@@ -55,9 +55,9 @@ namespace raytracer
     // Gets camera space coordinate basis
     public List<List<float>> GetCameraCoordinatesBasis()
     {
-      var w = Normalize(Sub(Position, Target));
-      var u = Normalize(Cross(Up, w));
-      var v = Normalize(Cross(w, u));
+      var w = LinearAlgebra.Normalize(LinearAlgebra.Sub(Position, Target));
+      var u = LinearAlgebra.Normalize(LinearAlgebra.Cross(Up, w));
+      var v = LinearAlgebra.Normalize(LinearAlgebra.Cross(w, u));
       return new List<List<float>> { u, v, w};
     }
 
@@ -67,7 +67,7 @@ namespace raytracer
       var worldCoords = Position;
       for (int i = 0; i < 3; i++)
       {
-        worldCoords = Add(worldCoords, MultScalar(cameraCoords[i], CameraBasis[i]));
+        worldCoords = LinearAlgebra.Add(worldCoords, LinearAlgebra.MultScalar(cameraCoords[i], CameraBasis[i]));
       }
       return worldCoords;
     }
