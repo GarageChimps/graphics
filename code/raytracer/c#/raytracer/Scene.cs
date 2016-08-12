@@ -21,9 +21,11 @@ namespace raytracer
       Lights = lights;
     }
 
-    public List<float> GetBackgroundColor()
+    public Vector GetBackgroundColor()
     {
-      return GetFloatListParam("background_color");
+      List<float> background = GetFloatListParam("background_color");
+
+      return new Vector(background);
     }
 
     public object GetParam(string paramName)
@@ -107,31 +109,44 @@ namespace raytracer
               var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
               var target = ((List<object>)dic["target"]).Select(Convert.ToSingle).ToList();
               var up = ((List<object>)dic["up"]).Select(Convert.ToSingle).ToList();
-              return new Camera(fov, position, up, target);
+              return new Camera(
+                fov, 
+                new Vector(position), 
+                new Vector(up), 
+                new Vector(target), 
+                near);
             }
             else if (dic["__type__"].ToString() == "sphere")
             {
               var radius = Convert.ToSingle(dic["radius"]);
               var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
               var materials = ((List<object>)dic["materials"]).Select(c => c.ToString()).ToList();
-              return new Sphere(radius, position, materials);
+              return new Sphere(
+                radius, 
+                new Vector(position), 
+                materials);
             }
             else if (dic["__type__"].ToString() == "point_light")
             {
               var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
               var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
-              return new PointLight(position, color);
+              return new PointLight(
+                new Vector(position), 
+                new Vector(color));
             }
             else if (dic["__type__"].ToString() == "directional_light")
             {
               var direction = ((List<object>)dic["direction"]).Select(Convert.ToSingle).ToList();
               var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
-              return new DirectionalLight(direction, color);
+              return new DirectionalLight(
+                new Vector(direction), 
+                new Vector(color));
             }
             else if (dic["__type__"].ToString() == "ambient_light")
             {
               var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
-              return new AmbientLight(color);
+              return new AmbientLight(
+                new Vector(color));
             }
           }
           return dic;

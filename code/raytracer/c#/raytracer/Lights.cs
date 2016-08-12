@@ -1,46 +1,47 @@
 ﻿using System.Collections.Generic;
-using static raytracer.LinearAlgebra;
+//using static raytracer.LinearAlgebra;
 
 namespace raytracer
 {
   interface ILight
   {
-    List<float> Color { get; set; }
+    Vector Color { get; set; }
   }
 
   interface IShadingLight : ILight
   {
-    List<float> GetDirection(List<float> p);
+    Vector GetDirection(Vector p);
   }
 
   class PointLight : IShadingLight
   {
-    public List<float> Position { get; set; }
-    public List<float> Color { get; set; }
-    public PointLight(List<float> position, List<float> color)
+    public Vector Position { get; set; }
+    public Vector Color { get; set; }
+    public PointLight(Vector position, Vector color)
     {
       Position = position;
       Color = color;
     }
 
-    public List<float> GetDirection(List<float> p)
+    public Vector GetDirection(Vector p)
     {
-      return Normalize(Sub(Position, p));
+      return (Position - p).Normalized;
+        //LinearAlgebra.Normalize(LinearAlgebra.Sub(Position, p));
     }
   }
 
 
   class DirectionalLight : IShadingLight
   {
-    public List<float> Direction { get; set; }
-    public List<float> Color { get; set; }
-    public DirectionalLight(List<float> direction, List<float> color)
+    public Vector Direction { get; set; }
+    public Vector Color { get; set; }
+    public DirectionalLight(Vector direction, Vector color)
     {
       Direction = direction;
       Color = color;
     }
 
-    public List<float> GetDirection(List<float> p)
+    public Vector GetDirection(Vector p)
     {
       return Direction;
     }
@@ -49,8 +50,8 @@ namespace raytracer
 
   class AmbientLight : ILight
   {
-    public List<float> Color { get; set; }
-    public AmbientLight(List<float> color)
+    public Vector Color { get; set; }
+    public AmbientLight(Vector color)
     {
       Color = color;
     }

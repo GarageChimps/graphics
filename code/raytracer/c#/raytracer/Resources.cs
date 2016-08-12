@@ -73,7 +73,9 @@ namespace raytracer
               {
                 useForAmbient = (bool)dic["use_for_ambient"];
               }
-              return new BRDFMaterial {Name = name, Color=color, BRDF = brdf, BRDFParams = brdfParams, UseForAmbient = useForAmbient };
+              return new BRDFMaterial {
+                Name = name, 
+                Color=new Vector(color), BRDF = brdf, BRDFParams = brdfParams, UseForAmbient = useForAmbient };
             }
             else if (dic["__type__"].ToString() == "reflective_material")
             {
@@ -100,15 +102,15 @@ namespace raytracer
 
   interface IColorMaterial : IMaterial
   {
-    List<float> Color { get; set; }
+    Vector Color { get; set; }
   }
 
   class BRDFMaterial : IColorMaterial
   {
     public string Name { get; set; }
-    public List<float> Color { get; set; }
+    public Vector Color { get; set; }
     public Dictionary<string, float> BRDFParams { get; set; }
-    public Func<List<float>, List<float>, List<float>, Dictionary<string, float>, float> BRDF { get; set; }
+    public Func<Vector, Vector, Vector, Dictionary<string, float>, float> BRDF { get; set; }
     public bool UseForAmbient { get; set; }
     
   }
