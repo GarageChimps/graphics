@@ -29,6 +29,20 @@ namespace raytracer
       get { return this / Size; }
     }
 
+    public Vector Clamped
+    {
+      get 
+      {
+        Vector clamped = this;
+
+        clamped.R = clamped.R > 1.0f ? 1.0f : clamped.R;
+        clamped.G = clamped.G > 1.0f ? 1.0f : clamped.G;
+        clamped.B = clamped.B > 1.0f ? 1.0f : clamped.B;
+
+        return clamped;
+      }
+    }
+
     public float R, G, B;
 
     public float X
@@ -47,11 +61,47 @@ namespace raytracer
       set { B = value; }
     }
 
-    Vector(float R, float G, float B)
+    public float this[int i]
+    {
+      get
+      {
+        if (i == 0)
+          return R;
+        else if (i == 1)
+          return G;
+        else if (i == 2)
+          return B;
+        else
+          throw new Exception("Invalid Vector coordinate index");
+      }
+      set
+      {
+        if (i == 0)
+          R = value;
+        else if (i == 1)
+          G = value;
+        else if (i == 2)
+          B = value;
+        else
+          throw new Exception("Invalid Vector coordinate index");
+      }
+    }
+
+    public Vector(float R, float G, float B)
     {
       this.R = R;
       this.G = G;
       this.B = B;
+    }
+
+    public Vector(List<float> coords)
+    {
+      if (coords.Count != 3)
+        throw new Exception("Vector: incorrect size of coords list");
+
+      this.R = coords[0];
+      this.G = coords[1];
+      this.B = coords[2];
     }
 
     public static Vector operator +(Vector vector1, Vector vector2)
@@ -79,9 +129,14 @@ namespace raytracer
       return new Vector(vector1.R * vector2.R, vector1.G * vector2.G, vector1.B * vector2.B);
     }
 
-    public static Vector operator *(Vector vector1, float scalar)
+    public static Vector operator *(Vector vector, float scalar)
     {
-      return new Vector(vector1.R * scalar, vector1.G * scalar, vector1.B * scalar);
+      return new Vector(vector.R * scalar, vector.G * scalar, vector.B * scalar);
+    }
+
+    public static Vector operator *(float scalar, Vector vector)
+    {
+      return vector * scalar;
     }
 
     public static Vector operator /(Vector vector1, Vector vector2)

@@ -5,7 +5,7 @@ namespace raytracer
 {
   interface IObject
   {
-    List<float> Position { get; set; }
+    Vector Position { get; set; }
     List<string> Materials { get; set; }
     float Intersect(Ray ray);
   }
@@ -13,9 +13,9 @@ namespace raytracer
   class Sphere : IObject
   {
     public float Radius { get; set; }
-    public List<float> Position { get; set; }
+    public Vector Position { get; set; }
     public List<string> Materials { get; set; }
-    public Sphere(float radius, List<float> position, List<string> materials)
+    public Sphere(float radius, Vector position, List<string> materials)
     {
       Radius = radius;
       Position = position;
@@ -25,9 +25,12 @@ namespace raytracer
     // Checks intersection between ray and specific sphere
     public float Intersect(Ray ray)
     {
-      float a = LinearAlgebra.Dot(ray.Direction, ray.Direction);
-      float b = 2 * LinearAlgebra.Dot(LinearAlgebra.Sub(ray.Position, Position), ray.Direction);
-      float c = LinearAlgebra.Dot(LinearAlgebra.Sub(ray.Position, Position), LinearAlgebra.Sub(ray.Position, Position)) - Radius * Radius;
+      float a = ray.Direction ^ ray.Direction;
+        //LinearAlgebra.Dot(ray.Direction, ray.Direction);
+      float b = 2 * ray.Direction ^ (ray.Position - Position); 
+        //2 * LinearAlgebra.Dot(LinearAlgebra.Sub(ray.Position, Position), ray.Direction);
+      float c = ((ray.Position - Position) ^ (ray.Position - Position)) - Radius * Radius;
+        //LinearAlgebra.Dot(LinearAlgebra.Sub(ray.Position, Position), LinearAlgebra.Sub(ray.Position, Position)) - Radius * Radius;
 
       var discr = b * b - 4 * a * c;
       if (discr < 0.0)

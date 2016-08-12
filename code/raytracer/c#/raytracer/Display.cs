@@ -8,7 +8,7 @@ namespace raytracer
 {
   class Display
   {
-    public static void GenerateImage(List<float>[,] imageData, int width, int height)
+    public static void GenerateImage(Vector[,] imageData, int width, int height)
     {
       var image = new Bitmap(width, height);
       for (int i = 0; i < width; i++)
@@ -16,7 +16,8 @@ namespace raytracer
         for (int j = 0; j < height; j++)
         {
           var color = imageData[i, height - j - 1];
-          color = color.Select(c => Math.Min(c, 1.0f)).ToList();
+          color = color.Clamped;
+          //color = color.Select(c => Math.Min(c, 1.0f)).ToList();
           image.SetPixel(i, j, Color.FromArgb(((int)(color[0] * 255)),
             ((int)(color[1] * 255)), ((int)(color[2] * 255))));
         }
