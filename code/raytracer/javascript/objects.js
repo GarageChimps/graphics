@@ -1,9 +1,10 @@
 //Checks intersection between ray and specific sphere
 function intersectSphere(ray)
 {
-	  var a = dot(ray.direction, ray.direction);
-	  var b = 2* dot(sub(ray.position, this.position), ray.direction);
-	  var c = dot(sub(ray.position, this.position), sub(ray.position, this.position)) - this.radius*this.radius;
+	  var a = 1.0; //dot(ray.direction, ray.direction);
+	  var subPos = sub(ray.position, this.position);
+	  var b = 2* dot(subPos, ray.direction);
+	  var c = dot(subPos, subPos) - this.radius*this.radius;
 
 	  var discr = b*b - 4*a*c;
 	  if(discr < 0.0)

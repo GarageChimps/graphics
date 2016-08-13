@@ -230,9 +230,9 @@ namespace raytracer
     public static List<float> Cross(List<float> vector1, List<float> vector2)
     {
       var crossVec = new List<float> { 0, 0, 0};
-      crossVec[0] = vector1[1] * vector2[2] - vector2[1] * vector1[2];
-      crossVec[1] = vector2[0] * vector1[2] - vector1[0] * vector2[2];
-      crossVec[2] = vector1[0] * vector2[1] - vector2[0] * vector1[1];
+      crossVec[0] = vector1[1] * vector2[2] - vector2[1] * vector1[2]; //y1*z2 - y2*z1
+      crossVec[1] = vector2[0] * vector1[2] - vector1[0] * vector2[2]; //x2*z1 - x1*z2
+      crossVec[2] = vector1[0] * vector2[1] - vector2[0] * vector1[1]; //x1*y2 - x2*y1
       return crossVec;
     }
   }

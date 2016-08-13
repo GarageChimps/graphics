@@ -25,13 +25,11 @@ namespace raytracer
     // Checks intersection between ray and specific sphere
     public float Intersect(Ray ray)
     {
-      float a = ray.Direction ^ ray.Direction;
-        //LinearAlgebra.Dot(ray.Direction, ray.Direction);
-      float b = 2 * ray.Direction ^ (ray.Position - Position); 
-        //2 * LinearAlgebra.Dot(LinearAlgebra.Sub(ray.Position, Position), ray.Direction);
-      float c = ((ray.Position - Position) ^ (ray.Position - Position)) - Radius * Radius;
-        //LinearAlgebra.Dot(LinearAlgebra.Sub(ray.Position, Position), LinearAlgebra.Sub(ray.Position, Position)) - Radius * Radius;
-
+      float a = 1.0f;//ray.Direction ^ ray.Direction;
+      var subPos = (ray.Position - Position);
+      float b = 2 * ray.Direction ^ subPos; 
+      float c = (subPos ^ subPos) - Radius * Radius;
+      
       var discr = b * b - 4 * a * c;
       if (discr < 0.0)
       {

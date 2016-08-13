@@ -10,9 +10,10 @@ class Sphere(object):
 
     # Checks intersection between ray and specific sphere
     def intersect(self, ray):
-        a = dot(ray.direction, ray.direction)
-        b = 2 * dot(sub(ray.position, self.position), ray.direction)
-        c = dot(sub(ray.position, self.position), sub(ray.position, self.position)) - self.radius * self.radius
+        a = 1#dot(ray.direction, ray.direction)
+        subpos = sub(ray.position, self.position)
+        b = 2 * dot(subpos, ray.direction)
+        c = dot(subpos, subpos) - self.radius * self.radius
 
         discr = b * b - 4 * a * c
         if discr < 0.0:
