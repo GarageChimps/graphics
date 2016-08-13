@@ -113,8 +113,7 @@ namespace raytracer
                 fov, 
                 new Vector(position), 
                 new Vector(up), 
-                new Vector(target), 
-                near);
+                new Vector(target));
             }
             else if (dic["__type__"].ToString() == "sphere")
             {

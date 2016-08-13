@@ -22,7 +22,7 @@ namespace raytracer
     public CameraBounds Bounds { get; set; }
     public List<Vector> CameraBasis { get; set; }
 
-    public Camera(float fov, Vector position, Vector up, Vector target, float near)
+    public Camera(float fov, Vector position, Vector up, Vector target, float near=0.1f)
     {
       FOV = fov;
       Near = near;
