@@ -3,247 +3,32 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>Scene Elements Visualization</title>
+
+		<script type="text/javascript" src="libs/three.min.js"></script>
+		<script type="text/javascript" src="libs/TrackballControls.js"></script>
+		<script type="text/javascript" src="libs/uclass_TeapotGeometry.js"></script>
+		<script type="text/javascript" src="libs/uclass_shaders.js"></script>
+		<script type="text/javascript" src="libs/Detector.js"></script>
+		<script  type="text/javascript" src="libs/dat.gui.min.js"></script>
+
+		<script type="text/javascript" src="../raytracer/javascript/scenes/test_scene_1.json"></script> 
+		<script type="text/javascript" src="../raytracer/javascript/scenes/test_scene_2.json"></script>
+		<!--<script type="text/javascript" src="../raytracer/javascript/scenes/test_scene_3.json"></script>-->
+		<script type="text/javascript" src="../raytracer/javascript/resources/resources.json"></script>
+
+		<script src="../raytracer/javascript/linearAlgebra.js"></script>
+		<script src="../raytracer/javascript/brdfs.js"></script>
+		<script src="../raytracer/javascript/resources.js"></script>
+		<script src="../raytracer/javascript/scene.js"></script>
+		<script src="../raytracer/javascript/display.js"></script>
+		<script src="../raytracer/javascript/objects.js"></script>
+		<script src="../raytracer/javascript/camera.js"></script>
+		
 	</head>
 	<body>
-		<script src="libs/three.min.js"></script>
-		<script src="libs/TrackballControls.js"></script>
-		<script src="libs/uclass_TeapotGeometry.js"></script>
-		<script src="libs/uclass_shaders.js"></script>
-		<script src="libs/Detector.js"></script>
-		<script src="libs/dat.gui.min.js"></script>
-		<script>
-
-			/*global THREE, requestAnimationFrame, Detector, dat */
-			if (!Detector.webgl) { Detector.addGetWebGLMessage(); }
-
-			var SCREEN_WIDTH = window.innerWidth;
-			var SCREEN_HEIGHT = window.innerHeight;
-
-			var container, camera, scene, renderer;
-
-			var cameraControls;
-			var controller;
-			var clock = new THREE.Clock();
-
-			var ambientLight, light;
-			var cameraObj, lightObj, targetObj, upObj, sphere, imageObj;
-			var flatGouraudMaterial, flatPhongMaterial, gouraudMaterial, phongMaterial;
-
-			init();
-			animate();
-
-			function init() {
-
-				container = document.createElement('div');
-				document.body.appendChild(container);
-
-				// CAMERA
-				camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 80000);
-				camera.position.set(-100, 150, 100);
-
-				// LIGHTS
-				ambientLight = new THREE.AmbientLight(0x333333); // 0.2
-				light = new THREE.PointLight(0xffffff, 1.0);
-				light.position.set(0, 10, 10);
-
-				// RENDERER
-				renderer = new THREE.WebGLRenderer({ antialias: true });
-				renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-				renderer.setClearColorHex(0xAAAAAA, 1.0);
-				container.appendChild(renderer.domElement);
-
-				renderer.gammaInput = true;
-				renderer.gammaOutput = true;
-
-				// EVENTS
-				window.addEventListener('resize', onWindowResize, false);
-				document.addEventListener('keydown', onKeyDown, false);
-				document.addEventListener('keyup', onKeyUp, false);
-
-				// CONTROLS
-				cameraControls = new THREE.TrackballControls(camera, renderer.domElement);
-				cameraControls.target.set(0, 0, 0);
-
-				fillScene();
-				
-				// GUI
-				setupGui();
-			}
-
-			// EVENT HANDLERS
-
-			function onWindowResize() {
-
-				SCREEN_WIDTH = window.innerWidth;
-				SCREEN_HEIGHT = window.innerHeight;
-
-				renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-
-				camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-				camera.updateProjectionMatrix();
-
-			}
-
-			function onKeyDown(event) {
-
-				switch (event.keyCode) {
-
-					case 38: // up	
-						break;
-
-					case 40: // down
-						break;
-
-					case 70: // F
-					case 102: // f
-						break;
-
-					case 86: // V
-					case 118: // v
-						break;
-				}
-
-			}
-
-			function onKeyUp(event) {
-
-				switch (event.keyCode) {
-
-				}
-
-			}
-
-			function setupGui() {
-
-				controller = {
-
-					cx: 0.0,
-					cy: 0.0,
-					cz: 35,
-
-					tx: 0.0,
-					ty: 0.0,
-					tz: 10,
-
-					upx: 0.0,
-					upy: 0.0,
-					upz: 10,
-					
-					fov: 45,
-
-					lx: 0,
-					ly: 10,
-					lz: 10,
-
-					sx: 0.0,
-					sy: 0.0,
-					sz: 0.0,
-					radius: 5.0,
-
-					dummy: function () {
-					}
-
-				};
-
-				var h;
-
-				var gui = new dat.GUI();
-
-				h = gui.addFolder("Camera parameters");
-				h.add(controller, "cx", -50.0, 50.0, 0.0).name("position.x");
-				h.add(controller, "cy", -50.0, 50.0, 0.0).name("position.y");
-				h.add(controller, "cz", -50.0, 100.0, 35.0).name("position.z");
-				h.add(controller, "tx", -50.0, 50.0, 0.0).name("target.x");
-				h.add(controller, "ty", -50.0, 50.0, 0.0).name("target.y");
-				h.add(controller, "tz", -50.0, 50.0, 35.0).name("target.z");
-				h.add(controller, "upx", -1.0, 1.0, 0.0).name("up.x");
-				h.add(controller, "upy", -1.0, 1.0, 1.0).name("up.y");
-				h.add(controller, "upz", -1.0, 1.0, 0.0).name("up.z");
-				h.add(controller, "fov", 0.0, 180.0, 45.0).name("fov");
-				
-
-				h = gui.addFolder("Light parameters");
-				h.add(controller, "lx", -50.0, 50.0, 0.0).name("light.x");
-				h.add(controller, "ly", -50.0, 50.0, 10.0).name("light.y");
-				h.add(controller, "lz", -50.0, 50.0, 10.0).name("light.z");
-
-				h = gui.addFolder("Object parameters");
-				h.add(controller, "sx", -50.0, 50.0, 0.0).name("sphere.x");
-				h.add(controller, "sy", -50.0, 50.0, 0.0).name("sphere.y");
-				h.add(controller, "sz", -50.0, 50.0, 0.0).name("sphere.z");
-				h.add(controller, "radius", 0.0, 50.0, 5.0).name("radius");
-
-			}
-
-			//
-
-			function animate() {
-
-				requestAnimationFrame(animate);
-				render();
-
-			}
-
-			function render() {
-
-				var delta = clock.getDelta();
-				cameraControls.update(delta);
-				light.position.set(controller.lx, controller.ly, controller.lz);
-				lightObj.position.set(controller.lx, controller.ly, controller.lz);
-				cameraObj.position.set(controller.cx, controller.cy, controller.cz);
-				targetObj.position.set(controller.tx, controller.ty, controller.tz);
-				sphere.position.set(controller.sx, controller.sy, controller.sz);
-				sphere.scale.set(controller.radius, controller.radius, controller.radius);
-				renderer.render(scene, camera);
-
-			}
-
-			function fillScene() {
-				scene = new THREE.Scene();
-				scene.fog = new THREE.Fog( 0x808080, 2000, 4000 );
-				scene.add(camera);
-
-				scene.add(ambientLight);
-				scene.add(light);
-
-				var ground = new THREE.Mesh(
-					new THREE.PlaneGeometry( 1000, 1000, 100, 100 ),
-					new THREE.MeshBasicMaterial( { color: 0x0, wireframe: true } ) );
-				ground.rotation.x = - Math.PI / 2;
-				ground.position.y = -10;
-				scene.add( ground );
-				
-				var sphereMaterial = new THREE.MeshLambertMaterial( { color: 0xA00000 } );
-				sphere = new THREE.Mesh(
-					new THREE.SphereGeometry( 1, 32, 16 ), sphereMaterial );
-				scene.add( sphere );
-
-				var lightMaterial = new THREE.MeshLambertMaterial( { color: 0xFFFF00 } );
-				lightObj = new THREE.Mesh(
-					new THREE.SphereGeometry( 1, 32, 16 ), lightMaterial );
-				scene.add( lightObj );
-
-				var cameraMaterial = new THREE.MeshLambertMaterial( { color: 0xF010F0 } );
-				cameraObj = new THREE.Mesh( 
-					new THREE.CubeGeometry( 2, 2, 4 ), cameraMaterial );
-				scene.add( cameraObj );
-
-				targetObj = new THREE.Mesh(
-					new THREE.SphereGeometry( 0.5, 32, 16 ), cameraMaterial );
-				scene.add( targetObj );
-
-				imageObj = new THREE.Mesh(
-					new THREE.PlaneGeometry( 10, 10, 100, 100 ),
-					new THREE.MeshBasicMaterial( { color: 0x0, wireframe: true } ) );
-				//ground.rotation.x = - Math.PI / 2;
-				imageObj.position.z = 20;
-				scene.add( imageObj );
-			}
-
-		</script>
+		<script type="text/javascript" src="scene_viewer.js"></script>
 		<div>
-			<canvas width="1366" height="599"></canvas>
+			<canvas width="800" height="600"></canvas>
 		</div>
-		
 	</body>
 </html>
