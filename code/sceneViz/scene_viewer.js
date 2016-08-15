@@ -13,6 +13,7 @@ var clock = new THREE.Clock();
 init();
 animate();
 
+
 function createArrow(position, direction, radius, length, color)
 {
     var vectorDirection = new THREE.Vector3(direction[0], direction[1], direction[2]);
@@ -40,21 +41,33 @@ function createArrow(position, direction, radius, length, color)
 function init3jsObjects()
 {
     var cameraMaterial = new THREE.MeshBasicMaterial( { color: 0x070707, wireframe: true  } );
-    var boxObj = new THREE.Mesh(new THREE.CubeGeometry( 2, 2, 4 ), cameraMaterial );
+    var boxObj = new THREE.Mesh(new THREE.CubeGeometry( 4, 4, 4 ), cameraMaterial );
     var targetObj = new THREE.Mesh(
         new THREE.SphereGeometry( 0.5, 8, 4 ), cameraMaterial );
     var cameraU = createArrow(scene.camera.position, scene.camera.coordinateBasis[0], 0.07, 2, 0xff0000);
     var cameraV = createArrow(scene.camera.position, scene.camera.coordinateBasis[1], 0.07, 2, 0x00ff00);
     var cameraW = createArrow(scene.camera.position, scene.camera.coordinateBasis[2], 0.07, 2, 0x0000ff);
+
+    var fustrumArrows = [];
+    var fustrumCorners = getFustrumCorners(scene.camera);
+    for(var i=0; i<4; i++)
+    {
+        var dir = normalize(sub(fustrumCorners[i], scene.camera.position));
+        fustrumArrows.push(createArrow(scene.camera.position, dir, 0.01, 8000, 0x000000));
+    }
+
     scene.camera.visualObject =  {"material": cameraMaterial, "obj": boxObj, "target": targetObj,
-                                  "coords": [cameraU, cameraV, cameraW]};
+                                  "coords": [cameraU, cameraV, cameraW], "fustrum": fustrumArrows};
     
     var imageObj = new THREE.Mesh(
         new THREE.PlaneGeometry( 1, 1, scene.image.width, scene.image.height ),
         new THREE.MeshBasicMaterial( { color: 0x0, wireframe: true } ) );
     var imageCoords = cameraToWorldCoords(scene.camera, [0,0,-scene.camera.near]);
-    imageObj.position.set(imageCoords[0], imageCoords[1], imageCoords[2]);    
-    scene.image.visualObject = {"obj": imageObj};
+    imageObj.position.set(imageCoords[0], imageCoords[1], imageCoords[2]);
+    var imageOrigin = cameraToWorldCoords(scene.camera, pixelToCameraCoords(scene.camera, 0, 0, scene.image.width, scene.image.height));    
+    var imageX = createArrow(imageOrigin, scene.camera.coordinateBasis[0], 0.03, 1, 0xff0000);
+    var imageY = createArrow(imageOrigin, scene.camera.coordinateBasis[1], 0.03, 1, 0x00ff00);
+    scene.image.visualObject = {"obj": imageObj, "coords": [imageX, imageY]};
 
     for(var i=0; i<scene.lights.length; i++)
     {
@@ -77,7 +90,7 @@ function init() {
     loadResources(resources);
 	loadScene(scene);
     scene.image = {"width": 32, "height": 32};
-
+    setCameraBounds(scene.camera, scene.image.width, scene.image.height);
     init3jsObjects();
 
     container = document.createElement('div');
@@ -103,6 +116,9 @@ function init() {
 
     // CONTROLS
     cameraControls = new THREE.TrackballControls(camera3js);//, renderer.domElement);
+    cameraControls.zoomSpeed = 0.1;
+    cameraControls.rotateSpeed = 2.0;
+    cameraControls.panSpeed = 0.3;
     cameraControls.target.set(0, 0, 0);
 
     fillScene();
@@ -183,7 +199,7 @@ function setupGui() {
     h.add(controller, "upy", -1.0, 1.0, 1.0).name("up.y");
     h.add(controller, "upz", -1.0, 1.0, 0.0).name("up.z");
     h.add(controller, "fov", 0.0, 180.0, 45.0).name("fov");
-    h.add(controller, "near", -10.0, 50.0, 1.0).name("near");
+    h.add(controller, "near", -10.0, 50.0, 4.0).name("near");
     
     for(var i=0; i<scene.lights.length; i++)
     {
@@ -230,16 +246,17 @@ function render() {
 
     var delta = clock.getDelta();
     cameraControls.update(delta);
-
     
     scene.camera.position = [controller.cx, controller.cy, controller.cz];
-    scene.camera.visualObject.obj.position.set(controller.cx, controller.cy, controller.cz);
     scene.camera.target = [controller.tx, controller.ty, controller.tz];
     scene.camera.visualObject.target.position.set(controller.tx, controller.ty, controller.tz);
     scene.camera.near = controller.near;
     scene.camera.fov = controller.fov;
     setCameraBounds(scene.camera, scene.image.width, scene.image.height);
     setCameraCoordinatesBasis(scene.camera);
+    
+    var cameraBoxPosition = add(scene.camera.position, mult_scalar(2, scene.camera.coordinateBasis[2]));
+    scene.camera.visualObject.obj.position.set(cameraBoxPosition[0], cameraBoxPosition[1], cameraBoxPosition[2]);
     
     var imageCoords = cameraToWorldCoords(scene.camera, [0,0,-controller.near]);
     scene.image.visualObject.obj.position.set(imageCoords[0], imageCoords[1], imageCoords[2]);
@@ -283,9 +300,9 @@ function fillScene() {
     
     var ground = new THREE.Mesh(
         new THREE.PlaneGeometry( 1000, 1000, 100, 100 ),
-        new THREE.MeshBasicMaterial( { color: 0x0, wireframe: true } ) );
+        new THREE.MeshBasicMaterial( { color: 0xCCCCCC, wireframe: true } ) );
     ground.rotation.x = - Math.PI / 2;
-    ground.position.y = -10;
+    ground.position.y = -15;
     scene3js.add( ground );
     
     for(var i=0; i<scene.objects.length; i++)
@@ -312,6 +329,14 @@ function fillScene() {
     {
         scene3js.add(scene.camera.visualObject.coords[i]);
     }
+    for(var i=0; i<4; i++)
+    {
+        scene3js.add(scene.camera.visualObject.fustrum[i]);
+    }
 
     scene3js.add( scene.image.visualObject.obj );
+    for(var i=0; i<2; i++)
+    {
+        scene3js.add(scene.image.visualObject.coords[i]);
+    }
 }

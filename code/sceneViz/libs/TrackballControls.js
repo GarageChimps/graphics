@@ -392,7 +392,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	function mousedown( event ) {
 
-		if ( _this.enabled === false ) return;
+		if ( _this.enabled === false || event.pageX > 960) return;
 
 		event.preventDefault();
 		event.stopPropagation();
