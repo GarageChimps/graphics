@@ -15,27 +15,42 @@ animate();
 
 
 function createArrow(position, direction, radius, length, color)
-{
-    var vectorDirection = new THREE.Vector3(direction[0], direction[1], direction[2]);
-    var up = new THREE.Vector3(0, 1, 0);
-    
+{    
     var arrowGroup = new THREE.Object3D();
     var material = new THREE.MeshBasicMaterial( { color: color } );
     var axis = new THREE.Mesh(
         new THREE.CylinderGeometry( radius, radius, length, 48, 1, true ), material );
-    var axisPosition = add(position, mult_scalar(length/2, direction));
-    axis.position.set(axisPosition[0], axisPosition[1], axisPosition[2]);
-    axis.quaternion.setFromUnitVectors(up, vectorDirection.clone().normalize());
-
     arrowGroup.add( axis );
     
     var arrowPoint = new THREE.Mesh(
         new THREE.CylinderGeometry( 0, 2*radius, 4*radius, 48, 1, true ), material );
+    arrowGroup.add( arrowPoint );
+
+    updateArrow(arrowGroup, position, direction, radius, length);
+    return arrowGroup;
+}
+
+function updateArrow(arrow, position, direction, radius, length)
+{    
+    var axis = arrow.children[0];
+    var axisPosition = add(position, mult_scalar(length/2, direction));
+    axis.position.set(axisPosition[0], axisPosition[1], axisPosition[2]);
+    updateObjectOrientation(axis, direction);
+
+    var arrowPoint = arrow.children[1];
     var pointPosition = add(position, mult_scalar(length + radius * 2, direction));
     arrowPoint.position.set(pointPosition[0], pointPosition[1], pointPosition[2]);
-    arrowPoint.quaternion.setFromUnitVectors(up, vectorDirection.clone().normalize());
-    arrowGroup.add( arrowPoint );
-    return arrowGroup;
+    updateObjectOrientation(arrowPoint, direction);
+    
+}
+
+function updateObjectOrientation(obj, direction)
+{
+    var vectorDirection = new THREE.Vector3(direction[0], direction[1], direction[2]);
+    vectorDirection = vectorDirection.normalize();
+    var up = new THREE.Vector3(0, 1, 0);
+    obj.quaternion.setFromUnitVectors(up, vectorDirection);
+    //obj.quaternion.setFromAxisAngle(vectorDirection, 0);
 }
 
 function init3jsObjects()
@@ -44,6 +59,7 @@ function init3jsObjects()
     var boxObj = new THREE.Mesh(new THREE.CubeGeometry( 4, 4, 4 ), cameraMaterial );
     var targetObj = new THREE.Mesh(
         new THREE.SphereGeometry( 0.5, 8, 4 ), cameraMaterial );
+    var upObj = createArrow(scene.camera.position, scene.camera.up, 0.07, 2, 0x000000);
     var cameraU = createArrow(scene.camera.position, scene.camera.coordinateBasis[0], 0.07, 2, 0xff0000);
     var cameraV = createArrow(scene.camera.position, scene.camera.coordinateBasis[1], 0.07, 2, 0x00ff00);
     var cameraW = createArrow(scene.camera.position, scene.camera.coordinateBasis[2], 0.07, 2, 0x0000ff);
@@ -56,7 +72,7 @@ function init3jsObjects()
         fustrumArrows.push(createArrow(scene.camera.position, dir, 0.01, 8000, 0x000000));
     }
 
-    scene.camera.visualObject =  {"material": cameraMaterial, "obj": boxObj, "target": targetObj,
+    scene.camera.visualObject =  {"material": cameraMaterial, "obj": boxObj, "target": targetObj, "up": upObj,
                                   "coords": [cameraU, cameraV, cameraW], "fustrum": fustrumArrows};
     
     var imageObj = new THREE.Mesh(
@@ -247,22 +263,46 @@ function render() {
     var delta = clock.getDelta();
     cameraControls.update(delta);
     
-    scene.camera.position = [controller.cx, controller.cy, controller.cz];
+    
     scene.camera.target = [controller.tx, controller.ty, controller.tz];
     scene.camera.visualObject.target.position.set(controller.tx, controller.ty, controller.tz);
+    
+    scene.camera.position = [controller.cx, controller.cy, controller.cz];
     scene.camera.near = controller.near;
     scene.camera.fov = controller.fov;
+    scene.camera.up = [controller.upx, controller.upy, controller.upz];
+    scene.camera.up = normalize(scene.camera.up);
     setCameraBounds(scene.camera, scene.image.width, scene.image.height);
     setCameraCoordinatesBasis(scene.camera);
     
     var cameraBoxPosition = add(scene.camera.position, mult_scalar(2, scene.camera.coordinateBasis[2]));
     scene.camera.visualObject.obj.position.set(cameraBoxPosition[0], cameraBoxPosition[1], cameraBoxPosition[2]);
+    updateObjectOrientation(scene.camera.visualObject.obj, scene.camera.coordinateBasis[2]);
+
+    var upPosition = add(cameraBoxPosition, mult_scalar(2, scene.camera.coordinateBasis[1]));
+    updateArrow(scene.camera.visualObject.up, upPosition, scene.camera.up, 0.07, 2);
+
+    for(var i=0; i<3; i++)
+    {
+        updateArrow(scene.camera.visualObject.coords[i], scene.camera.position, scene.camera.coordinateBasis[i], 0.07, 2);
+    }
+    
+    var fustrumCorners = getFustrumCorners(scene.camera);
+    for(var i=0; i<4; i++)
+    {
+        var dir = normalize(sub(fustrumCorners[i], scene.camera.position));
+        updateArrow(scene.camera.visualObject.fustrum[i], scene.camera.position, dir, 0.01, 8000);
+    }
     
     var imageCoords = cameraToWorldCoords(scene.camera, [0,0,-controller.near]);
     scene.image.visualObject.obj.position.set(imageCoords[0], imageCoords[1], imageCoords[2]);
     scene.image.visualObject.obj.scale.x = scene.camera.cameraBounds.r - scene.camera.cameraBounds.l;     
     scene.image.visualObject.obj.scale.y = scene.camera.cameraBounds.t - scene.camera.cameraBounds.b;     
-    
+    updateObjectOrientation(scene.image.visualObject.obj, scene.camera.coordinateBasis[1]);
+
+    var imageOrigin = cameraToWorldCoords(scene.camera, pixelToCameraCoords(scene.camera, 0, 0, scene.image.width, scene.image.height));    
+    updateArrow(scene.image.visualObject.coords[0], imageOrigin, scene.camera.coordinateBasis[0], 0.03, 1);
+    updateArrow(scene.image.visualObject.coords[1], imageOrigin, scene.camera.coordinateBasis[1], 0.03, 1);
     
     for(var i=0; i<scene.lights.length; i++)
     {
@@ -325,6 +365,7 @@ function fillScene() {
 
     scene3js.add( scene.camera.visualObject.obj );
     scene3js.add( scene.camera.visualObject.target );
+    scene3js.add( scene.camera.visualObject.up );
     for(var i=0; i<3; i++)
     {
         scene3js.add(scene.camera.visualObject.coords[i]);
