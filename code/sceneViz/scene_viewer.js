@@ -26,20 +26,23 @@ function createArrow(position, direction, radius, length, color)
         new THREE.CylinderGeometry( 0, 2*radius, 4*radius, 48, 1, true ), material );
     arrowGroup.add( arrowPoint );
 
-    updateArrow(arrowGroup, position, direction, radius, length);
+    updateArrow(arrowGroup, position, direction, radius, length, true);
     return arrowGroup;
 }
 
-function updateArrow(arrow, position, direction, radius, length)
+function updateArrow(arrow, position, direction, radius, length, show)
 {    
+    var scale = show ? 1 : 0;
     var axis = arrow.children[0];
     var axisPosition = add(position, mult_scalar(length/2, direction));
     axis.position.set(axisPosition[0], axisPosition[1], axisPosition[2]);
+    axis.scale.set(scale,scale,scale);
     updateObjectOrientation(axis, direction);
 
     var arrowPoint = arrow.children[1];
     var pointPosition = add(position, mult_scalar(length + radius * 2, direction));
     arrowPoint.position.set(pointPosition[0], pointPosition[1], pointPosition[2]);
+    arrowPoint.scale.set(scale,scale,scale);
     updateObjectOrientation(arrowPoint, direction);
     
 }
@@ -83,7 +86,16 @@ function init3jsObjects()
     var imageOrigin = cameraToWorldCoords(scene.camera, pixelToCameraCoords(scene.camera, 0, 0, scene.image.width, scene.image.height));    
     var imageX = createArrow(imageOrigin, scene.camera.coordinateBasis[0], 0.03, 1, 0xff0000);
     var imageY = createArrow(imageOrigin, scene.camera.coordinateBasis[1], 0.03, 1, 0x00ff00);
-    scene.image.visualObject = {"obj": imageObj, "coords": [imageX, imageY]};
+    var rays = [];
+    for(var i=0; i<scene.image.width; i++)
+	{
+		for(var j=0; j<scene.image.height; j++)
+		{
+			var ray = generatePixelRay(scene.camera, i, j, scene.image.width, scene.image.height);
+            rays.push(createArrow(ray.position, ray.direction, 0.02, 8000, 0x222222));
+        }
+    }
+    scene.image.visualObject = {"obj": imageObj, "coords": [imageX, imageY], "rays": rays};
 
     for(var i=0; i<scene.lights.length; i++)
     {
@@ -99,13 +111,18 @@ function init3jsObjects()
         var sphere = new THREE.Mesh(new THREE.SphereGeometry( 1, 32, 16 ), sphereMaterial );
         scene.objects[i].visualObject = {"material": sphereMaterial, "obj": sphere};
     }
+
+    var x = createArrow([0,0,0], [1,0,0], 0.07, 2, 0xff0000);
+    var y = createArrow([0,0,0], [0,1,0], 0.07, 2, 0x00ff00);
+    var z = createArrow([0,0,0], [0,0,1], 0.07, 2, 0x0000ff);
+    scene.visualObject = {"coords": [x,y,z]};
 }
 
 function init() {
 
     loadResources(resources);
 	loadScene(scene);
-    scene.image = {"width": 32, "height": 32};
+    scene.image = {"width": 9, "height": 6};
     setCameraBounds(scene.camera, scene.image.width, scene.image.height);
     init3jsObjects();
 
@@ -202,7 +219,29 @@ function setupGui() {
 
     controller.fov = scene.camera.fov;
     controller.near = scene.camera.near;
-    
+    controller.cameraCoords = false;
+
+    controller.fustrum = false;
+    controller.imageCoords = false;
+    controller.rays = false;
+    controller.worldCoords = false;
+    controller.setCamera = function() 
+    {  
+        cameraControls.reset();
+        cameraControls.target.set(scene.camera.target[0], scene.camera.target[1], scene.camera.target[2]);
+        camera3js.position.set(scene.camera.position[0], scene.camera.position[1], scene.camera.position[2]);
+        camera3js.lookAt.set(scene.camera.target[0], scene.camera.target[1], scene.camera.target[2]);
+        camera3js.up.set(scene.camera.up[0], scene.camera.up[1], scene.camera.up[2]);
+        camera3js.fov = scene.camera.fov;
+        camera3js.updateProjectionMatrix();
+    };
+
+    h = gui.addFolder("Scene parameters");
+    h.add(controller, "worldCoords", false).name("coords");
+
+    h = gui.addFolder("Image parameters");
+    h.add(controller, "imageCoords", false).name("coords");
+    h.add(controller, "rays", false).name("rays");
 
     h = gui.addFolder("Camera parameters");
     h.add(controller, "cx", -50.0, 50.0, 0.0).name("position.x");
@@ -216,6 +255,10 @@ function setupGui() {
     h.add(controller, "upz", -1.0, 1.0, 0.0).name("up.z");
     h.add(controller, "fov", 0.0, 180.0, 45.0).name("fov");
     h.add(controller, "near", -10.0, 50.0, 4.0).name("near");
+    h.add(controller, "cameraCoords", false).name("coords");
+    h.add(controller, "fustrum", false).name("fustrum");
+    h.add(controller, "setCamera").name("setCamera");
+    
     
     for(var i=0; i<scene.lights.length; i++)
     {
@@ -262,7 +305,20 @@ function render() {
 
     var delta = clock.getDelta();
     cameraControls.update(delta);
+
+    for(var i=0; i<scene.image.width; i++)
+	{
+		for(var j=0; j<scene.image.height; j++)
+		{
+            var index = i + scene.image.width*j;
+			var ray = generatePixelRay(scene.camera, i, j, scene.image.width, scene.image.height);
+            updateArrow(scene.image.visualObject.rays[index], ray.position, ray.direction, 0.02, 8000, controller.rays);
+        }
+    }
     
+    updateArrow(scene.visualObject.coords[0], [0,0,0], [1,0,0], 0.07, 2, controller.worldCoords);
+    updateArrow(scene.visualObject.coords[1], [0,0,0], [0,1,0], 0.07, 2, controller.worldCoords);
+    updateArrow(scene.visualObject.coords[2], [0,0,0], [0,0,1], 0.07, 2, controller.worldCoords);
     
     scene.camera.target = [controller.tx, controller.ty, controller.tz];
     scene.camera.visualObject.target.position.set(controller.tx, controller.ty, controller.tz);
@@ -280,18 +336,19 @@ function render() {
     updateObjectOrientation(scene.camera.visualObject.obj, scene.camera.coordinateBasis[2]);
 
     var upPosition = add(cameraBoxPosition, mult_scalar(2, scene.camera.coordinateBasis[1]));
-    updateArrow(scene.camera.visualObject.up, upPosition, scene.camera.up, 0.07, 2);
+    updateArrow(scene.camera.visualObject.up, upPosition, scene.camera.up, 0.07, 2, true);
 
     for(var i=0; i<3; i++)
     {
-        updateArrow(scene.camera.visualObject.coords[i], scene.camera.position, scene.camera.coordinateBasis[i], 0.07, 2);
+
+        updateArrow(scene.camera.visualObject.coords[i], scene.camera.position, scene.camera.coordinateBasis[i], 0.07, 2, controller.cameraCoords);
     }
     
     var fustrumCorners = getFustrumCorners(scene.camera);
     for(var i=0; i<4; i++)
     {
         var dir = normalize(sub(fustrumCorners[i], scene.camera.position));
-        updateArrow(scene.camera.visualObject.fustrum[i], scene.camera.position, dir, 0.01, 8000);
+        updateArrow(scene.camera.visualObject.fustrum[i], scene.camera.position, dir, 0.01, 8000, controller.fustrum);
     }
     
     var imageCoords = cameraToWorldCoords(scene.camera, [0,0,-controller.near]);
@@ -301,8 +358,8 @@ function render() {
     updateObjectOrientation(scene.image.visualObject.obj, scene.camera.coordinateBasis[1]);
 
     var imageOrigin = cameraToWorldCoords(scene.camera, pixelToCameraCoords(scene.camera, 0, 0, scene.image.width, scene.image.height));    
-    updateArrow(scene.image.visualObject.coords[0], imageOrigin, scene.camera.coordinateBasis[0], 0.03, 1);
-    updateArrow(scene.image.visualObject.coords[1], imageOrigin, scene.camera.coordinateBasis[1], 0.03, 1);
+    updateArrow(scene.image.visualObject.coords[0], imageOrigin, scene.camera.coordinateBasis[0], 0.03, 1, controller.imageCoords);
+    updateArrow(scene.image.visualObject.coords[1], imageOrigin, scene.camera.coordinateBasis[1], 0.03, 1, controller.imageCoords);
     
     for(var i=0; i<scene.lights.length; i++)
     {
@@ -379,5 +436,14 @@ function fillScene() {
     for(var i=0; i<2; i++)
     {
         scene3js.add(scene.image.visualObject.coords[i]);
+    }
+    for(var i=0; i<scene.image.visualObject.rays.length; i++)
+    {
+        scene3js.add(scene.image.visualObject.rays[i]);
+    }
+
+    for(var i=0; i<3; i++)
+    {
+        scene3js.add(scene.visualObject.coords[i]);
     }
 }
