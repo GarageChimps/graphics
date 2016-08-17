@@ -37,31 +37,52 @@ function updateArrow(arrow, position, direction, radius, length, show)
     var axisPosition = add(position, mult_scalar(length/2, direction));
     axis.position.set(axisPosition[0], axisPosition[1], axisPosition[2]);
     axis.scale.set(scale,scale,scale);
-    updateObjectOrientation(axis, direction);
+    updateObjectOrientation(axis, direction, [0,1,0]);
 
     var arrowPoint = arrow.children[1];
     var pointPosition = add(position, mult_scalar(length + radius * 2, direction));
     arrowPoint.position.set(pointPosition[0], pointPosition[1], pointPosition[2]);
     arrowPoint.scale.set(scale,scale,scale);
-    updateObjectOrientation(arrowPoint, direction);
+    updateObjectOrientation(arrowPoint, direction, [0,1,0]);
     
 }
 
-function updateObjectOrientation(obj, direction)
+function updateObjectOrientation(obj, direction, up)
 {
     var vectorDirection = new THREE.Vector3(direction[0], direction[1], direction[2]);
     vectorDirection = vectorDirection.normalize();
-    var up = new THREE.Vector3(0, 1, 0);
+    var up = new THREE.Vector3(up[0], up[1], up[2]);
     obj.quaternion.setFromUnitVectors(up, vectorDirection);
     //obj.quaternion.setFromAxisAngle(vectorDirection, 0);
 }
 
+function toVector3(array)
+{
+    return new THREE.Vector3(array);
+}
+
+function updateObjectOrientationUsingBasis(obj, basisVectors)
+{
+    var m = new THREE.Matrix4();
+    m.identity();
+    m.set(basisVectors[0][0], basisVectors[0][1], basisVectors[0][2], 0, 
+          basisVectors[1][0], basisVectors[1][1], basisVectors[1][2], 0,
+          basisVectors[2][0], basisVectors[2][1], basisVectors[2][2], 0, 
+          0, 0, 0, 1);
+    //m.identity();
+    //m.makeBasis(toVector3(basisVectors[0]), toVector3(basisVectors[1]), toVector3(basisVectors[2]));
+    //m = m.transpose();
+    m = m.getInverse(m);
+    obj.quaternion.setFromRotationMatrix(m);
+}
+
 function init3jsObjects()
 {
-    var cameraMaterial = new THREE.MeshBasicMaterial( { color: 0x070707, wireframe: true  } );
-    var boxObj = new THREE.Mesh(new THREE.CubeGeometry( 4, 4, 4 ), cameraMaterial );
+    var cameraMaterial = new THREE.MeshBasicMaterial( { color: 0x040404, wireframe: false, transparent: true, opacity: 0.8  } );
+    var boxObj = new THREE.Mesh(new THREE.CubeGeometry( 2, 2, 4 ), cameraMaterial );
+    var targetMaterial = new THREE.MeshBasicMaterial( { color: 0x040404, wireframe: true, transparent: true, opacity: 0.8  } );
     var targetObj = new THREE.Mesh(
-        new THREE.SphereGeometry( 0.5, 8, 4 ), cameraMaterial );
+        new THREE.SphereGeometry( 0.2, 16, 8 ), targetMaterial );
     var upObj = createArrow(scene.camera.position, scene.camera.up, 0.07, 2, 0x000000);
     var cameraU = createArrow(scene.camera.position, scene.camera.coordinateBasis[0], 0.07, 2, 0xff0000);
     var cameraV = createArrow(scene.camera.position, scene.camera.coordinateBasis[1], 0.07, 2, 0x00ff00);
@@ -107,7 +128,8 @@ function init3jsObjects()
 
     for(var i=0; i<scene.objects.length; i++)
     {
-        var sphereMaterial = new THREE.MeshLambertMaterial( { color: 0xA00000 } );
+        var color = resources.materials[scene.objects[i].materials[0]].color;
+        var sphereMaterial = new THREE.MeshLambertMaterial( { color: new THREE.Color(color[0],color[1],color[2]) } );
         var sphere = new THREE.Mesh(new THREE.SphereGeometry( 1, 32, 16 ), sphereMaterial );
         scene.objects[i].visualObject = {"material": sphereMaterial, "obj": sphere};
     }
@@ -333,9 +355,10 @@ function render() {
     
     var cameraBoxPosition = add(scene.camera.position, mult_scalar(2, scene.camera.coordinateBasis[2]));
     scene.camera.visualObject.obj.position.set(cameraBoxPosition[0], cameraBoxPosition[1], cameraBoxPosition[2]);
-    updateObjectOrientation(scene.camera.visualObject.obj, scene.camera.coordinateBasis[2]);
-
-    var upPosition = add(cameraBoxPosition, mult_scalar(2, scene.camera.coordinateBasis[1]));
+    updateObjectOrientationUsingBasis(scene.camera.visualObject.obj, scene.camera.coordinateBasis);
+    //updateObjectOrientation(scene.camera.visualObject.obj, scene.camera.coordinateBasis[2], [0,1,0]);
+    
+    var upPosition = add(cameraBoxPosition, mult_scalar(1, scene.camera.coordinateBasis[1]));
     updateArrow(scene.camera.visualObject.up, upPosition, scene.camera.up, 0.07, 2, true);
 
     for(var i=0; i<3; i++)
@@ -355,7 +378,8 @@ function render() {
     scene.image.visualObject.obj.position.set(imageCoords[0], imageCoords[1], imageCoords[2]);
     scene.image.visualObject.obj.scale.x = scene.camera.cameraBounds.r - scene.camera.cameraBounds.l;     
     scene.image.visualObject.obj.scale.y = scene.camera.cameraBounds.t - scene.camera.cameraBounds.b;     
-    updateObjectOrientation(scene.image.visualObject.obj, scene.camera.coordinateBasis[1]);
+    //updateObjectOrientation(scene.image.visualObject.obj, scene.camera.coordinateBasis[1], [0,1,0]);
+    updateObjectOrientationUsingBasis(scene.image.visualObject.obj, scene.camera.coordinateBasis);
 
     var imageOrigin = cameraToWorldCoords(scene.camera, pixelToCameraCoords(scene.camera, 0, 0, scene.image.width, scene.image.height));    
     updateArrow(scene.image.visualObject.coords[0], imageOrigin, scene.camera.coordinateBasis[0], 0.03, 1, controller.imageCoords);
