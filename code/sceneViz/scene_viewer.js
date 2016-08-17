@@ -79,7 +79,13 @@ function updateObjectOrientationUsingBasis(obj, basisVectors)
 function init3jsObjects()
 {
     var cameraMaterial = new THREE.MeshBasicMaterial( { color: 0x040404, wireframe: false, transparent: true, opacity: 0.8  } );
+    var cameraGroup = new THREE.Object3D();
     var boxObj = new THREE.Mesh(new THREE.CubeGeometry( 2, 2, 4 ), cameraMaterial );
+    cameraGroup.add(boxObj);
+    var lensObj = new THREE.Mesh(new THREE.CylinderGeometry( 0, 1, 2, 48, 1, true ), cameraMaterial );
+    lensObj.rotation.x = Math.PI / 2;
+    lensObj.position.z = -2;
+    cameraGroup.add(lensObj);
     var targetMaterial = new THREE.MeshBasicMaterial( { color: 0x040404, wireframe: true, transparent: true, opacity: 0.8  } );
     var targetObj = new THREE.Mesh(
         new THREE.SphereGeometry( 0.2, 16, 8 ), targetMaterial );
@@ -96,7 +102,7 @@ function init3jsObjects()
         fustrumArrows.push(createArrow(scene.camera.position, dir, 0.01, 8000, 0x000000));
     }
 
-    scene.camera.visualObject =  {"material": cameraMaterial, "obj": boxObj, "target": targetObj, "up": upObj,
+    scene.camera.visualObject =  {"material": cameraMaterial, "obj": cameraGroup, "target": targetObj, "up": upObj,
                                   "coords": [cameraU, cameraV, cameraW], "fustrum": fustrumArrows};
     
     var imageObj = new THREE.Mesh(
@@ -276,7 +282,7 @@ function setupGui() {
     h.add(controller, "upy", -1.0, 1.0, 1.0).name("up.y");
     h.add(controller, "upz", -1.0, 1.0, 0.0).name("up.z");
     h.add(controller, "fov", 0.0, 180.0, 45.0).name("fov");
-    h.add(controller, "near", -10.0, 50.0, 4.0).name("near");
+    h.add(controller, "near", -10.0, 50.0, 0.0).name("near");
     h.add(controller, "cameraCoords", false).name("coords");
     h.add(controller, "fustrum", false).name("fustrum");
     h.add(controller, "setCamera").name("setCamera");
