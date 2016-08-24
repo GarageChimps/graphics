@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-//using static raytracer.LinearAlgebra;
 
 namespace raytracer
 {
@@ -30,7 +29,6 @@ namespace raytracer
       Target = target;
       Up = up;
       CameraBasis = GetCameraCoordinatesBasis();
-
     }
 
     // Returns the left,right,top,bottom bounds of the near plane in camera space
@@ -56,11 +54,8 @@ namespace raytracer
     public List<Vector> GetCameraCoordinatesBasis()
     {
       Vector w = (Position - Target).Normalized;
-        //LinearAlgebra.Normalize(LinearAlgebra.Sub(Position, Target));
       Vector u = Up % w;
-        //LinearAlgebra.Normalize(LinearAlgebra.Cross(Up, w));
       Vector v = w % u;
-        //LinearAlgebra.Normalize(LinearAlgebra.Cross(w, u));
       return new List<Vector> { u, v, w };
     }
 
@@ -71,7 +66,6 @@ namespace raytracer
       for (int i = 0; i < 3; i++)
       {
         worldCoords = worldCoords + cameraCoords[i] * CameraBasis[i];
-          //LinearAlgebra.Add(worldCoords, LinearAlgebra.MultScalar(cameraCoords[i], CameraBasis[i]));
       }
       return worldCoords;
     }

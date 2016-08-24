@@ -29,15 +29,29 @@ namespace raytracer
       get { return this / Size; }
     }
 
+    /// <summary>
+    /// Gives this vector, with components clamped inside the interval [0, 1]
+    /// </summary>
     public Vector Clamped
     {
       get 
       {
         Vector clamped = this;
 
-        clamped.R = clamped.R > 1.0f ? 1.0f : clamped.R;
-        clamped.G = clamped.G > 1.0f ? 1.0f : clamped.G;
-        clamped.B = clamped.B > 1.0f ? 1.0f : clamped.B;
+        if (clamped.R > 1.0f)
+          clamped.R = 1.0f;
+        else if (clamped.R < 0.0f)
+          clamped.R = 0.0f;
+
+        if (clamped.G > 1.0f)
+          clamped.G = 1.0f;
+        else if (clamped.G < 0.0f)
+          clamped.G = 0.0f;
+
+        if (clamped.B > 1.0f)
+          clamped.B = 1.0f;
+        else if (clamped.B < 0.0f)
+          clamped.B = 0.0f;
 
         return clamped;
       }
@@ -104,49 +118,136 @@ namespace raytracer
       this.B = coords[2];
     }
 
+    /// <summary>
+    /// Gives the result of adding the two vectors component by component.
+    /// </summary>
+    /// <param name="vector1"></param>
+    /// <param name="vector2"></param>
+    /// <returns></returns>
     public static Vector operator +(Vector vector1, Vector vector2)
     {
       return new Vector(vector1.R + vector2.R, vector1.G + vector2.G, vector1.B + vector2.B);
     }
 
-    public static Vector operator +(Vector vector1, float scalar)
+    /// <summary>
+    /// Gives the result of adding a scalar to every component of the vector
+    /// </summary>
+    /// <param name="vector"></param>
+    /// <param name="scalar"></param>
+    /// <returns></returns>
+    public static Vector operator +(Vector vector, float scalar)
     {
-      return new Vector(vector1.R + scalar, vector1.G + scalar, vector1.B + scalar);
+      return new Vector(vector.R + scalar, vector.G + scalar, vector.B + scalar);
     }
 
+    /// <summary>
+    /// Gives the result of adding a scalar to every component of the vector
+    /// </summary>
+    /// <param name="scalar"></param>
+    /// <param name="vector"></param>
+    /// <returns></returns>
+    public static Vector operator +(float scalar, Vector vector)
+    {
+      return new Vector(vector.R + scalar, vector.G + scalar, vector.B + scalar);
+    }
+
+    /// <summary>
+    /// Gives the result of subtracting the two vectors component by component.
+    /// </summary>
+    /// <param name="vector1"></param>
+    /// <param name="vector2"></param>
+    /// <returns></returns>
     public static Vector operator -(Vector vector1, Vector vector2)
     {
       return new Vector(vector1.R - vector2.R, vector1.G - vector2.G, vector1.B - vector2.B);
     }
 
-    public static Vector operator -(Vector vector1, float scalar)
+    /// <summary>
+    /// Gives the result of subtracting a scalar to every component of the vector
+    /// </summary>
+    /// <param name="vector"></param>
+    /// <param name="scalar"></param>
+    /// <returns></returns>
+    public static Vector operator -(Vector vector, float scalar)
     {
-      return new Vector(vector1.R - scalar, vector1.G - scalar, vector1.B - scalar);
+      return new Vector(vector.R - scalar, vector.G - scalar, vector.B - scalar);
     }
 
+    /// <summary>
+    /// Gives the result of subtracting a one-valued vector by another vector
+    /// </summary>
+    /// <param name="vector"></param>
+    /// <param name="scalar"></param>
+    /// <returns></returns>
+    public static Vector operator -(float scalar, Vector vector)
+    {
+      return new Vector(scalar - vector.R, scalar - vector.G, scalar - vector.B);
+    }
+
+    /// <summary>
+    /// Gives the result of multiplying the two vectors component by component
+    /// </summary>
+    /// <param name="vector1"></param>
+    /// <param name="vector2"></param>
+    /// <returns></returns>
     public static Vector operator *(Vector vector1, Vector vector2)
     {
       return new Vector(vector1.R * vector2.R, vector1.G * vector2.G, vector1.B * vector2.B);
     }
-
+    
+    /// <summary>
+    /// Gives the result of multiplying the vector by a scalar
+    /// </summary>
+    /// <param name="vector"></param>
+    /// <param name="scalar"></param>
+    /// <returns></returns>
     public static Vector operator *(Vector vector, float scalar)
     {
       return new Vector(vector.R * scalar, vector.G * scalar, vector.B * scalar);
     }
 
+    /// <summary>
+    /// Gives the result of multiplying the vector by a scalar
+    /// </summary>
+    /// <param name="vector"></param>
+    /// <param name="scalar"></param>
+    /// <returns></returns>
     public static Vector operator *(float scalar, Vector vector)
     {
       return vector * scalar;
     }
 
+    /// <summary>
+    /// Gives the result of dividing the two vectors component by component
+    /// </summary>
+    /// <param name="vector1"></param>
+    /// <param name="vector2"></param>
+    /// <returns></returns>
     public static Vector operator /(Vector vector1, Vector vector2)
     {
       return new Vector(vector1.R / vector2.R, vector1.G / vector2.G, vector1.B / vector2.B);
     }
-    
-    public static Vector operator /(Vector vector1, float scalar)
+
+    /// <summary>
+    /// Gives the result of dividing a vector by a scalar
+    /// </summary>
+    /// <param name="vector"></param>
+    /// <param name="scalar"></param>
+    /// <returns></returns>
+    public static Vector operator /(Vector vector, float scalar)
     {
-      return new Vector(vector1.R / scalar, vector1.G / scalar, vector1.B / scalar);
+      return new Vector(vector.R / scalar, vector.G / scalar, vector.B / scalar);
+    }
+
+    /// <summary>
+    /// Gives the result of dividing a one-valued vector by another vector
+    /// </summary>
+    /// <param name="scalar"></param>
+    /// <param name="vector"></param>
+    /// <returns></returns>
+    public static Vector operator /(float scalar, Vector vector)
+    {
+      return new Vector(scalar / vector.R, scalar / vector.G, scalar / vector.B);
     }
 
     /// <summary>
@@ -175,65 +276,5 @@ namespace raytracer
       return new Vector(R, G, B);
     }
 
-  }
-
-  //Linear Algebra Lib
-  static class LinearAlgebra
-  {
-    public static List<float> Add(List<float>  vector1, List<float>  vector2)
-    {
-      return new List <float>{ vector1[0] + vector2[0], vector1[1] + vector2[1], vector1[2] + vector2[2]};
-    }
-
-
-    public static List<float> Mult(List<float> vector1, List<float> vector2)
-    {
-      return new List<float> { vector1[0] * vector2[0], vector1[1] * vector2[1], vector1[2] * vector2[2]};
-    }
-
-
-    public static List<float> MultScalar(float scalar, List<float> vector)
-    {
-      return new List<float> { scalar * vector[0], scalar * vector[1], scalar * vector[2]};
-    }
-
-
-    public static List<float> Sub(List<float> vector1, List<float> vector2)
-    {
-      return new List<float> { vector1[0] - vector2[0], vector1[1] - vector2[1], vector1[2] - vector2[2]};
-    }
-
-
-    public static float Dot(List<float> vector1, List<float> vector2)
-    {
-      return vector1[0] * vector2[0] + vector1[1] * vector2[1] + vector1[2] * vector2[2];
-    }
-
-
-    public static float Magnitude(List<float> vector1)
-    {
-      return (float)Math.Sqrt(LinearAlgebra.Dot(vector1, vector1));
-    }
-
-
-    public static List<float> Normalize(List<float> vector1)
-    {
-      var mag = LinearAlgebra.Magnitude(vector1);
-      if (mag == 0)
-      {
-        return new List<float> {0, 0, 0};
-      }
-      return new List<float> { vector1[0] / mag, vector1[1] / mag, vector1[2] / mag};
-    }
-
-
-    public static List<float> Cross(List<float> vector1, List<float> vector2)
-    {
-      var crossVec = new List<float> { 0, 0, 0};
-      crossVec[0] = vector1[1] * vector2[2] - vector2[1] * vector1[2]; //y1*z2 - y2*z1
-      crossVec[1] = vector2[0] * vector1[2] - vector1[0] * vector2[2]; //x2*z1 - x1*z2
-      crossVec[2] = vector1[0] * vector2[1] - vector2[0] * vector1[1]; //x1*y2 - x2*y1
-      return crossVec;
-    }
   }
 }

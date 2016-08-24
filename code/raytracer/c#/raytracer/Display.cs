@@ -17,7 +17,6 @@ namespace raytracer
         {
           var color = imageData[i, height - j - 1];
           color = color.Clamped;
-          //color = color.Select(c => Math.Min(c, 1.0f)).ToList();
           image.SetPixel(i, j, Color.FromArgb(((int)(color[0] * 255)),
             ((int)(color[1] * 255)), ((int)(color[2] * 255))));
         }
