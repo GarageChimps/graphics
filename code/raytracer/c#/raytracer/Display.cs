@@ -8,7 +8,7 @@ namespace raytracer
 {
   class Display
   {
-    public static void GenerateImage(Vector[,] imageData, int width, int height)
+    public static void GenerateImage(Vector[,] imageData, int width, int height, string imageFile)
     {
       var image = new Bitmap(width, height);
       for (int i = 0; i < width; i++)
@@ -21,7 +21,7 @@ namespace raytracer
             ((int)(color[1] * 255)), ((int)(color[2] * 255))));
         }
       }
-      image.Save("image.png", ImageFormat.Png);
+      image.Save(imageFile, ImageFormat.Png);
     }
   }
 }

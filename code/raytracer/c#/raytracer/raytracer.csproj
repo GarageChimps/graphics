@@ -66,12 +66,15 @@
     <None Include="App.config" />
     <None Include="packages.config" />
 	<Content Include="..\..\..\_resources\**" >
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
 	<Content Include="..\..\..\_scenes\**" >
+	<Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
 	<Content Include="..\..\..\_meshes\**" >
+	<Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
