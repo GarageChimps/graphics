@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-//using static raytracer.LinearAlgebra;
 
 namespace raytracer
 {
@@ -26,7 +25,6 @@ namespace raytracer
     public Vector GetDirection(Vector p)
     {
       return (Position - p).Normalized;
-        //LinearAlgebra.Normalize(LinearAlgebra.Sub(Position, p));
     }
   }
 
