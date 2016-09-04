@@ -1,7 +1,7 @@
 from PIL import Image
 
 
-def display(image_data, width, height):
+def display(image_data, width, height, fileName):
 
     image_list = []
     for j in range(height):
@@ -11,5 +11,5 @@ def display(image_data, width, height):
 
     img = Image.new('RGB', (width, height))
     img.putdata(image_list)
-    img.save('image.png')
+    img.save(fileName)
 
