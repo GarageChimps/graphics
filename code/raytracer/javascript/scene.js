@@ -1,7 +1,9 @@
 function loadScene(scene)
 {
 	scene.camera.near = 1;
-    setCameraCoordinatesBasis(scene.camera);
+	if (!("enable_shadows" in scene.params))
+		scene.params["enable_shadows"] = true;
+	setCameraCoordinatesBasis(scene.camera);
     scene.getBackgroundColor = function(){
         if ("background_color" in this.params)
             return this.params["background_color"]

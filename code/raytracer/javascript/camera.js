@@ -41,3 +41,14 @@ function cameraToWorldCoords(camera, cameraCoords)
 		worldCoords = add(worldCoords, mult_scalar(cameraCoords[i], basis[i]));
 	return worldCoords;
 }
+
+function getFustrumCorners(camera)
+{
+	var imageCenter = add(camera.position, mult_scalar(-camera.near, camera.coordinateBasis[2]));
+	var rightVector = mult_scalar(camera.cameraBounds.r, camera.coordinateBasis[0]);
+	var topVector = mult_scalar(camera.cameraBounds.t, camera.coordinateBasis[1]);
+	return [add(add(imageCenter, rightVector), topVector),
+			add(sub(imageCenter, rightVector), topVector),
+			sub(add(imageCenter, rightVector), topVector),
+			sub(sub(imageCenter, rightVector), topVector)];
+}

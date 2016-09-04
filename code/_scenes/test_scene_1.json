@@ -1,4 +1,4 @@
-var scene ={
+{
     "__type__": "scene",
     "camera": {
         "__type__": "camera",
@@ -15,8 +15,9 @@ var scene ={
             "materials": []
         }
     ],
-    "lights": [],
+    "lights": [
+    ],
     "params": {
         "background_color": [1,1,1]
     }
-};
+}

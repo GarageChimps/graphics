@@ -70,10 +70,16 @@ var resources =
             },
             "brdf": "blinnPhong"
         },
-        {
-            "__type__": "reflective_material",
-            "name": "mirror_03",
-            "reflectivity": 0.5
+		{
+            "__type__": "brdf_material",
+            "name" : "blue_bph_1000",
+            "color": [0,0,1],
+            "brdfParams":
+            {
+              "shininess": 1000
+            },
+            "brdf": "blinnPhong"
         }
     ]
 };
+  

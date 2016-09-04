@@ -124,7 +124,8 @@ function getShadingColor(p, n, d, materials, scene, resources, recursion)
 	{		
 		var lightPos = shadingLights[i].position;
 		var l = shadingLights[i].getDirection(p);
-		if(!isInShadow(p, l, scene))
+		
+		if(!scene.params["enable_shadows"] || !isInShadow(p, l, scene))
 		{
 			var lightColor = shadingLights[i].color;
 			for(var j=0; j<brdfMaterials.length; j++)

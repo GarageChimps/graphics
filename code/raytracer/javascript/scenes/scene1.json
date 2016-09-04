@@ -1,35 +1,28 @@
-var scene =
-{
+var scene = {
     "__type__": "scene",
     "camera": {
         "__type__": "camera",
         "fov": 45.0,
-        "position": [0,0,35],
+        "position": [0,0,10],
         "up": [0,1,0],
-        "target": [0,0,10],
-        "near": 0.1
+        "target": [0,0,0]
     },
     "objects": [
         {
             "__type__": "sphere",
-            "radius": 5,
+            "radius": 1,
             "position": [0,0,0],
             "materials": ["red_lambert"]
         }
     ],
     "lights": [
-        {
+	   {
           "__type__": "point_light",
-          "position": [0, 10, 10],
+          "position": [0, 10, 20],
           "color": [0.5, 0.5, 0.5]
-        },
-        {
-          "__type__": "ambient_light",
-          "color": [0.2, 0.2, 0.2]
         }
     ],
     "params": {
-        "background_color": [0,0,0],
-        "maxReflectionRecursions": 1
+        "background_color": [0.4,0.4,0.4]
     }
 };
