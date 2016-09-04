@@ -19,6 +19,8 @@ namespace raytracer
       Camera = camera;
       Objects = objects;
       Lights = lights;
+      if (!Parameters.ContainsKey("enable_shadows"))
+        Parameters.Add("enable_shadows", true);
     }
 
     public Vector GetBackgroundColor()
@@ -54,6 +56,15 @@ namespace raytracer
         return Convert.ToInt32(Parameters[paramName]);
       }
       return 0;
+    }
+
+    public bool GetBoolParam(string paramName)
+    {
+      if (Parameters.ContainsKey(paramName))
+      {
+        return Convert.ToBoolean(Parameters[paramName]);
+      }
+      return false;
     }
 
     public IEnumerable<AmbientLight> GetAmbientLights()

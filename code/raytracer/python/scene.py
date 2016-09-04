@@ -11,6 +11,8 @@ class Scene(object):
         self.camera = camera
         self.objects = objects
         self.lights = lights
+        if "enable_shadows" not in self.params:
+            self.params["enable_shadows"] = True
 
     def get_background_color(self):
         if "background_color" in self.params:

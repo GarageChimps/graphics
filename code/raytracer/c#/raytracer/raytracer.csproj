@@ -65,16 +65,13 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <Content Include="Scenes\test_scene_3.json">
+	<Content Include="..\..\..\_resources\**" >
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\resources.json">
+	<Content Include="..\..\..\_scenes\**" >
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scenes\test_scene_2.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scenes\test_scene_1.json">
+	<Content Include="..\..\..\_meshes\**" >
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

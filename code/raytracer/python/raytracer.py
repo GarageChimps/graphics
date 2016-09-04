@@ -97,7 +97,7 @@ def getShadingColor(p, n, d, materials, scene, resources, recursion):
     for light in scene.get_shading_lights():
         l = light.get_direction(p)
         #Direct illumination
-        if not isInShadow(p, l, scene):
+        if not scene.get_param("enable_shadows") or not isInShadow(p, l, scene):
             lightColor = light.color
             for material in brdf_materials:
                 brdfVal = material.brdf(n, l, v, material.brdfParams)
