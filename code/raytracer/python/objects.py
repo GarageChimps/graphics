@@ -8,6 +8,9 @@ class Sphere(object):
         self.position = position
         self.materials = materials
 
+    def get_normal(self, p):
+        return normalize(sub(p, self.position))
+
     # Checks intersection between ray and specific sphere
     def intersect(self, ray):
         a = 1#dot(ray.direction, ray.direction)
@@ -27,4 +30,4 @@ class Sphere(object):
         if tMin < 0.0:
             return float("inf")
 
-        return tMin
+        return tMin, self

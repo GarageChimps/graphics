@@ -15,10 +15,10 @@ def render(resourcesFilePath, sceneFilePath, imageFilePath, width, height):
 
 if __name__ == "__main__":
     imageFilePath = "image.png"
-    width = 256
-    height = 256
+    width = 16
+    height = 16
     resourcesFilePath = "../../_resources/resources.json"
-    sceneFilePath = "../../_scenes/taller1/scene1.json"
+    sceneFilePath = "../../_scenes/taller3/scene1.json"
 
     for index, arg in enumerate(sys.argv):
         if index + 1 < len(sys.argv):

@@ -43,3 +43,5 @@ def cross(vector1, vector2):
     return crossVec
 
 
+def det(a,  b,  c,  d,  e,  f,  g,  h,  i):
+    return a * e * i - a * f * h - b * d * i + c * d * h + b * f * g - c * e * g

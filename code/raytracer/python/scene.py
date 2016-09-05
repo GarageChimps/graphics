@@ -3,6 +3,7 @@ from utils import jsonfile2obj
 from camera import *
 from objects import *
 from lights import *
+from mesh import Mesh
 
 
 class Scene(object):
@@ -49,6 +50,10 @@ def sceneHook(obj):
             return Camera(obj["fov"], obj["position"], obj["up"], obj["target"])
         if obj['__type__'] == "sphere":
             return Sphere(obj["radius"], obj["position"], obj["materials"])
+        if obj['__type__'] == "mesh":
+            mesh = Mesh(obj["file_path"], obj["materials"])
+            mesh.init()
+            return mesh
         if obj['__type__'] == "point_light":
             return PointLight(obj["position"], obj["color"])
         if obj['__type__'] == "directional_light":

@@ -41,30 +41,28 @@ def generatePixelRay(camera, i, j, width, height):
 def intersectAndShade(ray, scene, resources, recursion):
     if recursion > scene.get_int_param("maxReflectionRecursions"):
         return scene.get_background_color()
-    intersectResult = intersectAllObjects(ray, scene)
-    tIntersect = intersectResult[0]
-    indexIntersect = intersectResult[1]
+    tIntersect, objectIntersected = intersectAllObjects(ray, scene)
     if tIntersect < float("inf"):
-        return getRayColor(ray, tIntersect, scene.objects[indexIntersect], scene, resources, recursion)
+        return getRayColor(ray, tIntersect, objectIntersected, scene, resources, recursion)
     return scene.get_background_color()
 
 
 #Check intersection between ray and all objects of the scene
 def intersectAllObjects(ray, scene):
     tMin = float("inf")
-    indexMin = -1
-    for index, obj in enumerate(scene.objects):
-        t = obj.intersect(ray)
+    objectIntersected = None
+    for obj in scene.objects:
+        t, o = obj.intersect(ray)
         if t < tMin:
             tMin = t
-            indexMin = index
+            objectIntersected = o
 
-    return [tMin, indexMin]
+    return tMin, objectIntersected
 
 #Calculates the color gathered by this ray after intersecting an object
 def getRayColor(ray, tIntersection, object, scene,resources, recursion):
     p = add(ray.position, mult_scalar(tIntersection, ray.direction))
-    n = normalize(sub(p, object.position))
+    n = object.get_normal(p)
     return shade(p, n, ray.direction, object.materials, scene, resources, recursion)
 
 
