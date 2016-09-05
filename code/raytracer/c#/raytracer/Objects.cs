@@ -5,9 +5,9 @@ namespace raytracer
 {
   interface IObject
   {
-    Vector Position { get; set; }
     List<string> Materials { get; set; }
-    float Intersect(Ray ray);
+    Tuple<float, IObject> Intersect(Ray ray);
+    Vector GetNormal(Vector p);
   }
 
   class Sphere : IObject
@@ -23,7 +23,7 @@ namespace raytracer
     }
 
     // Checks intersection between ray and specific sphere
-    public float Intersect(Ray ray)
+    public Tuple<float, IObject> Intersect(Ray ray)
     {
       float a = 1.0f;//ray.Direction ^ ray.Direction;
       var subPos = (ray.Position - Position);
@@ -33,7 +33,7 @@ namespace raytracer
       var discr = b * b - 4 * a * c;
       if (discr < 0.0)
       {
-        return float.PositiveInfinity;
+        return new Tuple<float, IObject> (float.PositiveInfinity, null);
       }
 
       discr = (float)Math.Sqrt(discr);
@@ -43,10 +43,15 @@ namespace raytracer
       var tMin = Math.Min(t0, t1);
       if (tMin < 0.0)
       {
-        return float.PositiveInfinity;
+        return new Tuple<float, IObject>(float.PositiveInfinity, null);
       }
 
-      return tMin;
+      return new Tuple<float, IObject>(tMin, this);
+    }
+
+    public Vector GetNormal(Vector p)
+    {
+      return (p - this.Position).Normalized;
     }
   }
 

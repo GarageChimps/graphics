@@ -64,39 +64,41 @@ namespace raytracer
       }
       var intersectResult = IntersectAllObjects(ray, scene);
       var tIntersect = intersectResult.Item1;
-      var indexIntersect = intersectResult.Item2;
+      var objIntersected = intersectResult.Item2;
       if (tIntersect < float.PositiveInfinity)
       {
-        return GetRayColor(ray, tIntersect, scene.Objects[indexIntersect], scene, resources, recursion);
+        return GetRayColor(ray, tIntersect, objIntersected, scene, resources, recursion);
       }
       return scene.GetBackgroundColor();
     }
 
 
     // Check intersection between ray and all objects of the scene
-    private static Tuple<float, int> IntersectAllObjects(Ray ray, Scene scene)
+    private static Tuple<float, IObject> IntersectAllObjects(Ray ray, Scene scene)
     {
       var tMin = float.PositiveInfinity;
-      var indexMin = -1;
+      IObject objIntersected = null;
       for (int index = 0; index < scene.Objects.Count; index++)
       {
         var obj = scene.Objects[index];
-        var t = obj.Intersect(ray);
+        var intersectResult = obj.Intersect(ray);
+        var t = intersectResult.Item1;
+        var o = intersectResult.Item2;
         if (t < tMin)
         {
           tMin = t;
-          indexMin = index;
+          objIntersected = o;
         }
       }
 
-      return new Tuple<float, int>(tMin, indexMin);
+      return new Tuple<float, IObject>(tMin, objIntersected);
     }
 
     // Calculates the color gathered by this ray after intersecting an object
     private static Vector GetRayColor(Ray ray, float tIntersection, IObject obj, Scene scene, Resources resources, int recursion)
     {
       Vector p = ray.Position + (tIntersection * ray.Direction);
-      Vector n = (p - obj.Position).Normalized;
+      Vector n = obj.GetNormal(p);
       return Shade(p, n, ray.Direction, obj.Materials, scene, resources, recursion);
     }
 

@@ -8,12 +8,9 @@ class Face:
         self.tex_coord_indices = tex_coord_indices
         self.normal_indices = normal_indices
         self.mesh = mesh
-        self.materials = None
-        self.face_normal = None
-        if mesh is not None:
-            self.materials = mesh.materials
-            self.face_normal = cross(sub(self.position(0), self.position(1)),
-                                     sub(self.position(2), self.position(1)))
+        self.materials = mesh.materials
+        self.face_normal = normalize(cross(sub(self.position(2), self.position(1)),
+                                     sub(self.position(0), self.position(1))))
         self.barycentric_cache = None
 
     def coord(self, vertex, axis):

@@ -136,6 +136,14 @@ namespace raytracer
                 new Vector(position), 
                 materials);
             }
+            else if (dic["__type__"].ToString() == "mesh")
+            {
+              var filePath = dic["file_path"].ToString();
+              var materials = ((List<object>)dic["materials"]).Select(c => c.ToString()).ToList();
+              var mesh = new Mesh(filePath, materials);
+              mesh.Init();
+              return mesh;
+            }
             else if (dic["__type__"].ToString() == "point_light")
             {
               var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();

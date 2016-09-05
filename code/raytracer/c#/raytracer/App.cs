@@ -6,7 +6,7 @@
     {
       var imageFile = "image.png";
       var resourcesFile = "resources.json";
-      var sceneFile = "taller1/scene1.json";
+      var sceneFile = "taller3/scene1.json";
       var width = 256;
       var height = 256;
 

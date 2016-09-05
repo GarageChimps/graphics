@@ -10,7 +10,7 @@
     "objects": [
         {
             "__type__": "mesh",
-			"file_path": "../../_meshes/teapot.obj",
+			"file_path": "teapot_low.obj",
             "materials": ["red_lambert", "white_bph_100"]
         }
     ],
