@@ -140,7 +140,10 @@ namespace raytracer
             {
               var filePath = dic["file_path"].ToString();
               var materials = ((List<object>)dic["materials"]).Select(c => c.ToString()).ToList();
-              var mesh = new Mesh(filePath, materials);
+              var computeVertexNormals = false;
+              if (dic.ContainsKey("compute_vertex_normals"))
+                computeVertexNormals = Convert.ToBoolean(dic["compute_vertex_normals"]);
+              var mesh = new Mesh(filePath, materials, computeVertexNormals);
               mesh.Init();
               return mesh;
             }

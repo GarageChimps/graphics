@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace raytracer
 {
   class Face : IObject
   {
     private readonly Mesh _mesh;
-    private readonly Vector _faceNormal;
-    
+    public Vector FaceNormal { get; }
+
     public List<int> PositionIndices { get; set; }
     public List<int> TexCoordIndices { get; set; }
     public List<int> NormalIndices { get; set; }
@@ -21,7 +22,7 @@ namespace raytracer
       TexCoordIndices = texCoordIndices;
       NormalIndices = normalIndices;
       Materials = _mesh.Materials;
-      _faceNormal = ((GetPosition(2) - GetPosition(0)) % (GetPosition(0) - GetPosition(1))).Normalized;
+      FaceNormal = ((GetPosition(2) - GetPosition(0)) % (GetPosition(0) - GetPosition(1))).Normalized;
     }
 
     public Tuple<float, IObject> Intersect(Ray ray)
@@ -65,7 +66,7 @@ namespace raytracer
     public Vector GetVertexNormal(int vertex)
     {
       if (NormalIndices.Count == 0)
-        return _faceNormal;
+        return FaceNormal;
       return _mesh.Normals[NormalIndices[vertex]];
     }
 
@@ -99,6 +100,7 @@ namespace raytracer
 
   class Mesh : IObject
   {
+    private readonly bool _computeVertexNormals;
     public string FilePath { get; set; }
     public List<string> Materials { get; set; }
     
@@ -107,8 +109,9 @@ namespace raytracer
     public List<Vector> TexCoords { get; private set; } 
     public List<Face> Faces { get; private set; } 
 
-    public Mesh(string filePath, List<string> materials)
+    public Mesh(string filePath, List<string> materials, bool computeVertexNormals)
     {
+      _computeVertexNormals = computeVertexNormals;
       FilePath = filePath;
       Materials = materials;
 
@@ -121,6 +124,8 @@ namespace raytracer
     public void Init()
     {
       LoadFromObj(FilePath);
+      if (_computeVertexNormals)
+        ComputeVertexNormals();
     }
 
     private void LoadFromObj(string filePath)
@@ -164,6 +169,39 @@ namespace raytracer
             Faces.Add(new Face(positionIndices, texCoordIndices, normalIndices, this));
           }
         }
+      }
+    }
+
+    private void ComputeVertexNormals()
+    {
+      if (Normals.Count > 0)
+        return;
+
+      var facesForVertices = new List<List<Face>>();
+      foreach (var position in Positions)
+      {
+        facesForVertices.Add(new List<Face>());
+      }
+      foreach (var face in Faces)
+      {
+        foreach (var positionIndex in face.PositionIndices)
+        {
+          facesForVertices[positionIndex].Add(face);
+        }
+      }
+      foreach (var facesForVertex in facesForVertices)
+      {
+        var normal = new Vector();
+        foreach (var face in facesForVertex)
+        {
+          var fn = face.FaceNormal;
+          normal = normal + fn;
+        }
+        Normals.Add(normal.Normalized);
+      }
+      foreach (var face in Faces)
+      {
+        face.NormalIndices = face.PositionIndices.ToList();
       }
     }
 

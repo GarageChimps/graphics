@@ -10,8 +10,9 @@
     "objects": [
         {
             "__type__": "mesh",
-			"file_path": "sphere.obj",
-            "materials": ["red_lambert", "white_bph_100"]
+			"file_path": "teapot_low.obj",
+            "materials": ["red_lambert", "white_bph_100"],
+			"compute_vertex_normals": true
         }
     ],
     "lights": [

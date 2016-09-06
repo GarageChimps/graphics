@@ -3,14 +3,14 @@
     "camera": {
         "__type__": "camera",
         "fov": 45.0,
-        "position": [0,0,10],
+        "position": [0,0.5,0.5],
         "up": [0,1,0],
         "target": [0,0,0]
     },
     "objects": [
         {
             "__type__": "mesh",
-			"file_path": "sphere.obj",
+			"file_path": "bunny_low.obj",
             "materials": ["red_lambert", "white_bph_100"]
         }
     ],
