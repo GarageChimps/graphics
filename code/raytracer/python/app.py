@@ -15,8 +15,8 @@ def render(resourcesFilePath, sceneFilePath, imageFilePath, width, height):
 
 if __name__ == "__main__":
     imageFilePath = "image.png"
-    width = 64
-    height = 64
+    width = 256
+    height = 256
     resourcesFilePath = "../../_resources/resources.json"
     sceneFilePath = "../../_scenes/taller3/scene1.json"
 

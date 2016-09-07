@@ -53,6 +53,8 @@ class Face:
         tMin = float("inf")
 
         detA = det(xa - xb, xa - xc, xd, ya - yb, ya - yc, yd, za - zb, za - zc, zd)
+        if detA == 0:
+            return tMin, None
         t = det(xa - xb, xa - xc, xa - xe, ya - yb, ya - yc, ya - ye, za - zb, za - zc,
                 za - ze) / detA
         if t < 0:
