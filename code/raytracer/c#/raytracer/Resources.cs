@@ -80,8 +80,8 @@ namespace raytracer
             else if (dic["__type__"].ToString() == "reflective_material")
             {
               var name = dic["name"].ToString();
-              var reflectivity = Convert.ToSingle(dic["reflectivity"]);
-              return new ReflectiveMaterial { Name = name, Reflectivity= reflectivity };
+              var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
+              return new ReflectiveMaterial { Name = name, Color= new Vector(color) };
             }
           }
           return dic;
@@ -119,7 +119,7 @@ namespace raytracer
   class ReflectiveMaterial : IMaterial
   {
     public string Name { get; set; }
-    public float Reflectivity { get; set; }
+    public Vector Color { get; set; }
     
   }
 }

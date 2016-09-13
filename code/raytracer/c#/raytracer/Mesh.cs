@@ -158,7 +158,7 @@ namespace raytracer
             var normalIndices = new List<int>();
             for (int i = 1; i < 4; i++)
             {
-              var indices = parts[i].Split('/');
+              var indices = parts[i].Split(new [] { '/'}, StringSplitOptions.None);
               if(indices.Length > 0 && indices[0] != "")
                 positionIndices.Add(int.Parse(indices[0]) - 1);
               if (indices.Length > 1 && indices[1] != "")

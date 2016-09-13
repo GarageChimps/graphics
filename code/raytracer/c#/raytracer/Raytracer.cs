@@ -142,8 +142,9 @@ namespace raytracer
       foreach (var light in scene.GetShadingLights())
       {
         var l = light.GetDirection(p);
+        var dl = light.GetDistance(p);
         // Direct illumination
-        if (!scene.GetBoolParam("enable_shadows") || !IsInShadow(p, l, scene))
+        if (!scene.GetBoolParam("enable_shadows") || !IsInShadow(p, l, dl, scene))
         {
           var lightColor = light.Color;
           foreach (var material in brdfMaterials)
@@ -159,7 +160,7 @@ namespace raytracer
         {
           var reflectionRay = GetReflectionRay(p, n, d);
           var rayColor = IntersectAndShade(reflectionRay, scene, resources, recursion + 1);
-          var materialColor = material.Reflectivity * rayColor; 
+          var materialColor = material.Color * rayColor; 
           color += materialColor; 
         }
       }
@@ -177,12 +178,13 @@ namespace raytracer
 
 
     //Tests if a point p is in shadow for a given light l in the given scene
-    private static bool IsInShadow(Vector p, Vector l, Scene scene)
+    private static bool IsInShadow(Vector p, Vector l, float distanteToLight, Scene scene)
     {
       var ray = GenerateShadowRay(p, l);
       var intersectResult = IntersectAllObjects(ray, scene);
       var tIntersect = intersectResult.Item1;
-      return tIntersect < float.PositiveInfinity;
+      var inShadow = tIntersect < distanteToLight;
+      return inShadow;
     }
 
 

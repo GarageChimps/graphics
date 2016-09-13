@@ -10,6 +10,7 @@ namespace raytracer
   interface IShadingLight : ILight
   {
     Vector GetDirection(Vector p);
+    float GetDistance(Vector p);
   }
 
   class PointLight : IShadingLight
@@ -25,6 +26,11 @@ namespace raytracer
     public Vector GetDirection(Vector p)
     {
       return (Position - p).Normalized;
+    }
+
+    public float GetDistance(Vector p)
+    {
+      return (Position - p).Size;
     }
   }
 
@@ -42,6 +48,11 @@ namespace raytracer
     public Vector GetDirection(Vector p)
     {
       return Direction;
+    }
+
+    public float GetDistance(Vector p)
+    {
+      return float.PositiveInfinity;
     }
   }
 
