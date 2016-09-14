@@ -40,11 +40,18 @@ namespace raytracer
       var t0 = (-b - discr) / (2 * a);
       var t1 = (-b + discr) / (2 * a);
 
-      var tMin = Math.Min(t0, t1);
-      if (tMin < 0.0)
+      var tMin = float.PositiveInfinity;
+      if (t0 < 0.0 && t1 < 0.0)
       {
         return new Tuple<float, IObject>(float.PositiveInfinity, null);
       }
+      else if (t0 < 0.0)
+        tMin = t1;
+      else if (t1 < 0.0)
+        tMin = t0;
+      else
+        tMin = Math.Min(t0, t1);
+
 
       return new Tuple<float, IObject>(tMin, this);
     }

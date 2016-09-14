@@ -36,8 +36,8 @@
 		{
             "__type__": "sphere",
 			"radius": "0.35",
-			"position": [0.0, -0.25, 0.9],
-            "materials": ["air"]
+			"position": [0.22, -0.25, 0.9],
+            "materials": ["helium"]
         },
 		{
             "__type__": "sphere",

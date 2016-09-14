@@ -96,10 +96,45 @@
         },
 		{
             "__type__": "dielectric_material",
-            "name" : "glass",
-            "color": [0.75,0.6,0],
-			"attenuation": [0.0, 0.0, 0.0],
-			"refraction_index": 1.05
+            "name" : "water",
+            "color": [0.75,0.75,0.75],
+			"attenuation": [10, 10, 10],
+			"refraction_index": 1.3
+        },
+		{
+            "__type__": "dielectric_material",
+            "name" : "water",
+            "color": [0.75,0.75,0.75],
+			"attenuation": [0, 0, 0],
+			"refraction_index": 1.1
+        },
+		{
+            "__type__": "dielectric_material",
+            "name" : "helium",
+            "color": [1,1,1],
+			"attenuation": [0, 0, 0],
+			"refraction_index": 1.025
+        },
+		{
+            "__type__": "dielectric_material",
+            "name" : "helium_attenuated",
+            "color": [1,1,1],
+			"attenuation": [0.1, 0.1, 0.1],
+			"refraction_index": 1.025
+        },
+		{
+            "__type__": "dielectric_material",
+            "name" : "air",
+            "color": [1,1,1],
+			"attenuation": [0, 0, 0],
+			"refraction_index": 1.0
+        },
+		{
+            "__type__": "dielectric_material",
+            "name" : "air_attenuated",
+            "color": [1,1,1],
+			"attenuation": [2, 2, 2],
+			"refraction_index": 1.0
         }
 		
     ]

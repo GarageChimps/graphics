@@ -11,8 +11,14 @@
 		{
             "__type__": "mesh",
 			"file_path": "teapot_low.obj",
-            "materials": ["red_lambert", "white_bph_100"],
+            "materials": ["red_lambert", "mirror"],
 			"compute_vertex_normals": true
+        },
+		{
+            "__type__": "sphere",
+			"radius": "0.5",
+			"position": [0, 5, 0],
+            "materials": ["blue_lambert", "white_bph_100"]
         }
     ],
     "lights": [
