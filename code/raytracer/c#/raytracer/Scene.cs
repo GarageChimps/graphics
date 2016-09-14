@@ -26,8 +26,14 @@ namespace raytracer
     public Vector GetBackgroundColor()
     {
       List<float> background = GetFloatListParam("background_color");
-
       return new Vector(background);
+    }
+
+    public float GetRefractionIndex()
+    {
+      if (Parameters.ContainsKey("refractionIndex"))
+        return GetFloatParam("refractionIndex");
+      return 1.0f;
     }
 
     public object GetParam(string paramName)
@@ -54,6 +60,15 @@ namespace raytracer
       if (Parameters.ContainsKey(paramName))
       {
         return Convert.ToInt32(Parameters[paramName]);
+      }
+      return 0;
+    }
+
+    public float GetFloatParam(string paramName)
+    {
+      if (Parameters.ContainsKey(paramName))
+      {
+        return Convert.ToSingle(Parameters[paramName]);
       }
       return 0;
     }

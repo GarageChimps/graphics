@@ -28,6 +28,11 @@ namespace raytracer
       return Materials.Values.Where(m => materialNames.Contains(m.Name) && m is ReflectiveMaterial).Select(m => m).Cast<ReflectiveMaterial>();
     }
 
+    public IEnumerable<DielectricMaterial> GetDielectricMaterials(List<string> materialNames)
+    {
+      return Materials.Values.Where(m => materialNames.Contains(m.Name) && m is DielectricMaterial).Select(m => m).Cast<DielectricMaterial>();
+    }
+
     public IEnumerable<IColorMaterial> GetAmbientMaterials(List<string> materialNames)
     {
       return Materials.Values.Where(m => materialNames.Contains(m.Name) && m is BRDFMaterial && ((BRDFMaterial)m).UseForAmbient).Select(m => m).Cast<IColorMaterial>();
@@ -83,6 +88,14 @@ namespace raytracer
               var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
               return new ReflectiveMaterial { Name = name, Color= new Vector(color) };
             }
+            else if (dic["__type__"].ToString() == "dielectric_material")
+            {
+              var name = dic["name"].ToString();
+              var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
+              var attenuation = ((List<object>)dic["attenuation"]).Select(Convert.ToSingle).ToList();
+              var refractionIndex = Convert.ToSingle(dic["refraction_index"]);
+              return new DielectricMaterial { Name = name, Color = new Vector(color), Attenuation = new Vector(attenuation), RefractionIndex = refractionIndex};
+            }
           }
           return dic;
 
@@ -121,5 +134,14 @@ namespace raytracer
     public string Name { get; set; }
     public Vector Color { get; set; }
     
+  }
+
+  class DielectricMaterial : IMaterial
+  {
+    public string Name { get; set; }
+    public Vector Color { get; set; }
+    public Vector Attenuation { get; set; }
+    public float RefractionIndex { get; set; }
+
   }
 }

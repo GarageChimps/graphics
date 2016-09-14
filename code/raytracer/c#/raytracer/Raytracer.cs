@@ -136,6 +136,7 @@ namespace raytracer
       var color = new Vector ( 0, 0, 0 );
       var brdfMaterials = resources.GetBrdfMaterials(materials);
       var reflectiveMaterials = resources.GetReflectiveMaterials(materials);
+      var dielectricMaterials = resources.GetDielectricMaterials(materials);
 
       var v = (scene.Camera.Position - p).Normalized;
       
@@ -163,6 +164,20 @@ namespace raytracer
           var materialColor = material.Color * rayColor; 
           color += materialColor; 
         }
+
+        foreach (var material in dielectricMaterials)
+        {
+          var dielectricRays = GetDielectricRays(p, n, d, material, scene);
+          foreach (var rayTuple in dielectricRays)
+          {
+            var rayAttenuation = rayTuple.Item1;
+            var ray = rayTuple.Item2;
+            var rayColor = IntersectAndShade(ray, scene, resources, recursion + 1);
+            var materialColor = rayAttenuation * material.Color * rayColor;
+            color += materialColor;
+          }
+          
+        }
       }
 
       return color;
@@ -172,7 +187,7 @@ namespace raytracer
     //Generates a shadow ray for a given point p for light l
     private static Ray GenerateShadowRay(Vector p, Vector l)
     {
-      var q = p + (0.001f * l);
+      var q = p + 0.001f * l;
       return new Ray { Position = q, Direction = l };
     }
 
@@ -194,6 +209,76 @@ namespace raytracer
       var r = (d - (n * (d ^ n) * 2)).Normalized; 
       var q = p + (0.001f * r);
       return new Ray { Position = q, Direction = r };
+    }
+
+    //Gets the reflection ray in a point p with normal n based on original viewing direction d
+    private static Ray GetTransmisionRay(Vector p, Vector t)
+    {
+      var q = p + (0.001f * t);
+      return new Ray { Position = q, Direction = t };
+    }
+
+    private static Vector? GetTransmisionDirection(Vector n, Vector d, float refIndexIncoming, float  refIndexOutgoing)
+    {
+      float dDotN = d ^ n;
+      float a = 1 - (refIndexIncoming*refIndexIncoming/(refIndexOutgoing*refIndexOutgoing))*(1 - dDotN*dDotN);
+      //Total internal reflection
+      if (a < 0)
+        return null;
+      return (refIndexIncoming/refIndexOutgoing)*(d - (n*(dDotN))) - (float)(Math.Sqrt(a))*n;
+    }
+
+    private static List<Tuple<Vector, Ray>> GetDielectricRays(Vector p, Vector n, Vector d, DielectricMaterial material, Scene scene)
+    {
+      var rays = new List<Tuple<Vector, Ray>>();
+      float cosine = 0.0f;
+      float r0 = 0.0f;
+      Vector transmisionDirection = new Vector();
+      Vector beerFactor = new Vector();
+      bool totalInternalReflection = false;
+      //The ray is entering the object
+      if ((d ^ n) < 0)
+      {
+        cosine = -(d ^ n);
+        beerFactor = new Vector(1, 1, 1);
+        var t = GetTransmisionDirection(n, d, scene.GetRefractionIndex(), material.RefractionIndex);
+        if (t == null)
+          totalInternalReflection = true;
+        else
+        {
+          transmisionDirection = t.Value;
+          r0 = (material.RefractionIndex - 1) / (material.RefractionIndex + 1);
+          r0 = r0 * r0;
+        }
+        
+      }
+      else
+      {
+        var t = GetTransmisionDirection(-1.0f * n, d, material.RefractionIndex, scene.GetRefractionIndex());
+        beerFactor = new Vector((float)Math.Exp(-material.Attenuation.R), (float)Math.Exp(-material.Attenuation.G), (float)Math.Exp(-material.Attenuation.B));
+        if (t == null)
+          totalInternalReflection = true;
+        else
+        {
+          transmisionDirection = t.Value;
+          cosine = (transmisionDirection ^ n);
+          r0 = (scene.GetRefractionIndex() - 1)/(scene.GetRefractionIndex() + 1);
+          r0 = r0*r0;
+        }
+      }
+      if (totalInternalReflection)
+      {
+        rays.Add(new Tuple<Vector, Ray>(beerFactor, GetReflectionRay(p, n, d)));
+      }
+      else
+      {
+        float r = r0 + (1 - r0) * (float)Math.Pow(1 - cosine, 5);
+        rays.Add(new Tuple<Vector, Ray>(r * beerFactor, GetReflectionRay(p, n, d)));
+        rays.Add(new Tuple<Vector, Ray>((1 - r) * beerFactor, GetTransmisionRay(p, transmisionDirection)));
+      }
+      return rays;
+
+
     }
   }
 }

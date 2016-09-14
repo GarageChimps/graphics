@@ -93,6 +93,13 @@
             "__type__": "reflective_material",
             "name" : "gold_mirror",
             "color": [0.75,0.6,0]
+        },
+		{
+            "__type__": "dielectric_material",
+            "name" : "glass",
+            "color": [0.75,0.6,0],
+			"attenuation": [0.0, 0.0, 0.0],
+			"refraction_index": 1.05
         }
 		
     ]
