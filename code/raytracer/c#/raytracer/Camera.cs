@@ -15,16 +15,18 @@ namespace raytracer
   {
     public float FOV { get; set; }
     public float Near { get; set; }
+    public float LensSize { get; set; }
     public Vector Position { get; set; }
     public Vector Target { get; set; }
     public Vector Up { get; set; }
     public CameraBounds Bounds { get; set; }
     public List<Vector> CameraBasis { get; set; }
 
-    public Camera(float fov, Vector position, Vector up, Vector target, float near=0.1f)
+    public Camera(float fov, Vector position, Vector up, Vector target, float near=0.1f, float lensSize=0.0f)
     {
       FOV = fov;
       Near = near;
+      LensSize = lensSize;
       Position = position;
       Target = target;
       Up = up;
@@ -42,10 +44,10 @@ namespace raytracer
     }
 
     // Transforms pixel coordinate from image space to camera space
-    public Vector PixelToCameraCoords(int i, int j, int width, int height)
+    public Vector PixelToCameraCoords(float i, float j, int width, int height)
     {
-      float u = Bounds.Left + (Bounds.Right - Bounds.Left) * (i + 0.5f) / width;
-      float v = Bounds.Bottom + (Bounds.Top - Bounds.Bottom) * (j + 0.5f) / height;
+      float u = Bounds.Left + (Bounds.Right - Bounds.Left) * i / width;
+      float v = Bounds.Bottom + (Bounds.Top - Bounds.Bottom) * j / height;
       float w = -Near;
       return new Vector( u, v, w );
     }
@@ -68,6 +70,13 @@ namespace raytracer
         worldCoords = worldCoords + cameraCoords[i] * CameraBasis[i];
       }
       return worldCoords;
+    }
+
+    public Vector SampleCameraPosition(Random sampler)
+    {
+      var uRand = LensSize * ((float)sampler.NextDouble() - 1.0f);
+      var vRand = LensSize * ((float)sampler.NextDouble() - 1.0f);
+      return Position + uRand* CameraBasis[0] + vRand* CameraBasis[1];
     }
   }
 }

@@ -11,6 +11,7 @@ namespace raytracer
 
   class Raytracer
   {
+    private static Random _sampler = new Random();
     // Main raytracing function, recieves a scene and image size, and returns a rendered image
     public static Vector[,] RayTrace(Scene scene, Resources resources, int width, int height)
     {
@@ -20,14 +21,29 @@ namespace raytracer
       {
         for (int j = 0; j < height; j++)
         {
-          var ray = GeneratePixelRay(scene.Camera, i, j, width, height);
-          image[i, j] = IntersectAndShade(ray, scene, resources, 0);
+          var samplesPerPixel = scene.GetSamplesPerPixel();
+          var sqrtSamples = (int)(Math.Sqrt(samplesPerPixel));
+          var deltaI = 1.0f / (sqrtSamples + 1);
+          var deltaJ = 1.0f / (sqrtSamples + 1);
+          var pixelColor = new Vector();
+          for (float ii = i + deltaI, iSamples = 0; iSamples < sqrtSamples; ii+=deltaI, iSamples += 1)
+          {
+            for (float jj = j + deltaJ, jSamples = 0; jSamples < sqrtSamples; jj+=deltaJ, jSamples += 1)
+            {
+              var ray = GeneratePixelRay(scene.Camera, ii, jj, width, height);
+              var sampleColor = IntersectAndShade(ray, scene, resources, 0);
+              pixelColor += sampleColor;
+            }
+          }
+
+          
+          image[i, j] = pixelColor / samplesPerPixel;
         }
       }
 
       return image;
     }
-
+    
 
     // Initialize a matrix to store the image to be rendered
     private static Vector[,] CreateImage(Scene scene, int width, int height)
@@ -45,12 +61,13 @@ namespace raytracer
 
 
     // Generates a pixel view ray from the pixel coordinates
-    private static Ray GeneratePixelRay(Camera camera, int i, int j, int width, int height)
+    private static Ray GeneratePixelRay(Camera camera, float i, float j, int width, int height)
     {
       var cameraCoords = camera.PixelToCameraCoords(i, j, width, height);
       var worldCoords = camera.CameraToWorldCoords(cameraCoords);
-      var pixelDirection = (worldCoords - camera.Position).Normalized; 
-      return new Ray { Position = camera.Position, Direction = pixelDirection };
+      var origin = camera.SampleCameraPosition(_sampler);
+      var pixelDirection = (worldCoords - origin).Normalized; 
+      return new Ray { Position = origin, Direction = pixelDirection };
     }
 
 
@@ -142,10 +159,11 @@ namespace raytracer
       
       foreach (var light in scene.GetShadingLights())
       {
+        var sl = light.GetSampledDirection(p, _sampler);
         var l = light.GetDirection(p);
         var dl = light.GetDistance(p);
         // Direct illumination
-        if (!scene.GetBoolParam("enable_shadows") || !IsInShadow(p, l, dl, scene))
+        if (!scene.GetBoolParam("enable_shadows") || !IsInShadow(p, sl, dl, scene))
         {
           var lightColor = light.Color;
           foreach (var material in brdfMaterials)
@@ -159,7 +177,7 @@ namespace raytracer
         // Indirect illummination
         foreach (var material in reflectiveMaterials)
         {
-          var reflectionRay = GetReflectionRay(p, n, d);
+          var reflectionRay = GetReflectionRay(p, n, d, material.GlossyFactor);
           var rayColor = IntersectAndShade(reflectionRay, scene, resources, recursion + 1);
           var materialColor = material.Color * rayColor; 
           color += materialColor; 
@@ -204,9 +222,14 @@ namespace raytracer
 
 
     //Gets the reflection ray in a point p with normal n based on original viewing direction d
-    private static Ray GetReflectionRay(Vector p, Vector n, Vector d)
+    private static Ray GetReflectionRay(Vector p, Vector n, Vector d, float glossyFactor=0.0f)
     {
-      var r = (d - (n * (d ^ n) * 2)).Normalized; 
+      var perp1 = Vector.Perpendicular(n);
+      var perp2 = (n % perp1).Normalized;
+      var uRand = glossyFactor * ((float)_sampler.NextDouble() - 1.0f);
+      var vRand = glossyFactor * ((float)_sampler.NextDouble() - 1.0f);
+      var pertN = (n + uRand * perp1 + vRand * perp2).Normalized;
+      var r = (d - (pertN * (d ^ pertN) * 2)).Normalized; 
       var q = p + (0.001f * r);
       return new Ray { Position = q, Direction = r };
     }
@@ -269,7 +292,8 @@ namespace raytracer
       }
       else
       {
-        r0 = (material.RefractionIndex - 1) / (material.RefractionIndex + 1);
+        r0 = (material.RefractionIndex - scene.GetRefractionIndex()) / 
+          (material.RefractionIndex + scene.GetRefractionIndex());
         r0 = r0 * r0;
         float r = r0 + (1 - r0) * (float)Math.Pow(1 - cosine, 5);
         rays.Add(new Tuple<Vector, Ray>((1 - r) * beerFactor, GetTransmisionRay(p, transmisionDirection)));

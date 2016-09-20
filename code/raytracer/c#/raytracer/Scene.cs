@@ -36,6 +36,13 @@ namespace raytracer
       return 1.0f;
     }
 
+    public int GetSamplesPerPixel()
+    {
+      if (Parameters.ContainsKey("samplesPerPixel"))
+        return GetIntParam("samplesPerPixel");
+      return 1;
+    }
+    
     public object GetParam(string paramName)
     {
       if (Parameters.ContainsKey(paramName))
@@ -131,7 +138,12 @@ namespace raytracer
             else if (dic["__type__"].ToString() == "camera")
             {
               var fov = Convert.ToSingle(dic["fov"]);
-              //var near = Convert.ToSingle(dic["near"]);
+              var near = 0.1f;
+              if(dic.ContainsKey("near"))
+                near = Convert.ToSingle(dic["near"]);
+              var lensSize = 0.0f;
+              if (dic.ContainsKey("lensSize"))
+                lensSize = Convert.ToSingle(dic["lensSize"]);
               var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
               var target = ((List<object>)dic["target"]).Select(Convert.ToSingle).ToList();
               var up = ((List<object>)dic["up"]).Select(Convert.ToSingle).ToList();
@@ -139,7 +151,9 @@ namespace raytracer
                 fov, 
                 new Vector(position), 
                 new Vector(up), 
-                new Vector(target));
+                new Vector(target),
+                near,
+                lensSize);
             }
             else if (dic["__type__"].ToString() == "sphere")
             {
@@ -166,9 +180,18 @@ namespace raytracer
             {
               var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
               var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
+              var lightSize = 0.0f;
+              if (dic.ContainsKey("lightSize"))
+                lightSize = Convert.ToSingle(dic["lightSize"]);
+              var lightNormal = new Vector();
+              if (dic.ContainsKey("lightNormal"))
+                lightNormal = new Vector(((List<object>)dic["position"]).Select(Convert.ToSingle).ToList());
+
               return new PointLight(
                 new Vector(position), 
-                new Vector(color));
+                new Vector(color),
+                lightSize,
+                lightNormal);
             }
             else if (dic["__type__"].ToString() == "directional_light")
             {

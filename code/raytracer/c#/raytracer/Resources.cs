@@ -75,9 +75,7 @@ namespace raytracer
               var brdf = BRDF.GetBRDFDictionary()[dic["brdf"].ToString()];
               var useForAmbient = false;
               if (dic.ContainsKey("use_for_ambient"))
-              {
                 useForAmbient = (bool)dic["use_for_ambient"];
-              }
               return new BRDFMaterial {
                 Name = name, 
                 Color=new Vector(color), BRDF = brdf, BRDFParams = brdfParams, UseForAmbient = useForAmbient };
@@ -86,7 +84,10 @@ namespace raytracer
             {
               var name = dic["name"].ToString();
               var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
-              return new ReflectiveMaterial { Name = name, Color= new Vector(color) };
+              var glossyFactor = 0.0f;
+              if (dic.ContainsKey("glossyFactor"))
+                glossyFactor = Convert.ToSingle(dic["glossyFactor"]);
+              return new ReflectiveMaterial { Name = name, Color= new Vector(color), GlossyFactor = glossyFactor };
             }
             else if (dic["__type__"].ToString() == "dielectric_material")
             {
@@ -133,6 +134,7 @@ namespace raytracer
   {
     public string Name { get; set; }
     public Vector Color { get; set; }
+    public float GlossyFactor { get; set; }
     
   }
 

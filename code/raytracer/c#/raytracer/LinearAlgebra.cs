@@ -276,5 +276,17 @@ namespace raytracer
       return new Vector(R, G, B);
     }
 
+    public static Vector Perpendicular(Vector v)
+    {
+      var other = new Vector();
+      if(Math.Abs(v.X) >= Math.Abs(v.Y) && Math.Abs(v.X) >= Math.Abs(v.Z))
+        other = new Vector(0,1,0);
+      else if (Math.Abs(v.Y) >= Math.Abs(v.X) && Math.Abs(v.Y) >= Math.Abs(v.Z))
+        other = new Vector(0, 0, 1);
+      else
+        other = new Vector(1,0,0);
+      return (v%other).Normalized;
+    }
+
   }
 }
