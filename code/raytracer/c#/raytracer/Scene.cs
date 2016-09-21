@@ -144,6 +144,9 @@ namespace raytracer
               var lensSize = 0.0f;
               if (dic.ContainsKey("lensSize"))
                 lensSize = Convert.ToSingle(dic["lensSize"]);
+              var exposure = 0.0f;
+              if (dic.ContainsKey("exposure"))
+                exposure = Convert.ToSingle(dic["exposure"]);
               var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
               var target = ((List<object>)dic["target"]).Select(Convert.ToSingle).ToList();
               var up = ((List<object>)dic["up"]).Select(Convert.ToSingle).ToList();
@@ -153,17 +156,22 @@ namespace raytracer
                 new Vector(up), 
                 new Vector(target),
                 near,
-                lensSize);
+                lensSize,
+                exposure);
             }
             else if (dic["__type__"].ToString() == "sphere")
             {
               var radius = Convert.ToSingle(dic["radius"]);
               var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
+              var velocity = new Vector();
+              if (dic.ContainsKey("velocity"))
+                velocity = new Vector(((List<object>)dic["velocity"]).Select(Convert.ToSingle).ToList());
               var materials = ((List<object>)dic["materials"]).Select(c => c.ToString()).ToList();
               return new Sphere(
                 radius, 
                 new Vector(position), 
-                materials);
+                materials,
+                velocity);
             }
             else if (dic["__type__"].ToString() == "mesh")
             {

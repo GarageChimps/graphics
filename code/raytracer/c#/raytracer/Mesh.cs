@@ -57,7 +57,7 @@ namespace raytracer
       return new Tuple<float, IObject>(t, this);
     }
 
-    public Vector GetNormal(Vector p)
+    public Vector GetNormal(Vector p, float time)
     {
       var bar = BarycentricCoords(p);
       return (bar[0]*GetVertexNormal(0) + bar[1]*GetVertexNormal(1) + bar[2]*GetVertexNormal(2)).Normalized;
@@ -221,7 +221,7 @@ namespace raytracer
       return new Tuple<float, IObject>(tMin, intersectedFace);
     }
 
-    public Vector GetNormal(Vector p)
+    public Vector GetNormal(Vector p, float time)
     {
       return new Vector();
     }

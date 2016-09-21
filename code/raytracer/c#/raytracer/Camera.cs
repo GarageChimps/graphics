@@ -16,17 +16,19 @@ namespace raytracer
     public float FOV { get; set; }
     public float Near { get; set; }
     public float LensSize { get; set; }
+    public float Exposure { get; set; }
     public Vector Position { get; set; }
     public Vector Target { get; set; }
     public Vector Up { get; set; }
     public CameraBounds Bounds { get; set; }
     public List<Vector> CameraBasis { get; set; }
 
-    public Camera(float fov, Vector position, Vector up, Vector target, float near=0.1f, float lensSize=0.0f)
+    public Camera(float fov, Vector position, Vector up, Vector target, float near=0.1f, float lensSize=0.0f, float exposure=0.0f)
     {
       FOV = fov;
       Near = near;
       LensSize = lensSize;
+      Exposure = exposure;
       Position = position;
       Target = target;
       Up = up;

@@ -7,7 +7,7 @@ namespace raytracer
   {
     List<string> Materials { get; set; }
     Tuple<float, IObject> Intersect(Ray ray);
-    Vector GetNormal(Vector p);
+    Vector GetNormal(Vector p, float time);
   }
 
   class Sphere : IObject
@@ -15,18 +15,26 @@ namespace raytracer
     public float Radius { get; set; }
     public Vector Position { get; set; }
     public List<string> Materials { get; set; }
-    public Sphere(float radius, Vector position, List<string> materials)
+    public Vector Velocity { get; set; }
+
+    public Sphere(float radius, Vector position, List<string> materials, Vector velocity)
     {
       Radius = radius;
       Position = position;
       Materials = materials;
+      Velocity = velocity;
     }
 
+    private Vector GetPosition(float t)
+    {
+      return Position + t*Velocity;
+    }
+    
     // Checks intersection between ray and specific sphere
     public Tuple<float, IObject> Intersect(Ray ray)
     {
       float a = 1.0f;//ray.Direction ^ ray.Direction;
-      var subPos = (ray.Position - Position);
+      var subPos = (ray.Position - GetPosition(ray.Time));
       float b = 2 * ray.Direction ^ subPos; 
       float c = (subPos ^ subPos) - Radius * Radius;
       
@@ -56,9 +64,9 @@ namespace raytracer
       return new Tuple<float, IObject>(tMin, this);
     }
 
-    public Vector GetNormal(Vector p)
+    public Vector GetNormal(Vector p, float time)
     {
-      return (p - this.Position).Normalized;
+      return (p - this.GetPosition(time)).Normalized;
     }
   }
 
