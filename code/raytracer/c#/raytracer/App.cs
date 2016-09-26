@@ -6,9 +6,9 @@
     {
       var imageFile = "image.png";
       var resourcesFile = "resources.json";
-      var sceneFile = "taller5/scene7.json";
-      var width = 512;
-      var height = 512;
+      var sceneFile = "taller6/scene1.json";
+      var width = 256;
+      var height = 256;
 
       var index = 0;
       foreach (var arg in args)

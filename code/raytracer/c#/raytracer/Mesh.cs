@@ -63,6 +63,12 @@ namespace raytracer
       return (bar[0]*GetVertexNormal(0) + bar[1]*GetVertexNormal(1) + bar[2]*GetVertexNormal(2)).Normalized;
     }
 
+    public Vector GetTextureCoords(Vector p, float time)
+    {
+      var bar = BarycentricCoords(p);
+      return bar[0] * _mesh.TexCoords[TexCoordIndices[0]] + bar[1] * _mesh.TexCoords[TexCoordIndices[1]] + bar[2] * _mesh.TexCoords[TexCoordIndices[2]];
+    }
+
     public Vector GetVertexNormal(int vertex)
     {
       if (NormalIndices.Count == 0)
@@ -226,5 +232,9 @@ namespace raytracer
       return new Vector();
     }
 
+    public Vector GetTextureCoords(Vector p, float time)
+    {
+      return new Vector();
+    }
   }
 }

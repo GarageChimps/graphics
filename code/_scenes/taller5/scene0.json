@@ -33,7 +33,8 @@
     ],
     "params": {
         "background_color": [1.0,1.0,1.0],
-		"maxReflectionRecursions": 3
+		"maxReflectionRecursions": 3,
+		"samplesPerPixel": 16
 		
     }
 }

@@ -8,6 +8,7 @@ namespace raytracer
     List<string> Materials { get; set; }
     Tuple<float, IObject> Intersect(Ray ray);
     Vector GetNormal(Vector p, float time);
+    Vector GetTextureCoords(Vector p, float time);
   }
 
   class Sphere : IObject
@@ -67,6 +68,11 @@ namespace raytracer
     public Vector GetNormal(Vector p, float time)
     {
       return (p - this.GetPosition(time)).Normalized;
+    }
+
+    public Vector GetTextureCoords(Vector p, float time)
+    {
+      throw new NotImplementedException();
     }
   }
 
