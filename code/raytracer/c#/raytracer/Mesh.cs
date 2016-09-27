@@ -65,6 +65,8 @@ namespace raytracer
 
     public Vector GetTextureCoords(Vector p, float time)
     {
+      if (TexCoordIndices.Count == 0)
+        return new Vector();
       var bar = BarycentricCoords(p);
       return bar[0] * _mesh.TexCoords[TexCoordIndices[0]] + bar[1] * _mesh.TexCoords[TexCoordIndices[1]] + bar[2] * _mesh.TexCoords[TexCoordIndices[2]];
     }

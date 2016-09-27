@@ -58,8 +58,8 @@ namespace raytracer
     public List<Vector> GetCameraCoordinatesBasis()
     {
       Vector w = (Position - Target).Normalized;
-      Vector u = Up % w;
-      Vector v = w % u;
+      Vector u = (Up % w).Normalized;
+      Vector v = (w % u).Normalized;
       return new List<Vector> { u, v, w };
     }
 

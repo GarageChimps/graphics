@@ -33,7 +33,7 @@ namespace raytracer
 
     public IEnumerable<BRDFMaterial> GetBrdfMaterials(List<string> materialNames)
     {
-      return Materials.Values.Where(m => materialNames.Contains(m.Name) && m is BRDFMaterial || m is BRDFColorTextureMaterial).Select(m => m).Cast<BRDFMaterial>().ToList();
+      return Materials.Values.Where(m => (materialNames.Contains(m.Name)) && (m is BRDFMaterial || m is BRDFColorTextureMaterial)).Select(m => m).Cast<BRDFMaterial>().ToList();
     }
 
     public IEnumerable<ReflectiveMaterial> GetReflectiveMaterials(List<string> materialNames)
