@@ -147,6 +147,15 @@
       "brdfParams": { },
       "brdf": "lambert",
       "use_for_ambient": true
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "earth_lambert_bilinear",
+      "color_texture": "earth",
+	  "texture_filtering": "bilinear",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
     }
 
   ],

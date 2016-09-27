@@ -72,7 +72,13 @@ namespace raytracer
 
     public Vector GetTextureCoords(Vector p, float time)
     {
-      throw new NotImplementedException();
+      var c = this.GetPosition(time);
+      var theta = (float)Math.Acos((p.Y - c.Y)/Radius);
+      var phi = (float)Math.Atan2(p.Z - c.Z, p.X - c.X);
+
+      var u = (float) (1.0 - (phi + Math.PI )/ (2.0*Math.PI));
+      var v = (float) ((Math.PI - theta) / (Math.PI));
+      return new Vector(u,v,0);
     }
   }
 

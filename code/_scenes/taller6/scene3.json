@@ -9,8 +9,9 @@
     },
     "objects": [
         {
-            "__type__": "mesh",
-			"file_path": "sphere.obj",
+            "__type__": "sphere",
+			"radius": "0.8",
+			"position": [0, 0, 0],
             "materials": ["earth_lambert", "white_bph_100"]
         }
     ],
