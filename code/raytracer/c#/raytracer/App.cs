@@ -4,9 +4,9 @@
   {
     static void Main(string[] args)
     {
-      var imageFile = "scene1_fixed.png";
+      var imageFile = "scene5.png";
       var resourcesFile = "resources.json";
-      var sceneFile = "taller4/scene1.json";
+      var sceneFile = "taller4/scene5.json";
       var width = 512;
       var height = 512;
 

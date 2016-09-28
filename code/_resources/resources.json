@@ -141,7 +141,7 @@
     },
 	{
       "__type__": "brdf_color_texture_material",
-      "name": "earth_lambert",
+      "name": "earth_lambert_nn",
       "color_texture": "earth",
 	  "texture_filtering": "nearest_neighbor",
       "brdfParams": { },
@@ -156,6 +156,24 @@
       "brdfParams": { },
       "brdf": "lambert",
       "use_for_ambient": true
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "red_lambert_nn",
+      "color_texture": "red",
+	  "texture_filtering": "nearest_neighbor",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "red_lambert_bilinear",
+      "color_texture": "red",
+	  "texture_filtering": "bilinear",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
     }
 
   ],
@@ -165,6 +183,12 @@
       "__type__": "color_texture",
       "name": "earth",
       "file_path": "textures/earthmap.jpg"
+
+    },
+	{
+      "__type__": "color_texture",
+      "name": "red",
+      "file_path": "textures/red.png"
 
     }
   ]

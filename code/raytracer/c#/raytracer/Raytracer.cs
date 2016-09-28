@@ -159,7 +159,7 @@ namespace raytracer
       var dielectricMaterials = resources.GetDielectricMaterials(materials);
 
       var v = (scene.Camera.Position - p).Normalized;
-      
+
       foreach (var light in scene.GetShadingLights())
       {
         var sl = light.GetSampledDirection(p, _sampler);
@@ -172,36 +172,36 @@ namespace raytracer
           foreach (var material in brdfMaterials)
           {
             var brdfVal = material.BRDF(n, l, v, material.BRDFParams);
-            var materialColor = lightColor * brdfVal * material.GetColor(texCoords); 
-            color += materialColor; 
-          }
-        }
-
-        // Indirect illummination
-        foreach (var material in reflectiveMaterials)
-        {
-          var reflectionRay = GetReflectionRay(p, n, d, material.GlossyFactor);
-          reflectionRay.Time = time;
-          var rayColor = IntersectAndShade(reflectionRay, scene, resources, recursion + 1);
-          var materialColor = material.Color * rayColor; 
-          color += materialColor; 
-        }
-
-        foreach (var material in dielectricMaterials)
-        {
-          var dielectricRays = GetDielectricRays(p, n, d, tIntersection, material, scene);
-          foreach (var rayTuple in dielectricRays)
-          {
-            var rayAttenuation = rayTuple.Item1;
-            var ray = rayTuple.Item2;
-            ray.Time = time;
-            var rayColor = IntersectAndShade(ray, scene, resources, recursion + 1);
-            var materialColor = rayAttenuation * material.Color * rayColor;
+            var materialColor = lightColor*brdfVal*material.GetColor(texCoords);
             color += materialColor;
           }
-          
         }
       }
+      // Indirect illummination
+      foreach (var material in reflectiveMaterials)
+      {
+        var reflectionRay = GetReflectionRay(p, n, d, material.GlossyFactor);
+        reflectionRay.Time = time;
+        var rayColor = IntersectAndShade(reflectionRay, scene, resources, recursion + 1);
+        var materialColor = material.Color * rayColor; 
+        color += materialColor; 
+      }
+
+      foreach (var material in dielectricMaterials)
+      {
+        var dielectricRays = GetDielectricRays(p, n, d, tIntersection, material, scene);
+        foreach (var rayTuple in dielectricRays)
+        {
+          var rayAttenuation = rayTuple.Item1;
+          var ray = rayTuple.Item2;
+          ray.Time = time;
+          var rayColor = IntersectAndShade(ray, scene, resources, recursion + 1);
+          var materialColor = rayAttenuation * material.Color * rayColor;
+          color += materialColor;
+        }
+          
+      }
+      
 
       return color;
     }
