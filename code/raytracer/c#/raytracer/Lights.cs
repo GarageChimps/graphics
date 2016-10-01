@@ -40,7 +40,7 @@ namespace raytracer
       var uRand = LightSize * ((float)sampler.NextDouble() - 1.0f);
       var vRand = LightSize * ((float)sampler.NextDouble() - 1.0f);
 
-      return (d + uRand * perp + vRand * perp2).Normalized;
+      return (Position + uRand * perp + vRand * perp2 - p).Normalized;
     }
 
     public Vector GetDirection(Vector p)

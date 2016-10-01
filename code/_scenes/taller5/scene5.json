@@ -28,7 +28,7 @@
           "__type__": "point_light",
           "position": [0, 20, 00],
           "color": [0.5, 0.5, 0.5],
-		  "lightSize": 0.1,
+		  "lightSize": 2,
 		  "lightNormal": [0.0, -1.0, 0.0]
         },
         {
@@ -38,6 +38,6 @@
     ],
     "params": {
         "background_color": [0.1,0.1,0.1],
-		"samplesPerPixel": 256
+		"samplesPerPixel": 1
     }
 }

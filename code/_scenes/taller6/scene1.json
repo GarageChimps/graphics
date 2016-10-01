@@ -3,7 +3,7 @@
     "camera": {
         "__type__": "camera",
         "fov": 45.0,
-        "position": [0,0,1.1],
+        "position": [0,0,3],
         "up": [0,1,0],
         "target": [0,0,0]
     },

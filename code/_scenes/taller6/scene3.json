@@ -3,16 +3,22 @@
     "camera": {
         "__type__": "camera",
         "fov": 45.0,
-        "position": [0,0,1.1],
+        "position": [0,0,3],
         "up": [0,1,0],
         "target": [0,0,0]
     },
     "objects": [
         {
             "__type__": "sphere",
-			"radius": "0.8",
-			"position": [0, 0, 0],
-            "materials": ["earth_lambert_nn", "white_bph_100"]
+			"radius": "0.5",
+			"position": [-0.7, 0, 0],
+            "materials": ["red_lambert", "white_bph_100"]
+        },
+		{
+            "__type__": "sphere",
+			"radius": "0.5",
+			"position": [0.7, 0, 0],
+            "materials": ["red_lambert_nn", "white_bph_100"]
         }
     ],
     "lights": [

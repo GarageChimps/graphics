@@ -174,6 +174,34 @@
       "brdfParams": { },
       "brdf": "lambert",
       "use_for_ambient": true
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "bricks_lambert_nn",
+      "color_texture": "bricks",
+	  "texture_filtering": "nearest_neighbor",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "bricks_lambert_bilinear",
+      "color_texture": "bricks",
+	  "texture_filtering": "bilinear",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "bricks_blinn_phong_bilinear",
+      "color_texture": "bricks_SPEC",
+	  "texture_filtering": "bilinear",
+      "brdfParams": {
+		"shininess": 100
+	  },
+      "brdf": "blinnPhong"
     }
 
   ],
@@ -189,6 +217,18 @@
       "__type__": "color_texture",
       "name": "red",
       "file_path": "textures/red.png"
+
+    },
+	{
+      "__type__": "color_texture",
+      "name": "bricks",
+      "file_path": "textures/bricks.jpg"
+
+    },
+	{
+      "__type__": "color_texture",
+      "name": "bricks_SPEC",
+      "file_path": "textures/bricks_SPEC.jpg"
 
     }
   ]

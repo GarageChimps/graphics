@@ -48,6 +48,6 @@
     ],
     "params": {
         "background_color": [0.1,0.1,0.1],
-		"samplesPerPixel": 256
+		"samplesPerPixel": 1
     }
 }
