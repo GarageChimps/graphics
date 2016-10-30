@@ -12,7 +12,7 @@ out vec4 pixelColor;
 /*Uniforms: same value for  all pixels*/
 
 //Size of the canvas
-uniform vec2 size;
+uniform vec2 size
 
 void main(void)
 { 

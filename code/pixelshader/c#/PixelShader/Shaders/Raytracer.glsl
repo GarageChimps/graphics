@@ -206,11 +206,17 @@ void main(void)
   vec3 color = vec3(0,0,0);
   float delta = 1.0 / (numberOfRaysPerPixelRoot + 1);
   float rayTime = 0.0;
-  float exposureTime = 0.3;
-  float deltaTime = exposureTime / (numberOfRaysPerPixelRoot * numberOfRaysPerPixelRoot);
+  float exposureTime = 0.0;
+  float deltaTime = 0.0;
   float speed = 0;
-  if(key > 0)
+  if(key == 101)
 	speed = 2;
+  if(key == 95)
+  {
+	speed = 2;
+    exposureTime = 0.3;
+    deltaTime = exposureTime / (numberOfRaysPerPixelRoot * numberOfRaysPerPixelRoot);
+  } 
   for(int i=0; i<numberOfRaysPerPixelRoot; i++)
   {
 	for(int j=0; j<numberOfRaysPerPixelRoot; j++)

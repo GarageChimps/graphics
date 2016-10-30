@@ -47,7 +47,11 @@ def resourcesHook(obj):
                 use_for_ambient = obj['use_for_ambient']
             return BRDFMaterial(obj['name'], obj['color'], obj['brdfParams'], brdfFunc, use_for_ambient)
         if obj['__type__'] == "reflective_material":
-            return ReflectiveMaterial(obj['name'], obj['reflectivity'])
+            return ReflectiveMaterial(obj['name'], 1)
+        if obj['__type__'] == "dielectric_material":
+            return ReflectiveMaterial(obj['name'], 1)
+        if obj['__type__'] == "brdf_color_texture_material":
+            return ReflectiveMaterial(obj['name'], 1)
         if obj['__type__'] == "resources":
             return Resources(obj['materials'])
     return obj

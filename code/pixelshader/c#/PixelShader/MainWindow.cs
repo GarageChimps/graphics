@@ -16,7 +16,7 @@ namespace PixelShader
     public static float FrameRate = 60;
 
 
-    private string PixelShaderFilePath = Path.Combine("Shaders", "Demo8.glsl");
+    private string PixelShaderFilePath = Path.Combine("Shaders", "Demo1.glsl");
     private string _pixelShaderSource;
     private const string VertexShaderSource = @"
       #version 330
