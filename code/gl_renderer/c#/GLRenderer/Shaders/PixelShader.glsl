@@ -1,5 +1,6 @@
 ﻿#version 130
-//Color to paint this pixel (r,g,b,a)
+precision highp float;
+
 out vec4 pixelColor;
 
 void main(void)

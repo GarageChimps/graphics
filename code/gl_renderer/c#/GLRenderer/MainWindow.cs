@@ -22,14 +22,15 @@ namespace PixelShader
     private string _vertexShaderSource;
 
     private int _vertexShaderHandle;
-    private int _fragmentShaderHandle;
+    private int _pixelShaderHandle;
     private int _shaderProgramHandle;
     private int _vaoHandle;
-    private int _positionVboHandle;
-    private int _eboHandle;
-    private int _viewProjectionHandler;
+    private int _vertexPositionBufferHandle;
+    private int _indicesBufferHandle;
 
-    private readonly Vector3[] _positionVboData =
+    private int _viewProjectionHandle;
+
+    private readonly Vector3[] _vertexPositionData =
     {
       new Vector3(-1.0f, -1.0f,  -1.0f),
       new Vector3( 1.0f, -1.0f,  -1.0f),
@@ -37,14 +38,18 @@ namespace PixelShader
       new Vector3(-1.0f,  1.0f,  -1.0f)
     };
 
-    private readonly int[] _indicesVboData =
+    private readonly int[] _indicesData =
     {
       0, 1, 2, 2, 3, 0
     };
 
+    //Column order
     private readonly float[] _viewProjectionMatrix =
     {
-      0.2f, 0, 0, 0, 0, 0.2f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+      0.2f, 0, 0, 0,
+      0, 0.2f, 0, 0,
+      0, 0, 0, 0,
+      0, 0, 0, 1
     };
     
     public MainWindow(int width, int height)
@@ -61,12 +66,12 @@ namespace PixelShader
       VSync = VSyncMode.On;
       GL.Enable(EnableCap.DepthTest);
       GL.Enable(EnableCap.Texture2D);
-      GL.ClearColor(Color.AliceBlue);
+      GL.ClearColor(0, 0.5f, 0.5f, 1);
 
       LoadShaders();
       CreateShaders();
-      CreateVBOs();
-      CreateVAOs();
+      CreateBuffers();
+      CreateVertexArrays();
 
       Console.WriteLine(GL.GetString(StringName.Version));
 
@@ -82,57 +87,57 @@ namespace PixelShader
     {
       GL.UseProgram(0);
       _vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
-      _fragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
+      _pixelShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
 
       GL.ShaderSource(_vertexShaderHandle, _vertexShaderSource);
-      GL.ShaderSource(_fragmentShaderHandle, _pixelShaderSource);
+      GL.ShaderSource(_pixelShaderHandle, _pixelShaderSource);
 
       GL.CompileShader(_vertexShaderHandle);
-      GL.CompileShader(_fragmentShaderHandle);
+      GL.CompileShader(_pixelShaderHandle);
 
-      Console.WriteLine(GL.GetShaderInfoLog(_fragmentShaderHandle));
+      Console.WriteLine(GL.GetShaderInfoLog(_pixelShaderHandle));
 
       // Create program
       _shaderProgramHandle = GL.CreateProgram();
 
       GL.AttachShader(_shaderProgramHandle, _vertexShaderHandle);
-      GL.AttachShader(_shaderProgramHandle, _fragmentShaderHandle);
+      GL.AttachShader(_shaderProgramHandle, _pixelShaderHandle);
 
       GL.LinkProgram(_shaderProgramHandle);
       GL.UseProgram(_shaderProgramHandle);
 
-      _viewProjectionHandler = GL.GetUniformLocation(_shaderProgramHandle, "viewProjection");
+      _viewProjectionHandle = GL.GetUniformLocation(_shaderProgramHandle, "viewProjection");
     }
 
-    private void CreateVBOs()
+    private void CreateBuffers()
     {
-      GL.GenBuffers(1, out _positionVboHandle);
-      GL.BindBuffer(BufferTarget.ArrayBuffer, _positionVboHandle);
+      GL.GenBuffers(1, out _vertexPositionBufferHandle);
+      GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexPositionBufferHandle);
       GL.BufferData(BufferTarget.ArrayBuffer,
-          new IntPtr(_positionVboData.Length * Vector3.SizeInBytes),
-          _positionVboData, BufferUsageHint.StaticDraw);
+          new IntPtr(_vertexPositionData.Length * Vector3.SizeInBytes),
+          _vertexPositionData, BufferUsageHint.StaticDraw);
 
-      GL.GenBuffers(1, out _eboHandle);
-      GL.BindBuffer(BufferTarget.ElementArrayBuffer, _eboHandle);
+      GL.GenBuffers(1, out _indicesBufferHandle);
+      GL.BindBuffer(BufferTarget.ElementArrayBuffer, _indicesBufferHandle);
       GL.BufferData(BufferTarget.ElementArrayBuffer,
-          new IntPtr(sizeof(uint) * _indicesVboData.Length),
-          _indicesVboData, BufferUsageHint.StaticDraw);
+          new IntPtr(sizeof(uint) * _indicesData.Length),
+          _indicesData, BufferUsageHint.StaticDraw);
 
       GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
       GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
     }
 
-    private void CreateVAOs()
+    private void CreateVertexArrays()
     {
       GL.GenVertexArrays(1, out _vaoHandle);
       GL.BindVertexArray(_vaoHandle);
 
       GL.EnableVertexAttribArray(0);
-      GL.BindBuffer(BufferTarget.ArrayBuffer, _positionVboHandle);
+      GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexPositionBufferHandle);
       GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, true, Vector3.SizeInBytes, 0);
       GL.BindAttribLocation(_shaderProgramHandle, 0, "inPosition");
 
-      GL.BindBuffer(BufferTarget.ElementArrayBuffer, _eboHandle);
+      GL.BindBuffer(BufferTarget.ElementArrayBuffer, _indicesBufferHandle);
 
       GL.BindVertexArray(0);
     }
@@ -142,11 +147,10 @@ namespace PixelShader
       GL.Viewport(0, 0, this.Width, this.Height);
       GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-      GL.UniformMatrix4(_viewProjectionHandler, 1, true, _viewProjectionMatrix);
+      GL.UniformMatrix4(_viewProjectionHandle, 1, false, _viewProjectionMatrix);
 
       GL.BindVertexArray(_vaoHandle);
-      GL.DrawElements(BeginMode.LineStrip, _indicesVboData.Length,
-          DrawElementsType.UnsignedInt, IntPtr.Zero);
+      GL.DrawElements(BeginMode.Triangles, _indicesData.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
       SwapBuffers();
     }
 

@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>GL Renderer</title>
+    <script id="vertex_shader" type="x-shader/x-fragment">
+        precision mediump  float;
+
+        attribute vec3 inPosition;
+
+        uniform mat4 viewProjection;
+
+        void main(void)
+        {
+            gl_Position = viewProjection * vec4(inPosition, 1);
+        }
+    </script>
+
+    <script id="pixel_shader" type="x-shader/x-fragment">
+        precision mediump  float;
+
+        void main(void)
+        { 
+          gl_FragColor  = vec4(1,0,0, 1);
+        }
+    </script>
+    
+</head>
+<body>
+	<script src="app.js"></script>
+</body>
+</html>
