@@ -95,6 +95,7 @@ namespace PixelShader
       GL.CompileShader(_vertexShaderHandle);
       GL.CompileShader(_pixelShaderHandle);
 
+      Console.WriteLine(GL.GetShaderInfoLog(_vertexShaderHandle));
       Console.WriteLine(GL.GetShaderInfoLog(_pixelShaderHandle));
 
       // Create program
