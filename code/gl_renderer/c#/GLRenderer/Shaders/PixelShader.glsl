@@ -5,5 +5,5 @@ out vec4 pixelColor;
 
 void main(void)
 { 
-  pixelColor = vec4(1,0,0, 1);
+  pixelColor = vec4(0,0,0, 1);
 }

@@ -60,13 +60,10 @@ class Renderer(QGLWidget):
             0, 1, 2, #face1
             2, 3, 0  #face2
         ];
-        # When drawing triangles, this array correspond to the indices of each face
-        # When drawing line_stripes, each pair of consecutive indices correspond to one line
-        # 0-1, 1-2, 2-2, 2-3, 3-0
 
         # TODO: Replace this with the orthographic projection transformation matrix
         # without including the image transformation (P * C)
-        #Column order
+        # Column order
         self.transformationMatrix = [
             0.2, 0, 0, 0,
             0, 0.2, 0, 0,
@@ -148,7 +145,8 @@ class Renderer(QGLWidget):
         # In general in OpenGl binding to 0 represents unbinding the last element bound
         glBindVertexArray(0)
 
-    # The render method of an OpenGL program will
+    # The render method of an OpenGL program will be called once per frame
+    # erasing the previous image and generating a new one
     def paintGL(self):
         glViewport(0, 0, WIDTH, HEIGHT)
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT)
@@ -164,12 +162,7 @@ class Renderer(QGLWidget):
 
         # Draw elements tells the GPU to draw what type of geometry with the faces/vertex data
         # already stored in the GPU buffers
-
-        # Drawing lines
-        glDrawElements(GL_LINE_STRIP, len(self.facesData), GL_UNSIGNED_INT, None)
-
-        # Drawing triangles (uncomment)
-        #glDrawElements(GL_TRIANGLES, len(self.facesData), GL_UNSIGNED_INT, None)
+        glDrawElements(GL_TRIANGLES, len(self.facesData), GL_UNSIGNED_INT, None)
 
 
 if __name__ == "__main__":

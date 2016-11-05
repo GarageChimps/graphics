@@ -9,11 +9,11 @@
 
         attribute vec3 inPosition;
 
-        uniform mat4 viewProjection;
+        uniform mat4 transformationMatrix;
 
         void main(void)
         {
-            gl_Position = viewProjection * vec4(inPosition, 1);
+            gl_Position = transformationMatrix * vec4(inPosition, 1);
         }
     </script>
 
@@ -22,7 +22,7 @@
 
         void main(void)
         { 
-          gl_FragColor  = vec4(1,0,0, 1);
+          gl_FragColor  = vec4(0,0,0, 1);
         }
     </script>
     

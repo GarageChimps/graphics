@@ -21,15 +21,17 @@ namespace PixelShader
     private string VertexShaderFilePath = Path.Combine("Shaders", "VertexShader.glsl");
     private string _vertexShaderSource;
 
+    //In OpenGL the way to identify resources in the GPU is with integer ids, which
+    //are called "handles" in this code
     private int _vertexShaderHandle;
     private int _pixelShaderHandle;
     private int _shaderProgramHandle;
-    private int _vaoHandle;
+    private int _objectHandle;
     private int _vertexPositionBufferHandle;
-    private int _indicesBufferHandle;
+    private int _facesBufferHandle;
+    private int _transformationMatrixHandle;
 
-    private int _viewProjectionHandle;
-
+    // TODO: Replace this with vertices data loaded from the mesh in the scene
     private readonly Vector3[] _vertexPositionData =
     {
       new Vector3(-1.0f, -1.0f,  -1.0f),
@@ -38,13 +40,17 @@ namespace PixelShader
       new Vector3(-1.0f,  1.0f,  -1.0f)
     };
 
-    private readonly int[] _indicesData =
+    //TODO: Replace this with face data loaded from the mesh in the scene
+    private readonly int[] _facesData =
     {
-      0, 1, 2, 2, 3, 0
+      0, 1, 2, //face 1
+      2, 3, 0  //face 2
     };
 
+    //TODO: Replace this with the orthographic projection transformation matrix
+    //without including the image transformation (P * C)
     //Column order
-    private readonly float[] _viewProjectionMatrix =
+    private readonly float[] _transformationMatrix =
     {
       0.2f, 0, 0, 0,
       0, 0.2f, 0, 0,
@@ -61,12 +67,14 @@ namespace PixelShader
 
     }
 
+    // The initialization method in an OpenGL program is called once.
+    // In the initialization method, we load and send the shaders to the GPU,
+    // and also send all the geometry information
     protected override void OnLoad(EventArgs e)
     {
       VSync = VSyncMode.On;
       GL.Enable(EnableCap.DepthTest);
-      GL.Enable(EnableCap.Texture2D);
-      GL.ClearColor(0, 0.5f, 0.5f, 1);
+      GL.ClearColor(1, 1, 1, 1);
 
       LoadShaders();
       CreateShaders();
@@ -83,9 +91,11 @@ namespace PixelShader
       _vertexShaderSource = File.ReadAllText(VertexShaderFilePath);
     }
 
+    // Shader source code is stored in GPU but we need to pass it to the GPU and instruct
+    // it to compile the code and create the program that represents the rendering algorithm
+    // that will be used
     protected virtual void CreateShaders()
     {
-      GL.UseProgram(0);
       _vertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
       _pixelShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
 
@@ -97,19 +107,18 @@ namespace PixelShader
 
       Console.WriteLine(GL.GetShaderInfoLog(_vertexShaderHandle));
       Console.WriteLine(GL.GetShaderInfoLog(_pixelShaderHandle));
-
-      // Create program
+      
       _shaderProgramHandle = GL.CreateProgram();
 
       GL.AttachShader(_shaderProgramHandle, _vertexShaderHandle);
       GL.AttachShader(_shaderProgramHandle, _pixelShaderHandle);
 
       GL.LinkProgram(_shaderProgramHandle);
-      GL.UseProgram(_shaderProgramHandle);
-
-      _viewProjectionHandle = GL.GetUniformLocation(_shaderProgramHandle, "viewProjection");
+      
+      _transformationMatrixHandle = GL.GetUniformLocation(_shaderProgramHandle, "transformationMatrix");
     }
 
+    // Create the buffers to store the geometry information
     private void CreateBuffers()
     {
       GL.GenBuffers(1, out _vertexPositionBufferHandle);
@@ -118,40 +127,54 @@ namespace PixelShader
           new IntPtr(_vertexPositionData.Length * Vector3.SizeInBytes),
           _vertexPositionData, BufferUsageHint.StaticDraw);
 
-      GL.GenBuffers(1, out _indicesBufferHandle);
-      GL.BindBuffer(BufferTarget.ElementArrayBuffer, _indicesBufferHandle);
+      GL.GenBuffers(1, out _facesBufferHandle);
+      GL.BindBuffer(BufferTarget.ElementArrayBuffer, _facesBufferHandle);
       GL.BufferData(BufferTarget.ElementArrayBuffer,
-          new IntPtr(sizeof(uint) * _indicesData.Length),
-          _indicesData, BufferUsageHint.StaticDraw);
+          new IntPtr(sizeof(uint) * _facesData.Length),
+          _facesData, BufferUsageHint.StaticDraw);
 
       GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
       GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
     }
 
+    //OpenGL has the concept of "Vertex Array Objects (VAO)" which are groups of geometries,
+    //shaders and textures that are associated to one object that wants to be drawn
+    //The idea of a VAO is to associate to one single handle a group of configurations
+    //that tell the GPU which geometry we want to render, with what shader and what textures
     private void CreateVertexArrays()
     {
-      GL.GenVertexArrays(1, out _vaoHandle);
-      GL.BindVertexArray(_vaoHandle);
+      GL.GenVertexArrays(1, out _objectHandle);
+      GL.BindVertexArray(_objectHandle);
 
       GL.EnableVertexAttribArray(0);
       GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexPositionBufferHandle);
       GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, true, Vector3.SizeInBytes, 0);
       GL.BindAttribLocation(_shaderProgramHandle, 0, "inPosition");
 
-      GL.BindBuffer(BufferTarget.ElementArrayBuffer, _indicesBufferHandle);
+      GL.BindBuffer(BufferTarget.ElementArrayBuffer, _facesBufferHandle);
 
       GL.BindVertexArray(0);
     }
 
+    // The render method of an OpenGL program will be called once per frame
+    // erasing the previous image and generating a new one
     protected override void OnRenderFrame(FrameEventArgs e)
     {
       GL.Viewport(0, 0, this.Width, this.Height);
       GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-      GL.UniformMatrix4(_viewProjectionHandle, 1, false, _viewProjectionMatrix);
+      // We need to indicate which shader to use before the drawing, and before sending
+      // uniform data
+      GL.UseProgram(_shaderProgramHandle);
+      GL.UniformMatrix4(_transformationMatrixHandle, 1, false, _transformationMatrix);
 
-      GL.BindVertexArray(_vaoHandle);
-      GL.DrawElements(BeginMode.Triangles, _indicesData.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
+      // We bind to our object handle so the GPU knows which geometries to draw
+      GL.BindVertexArray(_objectHandle);
+
+      // Draw elements tells the GPU to draw what type of geometry with the faces/vertex data
+      // already stored in the GPU buffers
+      GL.DrawElements(BeginMode.Triangles, _facesData.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
+
       SwapBuffers();
     }
 

@@ -2,12 +2,16 @@ var pixelShaderSource = "";
 var vertexShaderSource = "";
 
 var GL;
+
+//In OpenGL the way to identify resources in the GPU is with integer ids, which
+    //are called "handles" in this code
 var shaderProgramHandle;
-var viewProjectionHandle;
+var transformationMatrixHandle;
 var vertexPositionBufferHandle;
-var indicesBufferHandle;
+var facesBufferHandle;
 var vertexPositionAttributeHandle;
 
+// TODO: Replace this with vertices data loaded from the mesh in the scene
 var vertexPositionData =
     [
       -1.0, -1.0, -1.0,
@@ -16,11 +20,14 @@ var vertexPositionData =
       -1.0, 1.0, -1.0
 	];
 
-var indicesData =
+//TODO: Replace this with face data loaded from the mesh in the scene
+var facesData =
     [
       0, 1, 2, 2, 3, 0
 	];
 
+//TODO: Replace this with the orthographic projection transformation matrix
+//without including the image transformation (P * C)
 //Column order
 var viewProjectionMatrix =
     [
@@ -30,6 +37,9 @@ var viewProjectionMatrix =
 	  0, 0, 0, 1
 	];
 
+// The initialization method in an OpenGL program is called once.
+// In the initialization method, we load and send the shaders to the GPU,
+// and also send all the geometry information
 function init()
 {
 	var width = 512.0;
@@ -51,7 +61,7 @@ function init()
 	}
 
 	GL.enable(GL.DEPTH_TEST);
-	GL.clearColor(0, 0.5, 0.5, 1);
+	GL.clearColor(1, 1, 1, 1);
 
 	loadShaders();
 	createShaders();
@@ -84,6 +94,9 @@ function loadShaders()
 
 }
 
+// Shader source code is stored in GPU but we need to pass it to the GPU and instruct
+// it to compile the code and create the program that represents the rendering algorithm
+// that will be used
 function createShaders()
 {
 	var vertexShaderHandle = GL.createShader(GL.VERTEX_SHADER);
@@ -110,13 +123,13 @@ function createShaders()
 	 if (!GL.getProgramParameter(shaderProgramHandle, GL.LINK_STATUS)) {
 		alert("Could not initialise shaders");
 	 }
-	 GL.useProgram(shaderProgramHandle);
-
-	 viewProjectionHandle = GL.getUniformLocation(shaderProgramHandle, "viewProjection");
+	 
+	 transformationMatrixHandle = GL.getUniformLocation(shaderProgramHandle, "transformationMatrix");
 	 vertexPositionAttributeHandle = GL.getAttribLocation(shaderProgramHandle, "inPosition");
 	 GL.enableVertexAttribArray(vertexPositionAttributeHandle);
 }
 
+// Create the buffers to store the geometry information
 function createBuffers()
 {
 	vertexPositionBufferHandle = GL.createBuffer();
@@ -125,27 +138,33 @@ function createBuffers()
 		new Float32Array(vertexPositionData),
 		GL.STATIC_DRAW);
 
-	indicesBufferHandle = GL.createBuffer();
-	GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, indicesBufferHandle);
+	facesBufferHandle = GL.createBuffer();
+	GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, facesBufferHandle);
 	GL.bufferData(GL.ELEMENT_ARRAY_BUFFER,
-		new Uint16Array(indicesData),
+		new Uint16Array(facesData),
 		GL.STATIC_DRAW);
 }
 
-
+// The render method of an OpenGL program will be called once in this example
+// To allow interactivity we need to call this method every 1/60 seconds
 function render()
 {
 	GL.viewport(0, 0, GL.viewportWidth, GL.viewportHeight);
 	GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 
-	GL.uniformMatrix4fv(viewProjectionHandle, false, new Float32Array(viewProjectionMatrix));
+	// We need to indicate which shader to use before the drawing, and before sending
+	// uniform data
+	GL.useProgram(shaderProgramHandle);
+	GL.uniformMatrix4fv(transformationMatrixHandle, false, new Float32Array(viewProjectionMatrix));
 
+	// We bind to our buffer handles so the GPU knows which geometries to draw
 	GL.bindBuffer(GL.ARRAY_BUFFER, vertexPositionBufferHandle);
 	GL.vertexAttribPointer(vertexPositionAttributeHandle, 3, GL.FLOAT, false, 0, 0);
+	GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, facesBufferHandle);
 	
-
-	GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, indicesBufferHandle);
-	GL.drawElements(GL.TRIANGLES, indicesData.length, GL.UNSIGNED_SHORT, 0);
+	// Draw elements tells the GPU to draw what type of geometry with the faces/vertex data
+	// already stored in the GPU buffers
+	GL.drawElements(GL.TRIANGLES, facesData.length, GL.UNSIGNED_SHORT, 0);
 }
 
 init();

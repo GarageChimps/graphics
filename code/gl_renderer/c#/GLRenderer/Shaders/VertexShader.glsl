@@ -4,9 +4,9 @@ precision highp float;
 
 in vec3 inPosition;
 
-uniform mat4x4 viewProjection;
+uniform mat4x4 transformationMatrix;
 
 void main(void)
 {
-	gl_Position = viewProjection * vec4(inPosition, 1);
+	gl_Position = transformationMatrix * vec4(inPosition, 1);
 }
