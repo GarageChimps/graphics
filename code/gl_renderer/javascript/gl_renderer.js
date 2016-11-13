@@ -6,18 +6,33 @@ var GL;
 //In OpenGL the way to identify resources in the GPU is with integer ids, which
     //are called "handles" in this code
 var shaderProgramHandle;
+var lightPositionHandle;
+var lightColorHandle;
+var cameraPositionHandle;
+var materialColorHandle;
 var transformationMatrixHandle;
 var vertexPositionBufferHandle;
+var vertexNormalBufferHandle;
 var facesBufferHandle;
 var vertexPositionAttributeHandle;
+var vertexNormalAttributeHandle;
 
-// TODO: Replace this with vertices data loaded from the mesh in the scene
+// TODO: Replace this with vertices positions data loaded from the mesh in the scene
 var vertexPositionData =
     [
       -1.0, -1.0, -1.0,
       1.0, -1.0, -1.0,
       1.0,  1.0, -1.0,
       -1.0, 1.0, -1.0
+	];
+
+// TODO: Replace this with vertices normals data loaded from the mesh in the scene
+var vertexNormalData =
+    [
+      1.0, 0.0, -1.0,
+      0.0, 1.0, 0.0,
+      0.0,  0.0, 1.0,
+      1.0, 0.0, 1.0
 	];
 
 //TODO: Replace this with face data loaded from the mesh in the scene
@@ -36,6 +51,12 @@ var viewProjectionMatrix =
 	  0, 0, 1, 0, 
 	  0, 0, 0, 1
 	];
+
+//TODO: Replace this with scene parameters
+var cameraPosition = [1, 0, 0];
+var lightPosition = [0, 1, 0];
+var lightColor = [0, 0, 1];
+var materialColor = [1, 0, 0];
 
 // The initialization method in an OpenGL program is called once.
 // In the initialization method, we load and send the shaders to the GPU,
@@ -124,9 +145,17 @@ function createShaders()
 		alert("Could not initialise shaders");
 	 }
 	 
-	 transformationMatrixHandle = GL.getUniformLocation(shaderProgramHandle, "transformationMatrix");
 	 vertexPositionAttributeHandle = GL.getAttribLocation(shaderProgramHandle, "inPosition");
+	 vertexNormalAttributeHandle = GL.getAttribLocation(shaderProgramHandle, "inNormal");
 	 GL.enableVertexAttribArray(vertexPositionAttributeHandle);
+	 GL.enableVertexAttribArray(vertexNormalAttributeHandle);
+	
+	 transformationMatrixHandle = GL.getUniformLocation(shaderProgramHandle, "transformationMatrix");
+	 lightPositionHandle = GL.getUniformLocation(shaderProgramHandle, "lightPosition");
+	 lightColorHandle = GL.getUniformLocation(shaderProgramHandle, "lightColor");
+	 cameraPositionHandle = GL.getUniformLocation(shaderProgramHandle, "cameraPosition");
+	 materialColorHandle = GL.getUniformLocation(shaderProgramHandle, "materialColor");
+	 
 }
 
 // Create the buffers to store the geometry information
@@ -134,8 +163,16 @@ function createBuffers()
 {
 	vertexPositionBufferHandle = GL.createBuffer();
 	GL.bindBuffer(GL.ARRAY_BUFFER, vertexPositionBufferHandle);
+	GL.vertexAttribPointer(vertexPositionAttributeHandle, 3, GL.FLOAT, false, 0, 0);
 	GL.bufferData(GL.ARRAY_BUFFER,
 		new Float32Array(vertexPositionData),
+		GL.STATIC_DRAW);
+
+	verteNormalBufferHandle = GL.createBuffer();
+	GL.bindBuffer(GL.ARRAY_BUFFER, verteNormalBufferHandle);
+	GL.vertexAttribPointer(vertexNormalAttributeHandle, 3, GL.FLOAT, false, 0, 0);
+	GL.bufferData(GL.ARRAY_BUFFER,
+		new Float32Array(vertexNormalData),
 		GL.STATIC_DRAW);
 
 	facesBufferHandle = GL.createBuffer();
@@ -156,10 +193,11 @@ function render()
 	// uniform data
 	GL.useProgram(shaderProgramHandle);
 	GL.uniformMatrix4fv(transformationMatrixHandle, false, new Float32Array(viewProjectionMatrix));
+	GL.uniform3fv(lightPositionHandle, new Float32Array(lightPosition));
+	GL.uniform3fv(lightColorHandle, new Float32Array(lightColor));
+	GL.uniform3fv(cameraPositionHandle, new Float32Array(cameraPosition));
+	GL.uniform3fv(materialColorHandle, new Float32Array(materialColor));
 
-	// We bind to our buffer handles so the GPU knows which geometries to draw
-	GL.bindBuffer(GL.ARRAY_BUFFER, vertexPositionBufferHandle);
-	GL.vertexAttribPointer(vertexPositionAttributeHandle, 3, GL.FLOAT, false, 0, 0);
 	GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, facesBufferHandle);
 	
 	// Draw elements tells the GPU to draw what type of geometry with the faces/vertex data

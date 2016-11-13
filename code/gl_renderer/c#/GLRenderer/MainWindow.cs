@@ -51,7 +51,7 @@ namespace PixelShader
       new Vector3(1.0f, 0.0f,  0.0f),
       new Vector3(0.0f, 1.0f,  0.0f),
       new Vector3(0.0f, 0.0f,  1.0f),
-      new Vector3(1.0f, 0.0f,  0.0f)
+      new Vector3(1.0f, 0.0f,  1.0f)
     };
 
     //TODO: Replace this with face data loaded from the mesh in the scene
