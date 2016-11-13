@@ -28,10 +28,15 @@ namespace PixelShader
     private int _shaderProgramHandle;
     private int _objectHandle;
     private int _vertexPositionBufferHandle;
+    private int _vertexNormalBufferHandle;
     private int _facesBufferHandle;
     private int _transformationMatrixHandle;
+    private int _lightPositionHandle;
+    private int _lightColorHandle;
+    private int _cameraPositionHandle;
+    private int _materialColorHandle;
 
-    // TODO: Replace this with vertices data loaded from the mesh in the scene
+    // TODO: Replace this with vertices position data loaded from the mesh in the scene
     private readonly Vector3[] _vertexPositionData =
     {
       new Vector3(-1.0f, -1.0f,  -1.0f),
@@ -40,8 +45,17 @@ namespace PixelShader
       new Vector3(-1.0f,  1.0f,  -1.0f)
     };
 
+    // TODO: Replace this with vertices normal data loaded from the mesh in the scene
+    private readonly Vector3[] _vertexNormalData =
+    {
+      new Vector3(1.0f, 0.0f,  0.0f),
+      new Vector3(0.0f, 1.0f,  0.0f),
+      new Vector3(0.0f, 0.0f,  1.0f),
+      new Vector3(1.0f, 0.0f,  0.0f)
+    };
+
     //TODO: Replace this with face data loaded from the mesh in the scene
-    private readonly int[] _facesData =
+    private readonly uint[] _facesData =
     {
       0, 1, 2, //face 1
       2, 3, 0  //face 2
@@ -57,6 +71,12 @@ namespace PixelShader
       0, 0, 0, 0,
       0, 0, 0, 1
     };
+
+    //TODO: Replace this with scene parameters
+    private readonly float[] _cameraPosition = {1, 0, 0};
+    private readonly float[] _lightPosition = {0, 1, 0};
+    private readonly float[] _lightColor = {0, 0, 1};
+    private readonly float[] _materialColor = {1, 0, 0};
     
     public MainWindow(int width, int height)
       : base(width, height,
@@ -116,6 +136,10 @@ namespace PixelShader
       GL.LinkProgram(_shaderProgramHandle);
       
       _transformationMatrixHandle = GL.GetUniformLocation(_shaderProgramHandle, "transformationMatrix");
+      _lightPositionHandle = GL.GetUniformLocation(_shaderProgramHandle, "lightPosition");
+      _lightColorHandle = GL.GetUniformLocation(_shaderProgramHandle, "lightColor");
+      _cameraPositionHandle = GL.GetUniformLocation(_shaderProgramHandle, "cameraPosition");
+      _materialColorHandle = GL.GetUniformLocation(_shaderProgramHandle, "materialColor");
     }
 
     // Create the buffers to store the geometry information
@@ -126,6 +150,12 @@ namespace PixelShader
       GL.BufferData(BufferTarget.ArrayBuffer,
           new IntPtr(_vertexPositionData.Length * Vector3.SizeInBytes),
           _vertexPositionData, BufferUsageHint.StaticDraw);
+
+      GL.GenBuffers(1, out _vertexNormalBufferHandle);
+      GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexNormalBufferHandle);
+      GL.BufferData(BufferTarget.ArrayBuffer,
+          new IntPtr(_vertexNormalData.Length * Vector3.SizeInBytes),
+          _vertexNormalData, BufferUsageHint.StaticDraw);
 
       GL.GenBuffers(1, out _facesBufferHandle);
       GL.BindBuffer(BufferTarget.ElementArrayBuffer, _facesBufferHandle);
@@ -151,6 +181,11 @@ namespace PixelShader
       GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, true, Vector3.SizeInBytes, 0);
       GL.BindAttribLocation(_shaderProgramHandle, 0, "inPosition");
 
+      GL.EnableVertexAttribArray(1);
+      GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexNormalBufferHandle);
+      GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, true, Vector3.SizeInBytes, 0);
+      GL.BindAttribLocation(_shaderProgramHandle, 1, "inNormal");
+
       GL.BindBuffer(BufferTarget.ElementArrayBuffer, _facesBufferHandle);
 
       GL.BindVertexArray(0);
@@ -167,6 +202,10 @@ namespace PixelShader
       // uniform data
       GL.UseProgram(_shaderProgramHandle);
       GL.UniformMatrix4(_transformationMatrixHandle, 1, false, _transformationMatrix);
+      GL.Uniform3(_lightPositionHandle, 1, _lightPosition);
+      GL.Uniform3(_lightColorHandle, 1, _lightColor);
+      GL.Uniform3(_cameraPositionHandle, 1, _cameraPosition);
+      GL.Uniform3(_materialColorHandle, 1, _materialColor);
 
       // We bind to our object handle so the GPU knows which geometries to draw
       GL.BindVertexArray(_objectHandle);

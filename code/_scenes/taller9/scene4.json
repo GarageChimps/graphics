@@ -1,0 +1,33 @@
+{
+    "__type__": "scene",
+    "camera": {
+        "__type__": "camera",
+        "fov": 45.0,
+        "position": [0,-15,0],
+        "up": [0,0,1],
+        "target": [0,0,0],
+		"near": 1,
+		"far": 100
+    },
+    "objects": [
+        {
+            "__type__": "mesh",
+			"file_path": "sphere.obj",
+            "materials": ["red_lambert"]
+        },
+		{
+            "__type__": "mesh",
+			"file_path": "teapot.obj",
+            "materials": ["yellow_lambert"]
+        }
+    ],
+    "lights": [	   
+        {
+          "__type__": "ambient_light",
+          "color": [1, 1, 1]
+        }
+    ],
+    "params": {
+        "background_color": [1.0,1.0,1.0]
+    }
+}

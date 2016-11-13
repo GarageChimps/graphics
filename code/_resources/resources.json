@@ -202,6 +202,15 @@
 		"shininess": 100
 	  },
       "brdf": "blinnPhong"
+    },
+	{
+      "__type__": "brdf_color_texture_material",
+      "name": "chess_lambert_bilinear",
+      "color_texture": "chess",
+	  "texture_filtering": "bilinear",
+      "brdfParams": { },
+      "brdf": "lambert",
+      "use_for_ambient": true
     }
 
   ],
@@ -229,6 +238,12 @@
       "__type__": "color_texture",
       "name": "bricks_SPEC",
       "file_path": "textures/bricks_SPEC.jpg"
+
+    },
+	{
+      "__type__": "color_texture",
+      "name": "chess",
+      "file_path": "textures/chess.png"
 
     }
   ]

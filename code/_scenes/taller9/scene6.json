@@ -1,0 +1,48 @@
+{
+    "__type__": "scene",
+    "camera": {
+        "__type__": "camera",
+        "fov": 45.0,
+        "position": [0,0,4],
+        "up": [0,1,0],
+      "target": [ 0, 0, 0 ],
+      "near": 4.5,
+      "far": 100
+    },
+    "objects": [
+        {
+            "__type__": "mesh",
+			"file_path": "box_back.obj",
+            "materials": ["black_lambert"]
+        },
+		{
+            "__type__": "mesh",
+			"file_path": "box_right.obj",
+            "materials": ["green_lambert"]
+        },
+		{
+            "__type__": "mesh",
+			"file_path": "box_left.obj",
+            "materials": ["red_lambert"]
+        },
+		{
+            "__type__": "mesh",
+			"file_path": "box_top.obj",
+            "materials": ["blue_lambert"]
+        },
+		{
+            "__type__": "mesh",
+			"file_path": "box_bottom.obj",
+            "materials": ["yellow_lambert"]
+        }
+    ],
+    "lights": [
+	    {
+          "__type__": "ambient_light",
+          "color": [1, 1, 1]
+        }
+    ],
+    "params": {
+        "background_color": [1.0,1.0,1.0]
+    }
+}
