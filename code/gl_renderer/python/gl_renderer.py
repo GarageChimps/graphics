@@ -42,17 +42,30 @@ class Renderer(QGLWidget):
         # are called "handles" in this code
         self.shaderProgramHandle = None
         self.transformationMatrixHandle = None
+        self.lightPositionHandle = None
+        self.lightColorHandle = None
+        self.cameraPositionHandle = None
+        self.materialColorHandle = None
         self.vertexPositionBufferHandle = None
+        self.vertexNormalBufferHandle = None
         self.facesBufferHandle = None
         self.vertexPositionAttributeHandle = None
         self.objectHandle = None
 
-        # TODO: Replace this with vertices data loaded from the mesh in the scene
+        # TODO: Replace this with vertices position data loaded from the mesh in the scene
         self.vertexPositionData = [
             -1.0, -1.0, -1.0, #v1
              1.0, -1.0, -1.0, #v2
              1.0,  1.0, -1.0, #v3
             -1.0,  1.0, -1.0  #v4
+        ]
+
+        # TODO: Replace this with vertices normal data loaded from the mesh in the scene
+        self.vertexNormalData = [
+            1.0, 0.0, 0.0,  # v1
+            0.0, 1.0, 0.0,  # v2
+            0.0, 0.0, 1.0,  # v3
+            1.0, 0.0, 1.0  # v4
         ]
 
         # TODO: Replace this with face data loaded from the mesh in the scene
@@ -70,6 +83,12 @@ class Renderer(QGLWidget):
             0, 0, 1, 0,
             0, 0, 0, 1
         ]
+
+        #TODO: Replace this with scene data
+        self.cameraPosition = [1, 0, 0]
+        self.lightPosition = [0, 1, 0]
+        self.lightColor = [0, 0, 1]
+        self.materialColor = [1, 0, 0]
 
     # The initialization method in an OpenGL program is called once.
     # In the initialization method, we load and send the shaders to the GPU,
@@ -112,6 +131,10 @@ class Renderer(QGLWidget):
         glLinkProgram(self.shaderProgramHandle)
 
         self.transformationMatrixHandle = glGetUniformLocation(self.shaderProgramHandle, "transformationMatrix")
+        self.lightPositionHandle = glGetUniformLocation(self.shaderProgramHandle, "lightPosition")
+        self.lightColorHandle = glGetUniformLocation(self.shaderProgramHandle, "lightColor")
+        self.cameraPositionHandle = glGetUniformLocation(self.shaderProgramHandle, "cameraPosition")
+        self.materialColorHandle = glGetUniformLocation(self.shaderProgramHandle, "materialColor")
 
     # Create the buffers to store the geometry information
     def _create_buffers(self):
@@ -119,6 +142,12 @@ class Renderer(QGLWidget):
         self.vertexPositionBufferHandle = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, self.vertexPositionBufferHandle)
         glBufferData(GL_ARRAY_BUFFER, np.array(self.vertexPositionData, dtype='float32'),
+                     GL_STATIC_DRAW)
+
+        # We create one "array buffer" to store the normals
+        self.vertexNormalBufferHandle = glGenBuffers(1)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vertexNormalBufferHandle)
+        glBufferData(GL_ARRAY_BUFFER, np.array(self.vertexNormalData, dtype='float32'),
                      GL_STATIC_DRAW)
 
         # We create one "element array buffer" to store the faces
@@ -140,6 +169,11 @@ class Renderer(QGLWidget):
         glVertexAttribPointer(0, 3, GL_FLOAT, False, 0, None)
         glBindAttribLocation(self.shaderProgramHandle, 0, "inPosition")
 
+        glBindBuffer(GL_ARRAY_BUFFER, self.vertexNormalBufferHandle)
+        glEnableVertexAttribArray(1)
+        glVertexAttribPointer(1, 3, GL_FLOAT, False, 0, None)
+        glBindAttribLocation(self.shaderProgramHandle, 0, "inNormal")
+
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.facesBufferHandle)
 
         # In general in OpenGl binding to 0 represents unbinding the last element bound
@@ -156,6 +190,10 @@ class Renderer(QGLWidget):
         glUseProgram(self.shaderProgramHandle)
         glUniformMatrix4fv(self.transformationMatrixHandle, 1, False, np.array(self.transformationMatrix,
                                                                                dtype='float32'))
+        glUniform3fv(self.lightPositionHandle, 1, np.array(self.lightPosition, dtype='float32'))
+        glUniform3fv(self.lightColorHandle, 1, np.array(self.lightColor, dtype='float32'))
+        glUniform3fv(self.cameraPositionHandle, 1, np.array(self.cameraPosition, dtype='float32'))
+        glUniform3fv(self.materialColorHandle, 1, np.array(self.materialColor, dtype='float32'))
 
         # We bind to our object handle so the GPU knows which geometries to draw
         glBindVertexArray(self.objectHandle)
