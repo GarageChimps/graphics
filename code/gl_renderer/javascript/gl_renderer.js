@@ -11,52 +11,85 @@ var lightColorHandle;
 var cameraPositionHandle;
 var materialColorHandle;
 var transformationMatrixHandle;
-var vertexPositionBufferHandle;
-var vertexNormalBufferHandle;
-var facesBufferHandle;
 var vertexPositionAttributeHandle;
 var vertexNormalAttributeHandle;
 
-// TODO: Replace this with vertices positions data loaded from the mesh in the scene
-var vertexPositionData =
-    [
-      -1.0, -1.0, -1.0,
-      1.0, -1.0, -1.0,
-      1.0,  1.0, -1.0,
-      -1.0, 1.0, -1.0
-	];
+var objects = [
+	{
+	vertexPositionBufferHandle: -1,
+	vertexNormalBufferHandle : -1,
+	facesBufferHandle : -1,
 
-// TODO: Replace this with vertices normals data loaded from the mesh in the scene
-var vertexNormalData =
-    [
-      1.0, 0.0, -1.0,
-      0.0, 1.0, 0.0,
-      0.0,  0.0, 1.0,
-      1.0, 0.0, 1.0
-	];
+	vertexPositionData:
+		[
+		-1.0, -1.0, -1.0,
+		1.0, -1.0, -1.0,
+		1.0,  1.0, -1.0,
+		-1.0, 1.0, -1.0
+		],
 
-//TODO: Replace this with face data loaded from the mesh in the scene
-var facesData =
-    [
-      0, 1, 2, 2, 3, 0
-	];
+	vertexNormalData :
+		[
+		0.0, 0.0, -1.0,
+		1.0, 0.0, 0.0,
+		1.0,  1.0, 1.0,
+		0.0, 1.0, 1.0
+		],
+	facesData :
+		[
+		0, 1, 2, 2, 3, 0
+		],
 
-//TODO: Replace this with the orthographic projection transformation matrix
-//without including the image transformation (P * C)
-//Column order
-var viewProjectionMatrix =
-    [
-      0.2, 0, 0, 0, 
-	  0, 0.2, 0, 0, 
-	  0, 0, 1, 0, 
-	  0, 0, 0, 1
+	transformationMatrix :
+		[
+		0.2, 0, 0, 0, 
+		0, 0.2, 0, 0, 
+		0, 0, 1, 0, 
+		0, 0, 0, 1
+		],
+		materialColor: [1,0,0]
+	},
+	{
+	vertexPositionBufferHandle: -1,
+	vertexNormalBufferHandle : -1,
+	facesBufferHandle : -1,
+
+	vertexPositionData:
+		[
+		-1.0, -1.0, -1.0,
+		1.0, -1.0, -1.0,
+		1.0,  1.0, -1.0,
+		-1.0, 1.0, -1.0
+		],
+
+	vertexNormalData :
+		[
+		1.0, 0.0, -1.0,
+		0.0, 1.0, 0.0,
+		0.0,  0.0, 1.0,
+		1.0, 0.0, 1.0
+		],
+	facesData :
+		[
+		0, 1, 2, 2, 3, 0
+		],
+
+	transformationMatrix :
+		[
+		0.2, 0, 0, 0, 
+		0, 0.2, 0, 0, 
+		0, 0, 1, 0, 
+		0.3, 0.3, 0, 1
+		],
+		materialColor: [0,0,1]
+	}
+	
 	];
 
 //TODO: Replace this with scene parameters
 var cameraPosition = [1, 0, 0];
 var lightPosition = [0, 1, 0];
 var lightColor = [0, 0, 1];
-var materialColor = [1, 0, 0];
 
 // The initialization method in an OpenGL program is called once.
 // In the initialization method, we load and send the shaders to the GPU,
@@ -161,25 +194,28 @@ function createShaders()
 // Create the buffers to store the geometry information
 function createBuffers()
 {
-	vertexPositionBufferHandle = GL.createBuffer();
-	GL.bindBuffer(GL.ARRAY_BUFFER, vertexPositionBufferHandle);
-	GL.vertexAttribPointer(vertexPositionAttributeHandle, 3, GL.FLOAT, false, 0, 0);
-	GL.bufferData(GL.ARRAY_BUFFER,
-		new Float32Array(vertexPositionData),
-		GL.STATIC_DRAW);
+	for (var i=0; i < objects.length; i++) {
+		obj = objects[i];
+		obj.vertexPositionBufferHandle = GL.createBuffer();
+		GL.bindBuffer(GL.ARRAY_BUFFER, obj.vertexPositionBufferHandle);
+		GL.vertexAttribPointer(vertexPositionAttributeHandle, 3, GL.FLOAT, false, 0, 0);
+		GL.bufferData(GL.ARRAY_BUFFER,
+			new Float32Array(obj.vertexPositionData),
+			GL.STATIC_DRAW);
 
-	verteNormalBufferHandle = GL.createBuffer();
-	GL.bindBuffer(GL.ARRAY_BUFFER, verteNormalBufferHandle);
-	GL.vertexAttribPointer(vertexNormalAttributeHandle, 3, GL.FLOAT, false, 0, 0);
-	GL.bufferData(GL.ARRAY_BUFFER,
-		new Float32Array(vertexNormalData),
-		GL.STATIC_DRAW);
+		obj.verteNormalBufferHandle = GL.createBuffer();
+		GL.bindBuffer(GL.ARRAY_BUFFER, obj.verteNormalBufferHandle);
+		GL.vertexAttribPointer(vertexNormalAttributeHandle, 3, GL.FLOAT, false, 0, 0);
+		GL.bufferData(GL.ARRAY_BUFFER,
+			new Float32Array(obj.vertexNormalData),
+			GL.STATIC_DRAW);
 
-	facesBufferHandle = GL.createBuffer();
-	GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, facesBufferHandle);
-	GL.bufferData(GL.ELEMENT_ARRAY_BUFFER,
-		new Uint16Array(facesData),
-		GL.STATIC_DRAW);
+		obj.facesBufferHandle = GL.createBuffer();
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, obj.facesBufferHandle);
+		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER,
+			new Uint16Array(obj.facesData),
+			GL.STATIC_DRAW);
+	}
 }
 
 // The render method of an OpenGL program will be called once in this example
@@ -192,17 +228,21 @@ function render()
 	// We need to indicate which shader to use before the drawing, and before sending
 	// uniform data
 	GL.useProgram(shaderProgramHandle);
-	GL.uniformMatrix4fv(transformationMatrixHandle, false, new Float32Array(viewProjectionMatrix));
 	GL.uniform3fv(lightPositionHandle, new Float32Array(lightPosition));
 	GL.uniform3fv(lightColorHandle, new Float32Array(lightColor));
 	GL.uniform3fv(cameraPositionHandle, new Float32Array(cameraPosition));
-	GL.uniform3fv(materialColorHandle, new Float32Array(materialColor));
-
-	GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, facesBufferHandle);
 	
-	// Draw elements tells the GPU to draw what type of geometry with the faces/vertex data
-	// already stored in the GPU buffers
-	GL.drawElements(GL.TRIANGLES, facesData.length, GL.UNSIGNED_SHORT, 0);
+	for (var i=0; i < objects.length; i++) {
+		obj = objects[i];
+		GL.uniformMatrix4fv(transformationMatrixHandle, false, new Float32Array(obj.transformationMatrix));
+		GL.uniform3fv(materialColorHandle, new Float32Array(obj.materialColor));
+
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, obj.facesBufferHandle);
+		
+		// Draw elements tells the GPU to draw what type of geometry with the faces/vertex data
+		// already stored in the GPU buffers
+		GL.drawElements(GL.TRIANGLES, obj.facesData.length, GL.UNSIGNED_SHORT, 0);
+	}
 }
 
 init();
