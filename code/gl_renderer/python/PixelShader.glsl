@@ -14,5 +14,5 @@ uniform vec3 materialColor;
 void main(void)
 {
   //ToDo: Implement pixel shading
-  pixelColor = vec4(outNormal, 1);
+  pixelColor = vec4(materialColor, 1);
 }
