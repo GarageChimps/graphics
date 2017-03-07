@@ -76,10 +76,10 @@ namespace PixelShader
     {
       var obj1 = new Object(
         new[] {
-          new Vector3(-1.0f, -1.0f,  -1.0f),
-          new Vector3( 1.0f, -1.0f,  -1.0f),
-          new Vector3( 1.0f,  1.0f,  -1.0f),
-          new Vector3(-1.0f,  1.0f,  -1.0f)
+          new Vector3(-1.0f, -1.0f,  0.9f),
+          new Vector3( 1.0f, -1.0f,  0.9f),
+          new Vector3( 1.0f,  1.0f,  0.9f),
+          new Vector3(-1.0f,  1.0f,  0.9f)
         },
         new[] {
           new Vector3(0.0f, 0.0f,  0.0f),
@@ -95,17 +95,17 @@ namespace PixelShader
         {
            0.2f, 0, 0, 0,
           0, 0.2f, 0, 0,
-          0, 0, 0, 0,
+          0, 0, 1, 0,
           0, 0, 0, 1
         },
         new float[] { 1, 0, 0 }
         );
       var obj2 = new Object(
         new[] {
-          new Vector3(-1.0f, -1.0f,  -1.0f),
-          new Vector3( 1.0f, -1.0f,  -1.0f),
-          new Vector3( 1.0f,  1.0f,  -1.0f),
-          new Vector3(-1.0f,  1.0f,  -1.0f)
+          new Vector3(-1.0f, -1.0f,  -0.9f),
+          new Vector3( 1.0f, -1.0f,  -0.9f),
+          new Vector3( 1.0f,  1.0f,  -0.9f),
+          new Vector3(-1.0f,  1.0f,  -0.9f)
         },
         new[] {
           new Vector3(1.0f, 0.0f,  0.0f),
@@ -121,7 +121,7 @@ namespace PixelShader
         {
            0.2f, 0, 0, 0,
           0, 0.2f, 0, 0,
-          0, 0, 0, 0,
+          0, 0, 1, 0,
           0.3f, 0.3f, 0, 1
         },
         new float[] { 0, 0, 1 }
@@ -137,6 +137,7 @@ namespace PixelShader
     {
       VSync = VSyncMode.On;
       GL.Enable(EnableCap.DepthTest);
+// GL.DepthRange(1, 0);
       GL.ClearColor(1, 1, 1, 1);
 
       LoadShaders();

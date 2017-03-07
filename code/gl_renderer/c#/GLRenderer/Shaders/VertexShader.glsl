@@ -13,6 +13,7 @@ uniform mat4x4 transformationMatrix;
 void main(void)
 {
 	gl_Position = transformationMatrix * vec4(inPosition, 1);
+	//gl_Position.z = -gl_Position.z;
 	outNormal = inNormal;
 	outPosition = inPosition;
 }
