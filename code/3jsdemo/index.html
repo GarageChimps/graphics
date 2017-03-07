@@ -29,8 +29,10 @@
 
 			// create a camera specifying its (fov, aspect ratio, near, far)
 			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-			camera.position.z = 5;
-
+			camera.position.set(0, 0, 5);
+			camera.up.set(0,1,0);
+			camera.lookAt(0,0,0);
+			
 			// let there be light (point light)
 			var light = new THREE.PointLight( 0xffffff, 1, 0 ); //color, intensity, distance
 			light.position.set( 5, 5, 5 );
@@ -52,6 +54,7 @@
 			// now create the "renderer" who will draw things, and add it to the DOM
 			var renderer = new THREE.WebGLRenderer();
 			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor(0xffffff, 1);
 			document.body.appendChild( renderer.domElement );
 
 			// and draw things ..
