@@ -5,14 +5,20 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>THREE.js demo </title>
 
+
+
+		<style>
+			body { margin: 0; padding:0;}
+			canvas { position:absolute }
+		</style>
+
 		<script type="text/javascript" src="libs/three.min.js"></script>
 		<script type="text/javascript" src="libs/jquery-3.1.1.min.js"></script>
-
 		<script>
 		$(function(){
-			// 3js allows to create the whole scene in WebGL using
-			// a high level interface, without having to deal with al the "opengl" details
-			// see the docs at https://threejs.org/docs
+			/* 3js allows to create the whole scene in WebGL using
+			a high level interface, without having to deal with al the "opengl" details
+			see the documentation at https://threejs.org/docs */
 
 			// create a scene object
 			var scene = new THREE.Scene();
@@ -26,13 +32,9 @@
 			camera.position.z = 5;
 
 			// let there be light (point light)
-			var light1 = new THREE.PointLight( 0xffffff, 1, 0 ); //color, intensity, distance
-			light1.position.set( 5, 5, 5 );
-			scene.add( light1 );
-
-			// and ambient light
-			var light2 = new THREE.AmbientLight( 0x404040 );
-			scene.add( light2 );
+			var light = new THREE.PointLight( 0xffffff, 1, 0 ); //color, intensity, distance
+			light.position.set( 5, 5, 5 );
+			scene.add( light );
 
 			// create a geometry:
 			// sphere of r=1 and 32x32 diag crossed mesh
@@ -55,20 +57,11 @@
 			// and draw things ..
 			renderer.render(scene, camera);
 
-			// render on every screen refresh and update the camera
-			var controls = new THREE.TrackballControls( camera );
-			var animate = function(){
-				requestAnimationFrame( animate );
-				controls.update();
-				renderer.render( scene, camera );
-			}
-
-			animate();
-
 		});
-		</script>
+	</script>
 
 	</head>
+
 	<body>
 	</body>
 </html>
