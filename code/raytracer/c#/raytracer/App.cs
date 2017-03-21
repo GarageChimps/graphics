@@ -4,11 +4,11 @@
   {
     static void Main(string[] args)
     {
-      var imageFile = "scene1.png";
+      var imageFile = "image.png";
       var resourcesFile = "resources.json";
-      var sceneFile = "taller10/scene3.json";
-      var width = 128;
-      var height = 128;
+      var sceneFile = "scene6.json";
+      var width = 512;
+      var height = 512;
 
       var index = 0;
       foreach (var arg in args)

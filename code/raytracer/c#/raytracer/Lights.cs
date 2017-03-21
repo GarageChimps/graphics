@@ -13,8 +13,9 @@ namespace raytracer
     Vector GetDirection(Vector p);
     Vector GetSampledDirection(Vector p, Random sampler);
     float GetDistance(Vector p);
+    bool ReachesPoint(Vector p);
   }
-
+  
   class PointLight : IShadingLight
   {
     public Vector Position { get; set; }
@@ -52,6 +53,30 @@ namespace raytracer
     {
       return (Position - p).Size;
     }
+
+    public virtual bool ReachesPoint(Vector p)
+    {
+      return true;
+    }
+  }
+
+  class SpotLight : PointLight
+  {
+    public Vector Direction { get; set; }
+    public float Angle { get; set; }
+
+    public SpotLight(Vector position, Vector color, Vector direction, float angle) : base(position, color, 0, new Vector())
+    {
+      Direction = direction.Normalized;
+      Angle = angle;
+    }
+
+    public override bool ReachesPoint(Vector p)
+    {
+      var l = (Position - p).Normalized;
+      var lDotD = l ^ Direction;
+      return Math.Acos(lDotD) < Angle;
+    }
   }
 
 
@@ -61,7 +86,7 @@ namespace raytracer
     public Vector Color { get; set; }
     public DirectionalLight(Vector direction, Vector color)
     {
-      Direction = direction;
+      Direction = direction.Normalized;
       Color = color;
     }
 
@@ -78,6 +103,11 @@ namespace raytracer
     public float GetDistance(Vector p)
     {
       return float.PositiveInfinity;
+    }
+
+    public bool ReachesPoint(Vector p)
+    {
+      return true;
     }
   }
 
