@@ -74,8 +74,8 @@ namespace raytracer
     public override bool ReachesPoint(Vector p)
     {
       var l = (Position - p).Normalized;
-      var lDotD = l ^ Direction;
-      return Math.Acos(lDotD) < Angle;
+      var lDotD = -1*l ^ Direction;
+      return lDotD > Math.Cos(Angle/2.0f);
     }
   }
 
