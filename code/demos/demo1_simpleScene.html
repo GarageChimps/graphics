@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!-- THREE.js demo by jgalazm-->
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>THREE.js demo </title>
+
+
+
+		<style>
+			body { margin: 0; padding:0;}
+			canvas { position:absolute }
+		</style>
+
+		<script type="text/javascript" src="libs/three.min.js"></script>
+		<script type="text/javascript" src="libs/jquery-3.1.1.min.js"></script>
+		<script>
+		$(function(){
+			/* 3js allows to create the whole scene in WebGL using
+			a high level interface, without having to deal with al the "opengl" details
+			see the documentation at https://threejs.org/docs */
+
+			// create a scene object
+			var scene = new THREE.Scene();
+
+			//this may help:
+			//var axisHelper = new THREE.AxisHelper( 5 );
+			//scene.add( axisHelper );
+
+			// create a camera specifying its (fov, aspect ratio, near, far)
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			camera.position.set(0, 0, 5);
+			camera.up.set(0,1,0);
+			camera.lookAt(0,0,0);
+			
+			// let there be light (point light)
+			var light = new THREE.PointLight( 0xffffff, 1, 0 ); //color, intensity, distance
+			light.position.set( 5, 5, 5 );
+			scene.add( light );
+
+			// create a geometry:
+			// sphere of r=1 and 32x32 diag crossed mesh
+			var geometry = new THREE.SphereGeometry( 1, 32, 32 );
+
+			// create a material for the object
+			var material = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
+
+			// create an object with the specified geometry and matrial
+			var sphere = new THREE.Mesh( geometry, material );
+
+			// add the object to the scene
+			scene.add( sphere );
+
+			// now create the "renderer" who will draw things, and add it to the DOM
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor(0xffffff, 1);
+			document.body.appendChild( renderer.domElement );
+
+			// and draw things ..
+			renderer.render(scene, camera);
+
+		});
+	</script>
+
+	</head>
+
+	<body>
+	</body>
+</html>
