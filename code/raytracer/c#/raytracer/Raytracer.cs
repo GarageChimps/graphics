@@ -166,7 +166,9 @@ namespace raytracer
         var l = light.GetDirection(p);
         var dl = light.GetDistance(p);
         // Direct illumination
-        if (!scene.GetBoolParam("enable_shadows") || !IsInShadow(p, sl, dl, scene, time))
+        var shadowTest = !scene.GetBoolParam("enable_shadows") || !IsInShadow(p, sl, dl, scene, time);
+        var reachTest = light.ReachesPoint(p);
+        if (shadowTest && reachTest)
         {
           var lightColor = light.Color;
           foreach (var material in brdfMaterials)

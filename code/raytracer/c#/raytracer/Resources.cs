@@ -73,17 +73,23 @@ namespace raytracer
             if (dic["__type__"].ToString() == "resources")
             {
               var textures = new List<ITexture>();
-              var texturesObj = (List<object>)dic["textures"];
-              foreach (var tex in texturesObj)
+              if (dic.ContainsKey("textures"))
               {
-                textures.Add((ITexture)tex);
+                var texturesObj = (List<object>) dic["textures"];
+                foreach (var tex in texturesObj)
+                {
+                  textures.Add((ITexture) tex);
+                }
               }
 
               var materials = new List<IMaterial>();
-              var materialsObj = (List<object>)dic["materials"];
-              foreach (var mat in materialsObj)
+              if (dic.ContainsKey("materials"))
               {
-                materials.Add((IMaterial)mat);
+                var materialsObj = (List<object>) dic["materials"];
+                foreach (var mat in materialsObj)
+                {
+                  materials.Add((IMaterial) mat);
+                }
               }
               return new Resources(materials, textures);
             }

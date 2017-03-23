@@ -12,6 +12,7 @@ namespace raytracer
       BRDFDictionary.Add("constant", constant);
       BRDFDictionary.Add("lambert", lambert);
       BRDFDictionary.Add("blinnPhong", blinnPhong);
+      BRDFDictionary.Add("toon", toon);
       return BRDFDictionary;
     }
 
@@ -31,6 +32,21 @@ namespace raytracer
       Vector h = (v + l).Normalized; 
     
       return (float)Math.Pow(Math.Max(0.0f, n ^ h), parameters["shininess"]);      
+    }
+
+    public static float toon(Vector n, Vector l, Vector v, Dictionary<string, float> parameters)
+    {
+      int numIntervals = (int)parameters["intervals"];
+      var lambert = Math.Max(0.0f, n ^ l);
+      var delta = 1.0f/numIntervals;
+      for (float toon = 0; toon < 1.0; toon += delta)
+      {
+        if (lambert < toon)
+        {
+          return toon;
+        }
+      }
+      return 1.0f;
     }
   }
 }

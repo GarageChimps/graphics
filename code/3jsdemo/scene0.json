@@ -1,0 +1,28 @@
+{
+    "__type__": "scene",
+    "camera": {
+        "__type__": "camera",
+        "fov": 45.0,
+        "position": [0,0,5],
+        "up": [0,1,0],
+        "target": [0,0,0]
+    },
+    "objects": [
+        {
+            "__type__": "sphere",
+            "radius": 1,
+            "position": [0,0,0],
+            "materials": ["red_lambert"]
+        }
+    ],
+    "lights": [
+		{
+          "__type__": "point_light",
+          "position": [5, 5, 5],
+          "color": [1.0, 1.0, 1.0]
+        }
+    ],
+    "params": {
+        "background_color": [1.0,1.0,1.0]
+    }
+}

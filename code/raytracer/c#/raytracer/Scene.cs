@@ -209,6 +209,17 @@ namespace raytracer
                 new Vector(direction), 
                 new Vector(color));
             }
+            else if (dic["__type__"].ToString() == "spot_light")
+            {
+              var angle = (float)(Convert.ToSingle(dic["angle"]) * Math.PI / 180.0f);
+              var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
+              var direction = ((List<object>)dic["direction"]).Select(Convert.ToSingle).ToList();
+              var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
+              return new SpotLight(
+                new Vector(position),
+                new Vector(color),
+                new Vector(direction), angle);
+            }
             else if (dic["__type__"].ToString() == "ambient_light")
             {
               var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
