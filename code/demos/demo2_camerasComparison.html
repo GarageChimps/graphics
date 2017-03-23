@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!-- THREE.js demo by jgalazm-->
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>THREE.js demo </title>
+
+
+
+		<style>
+			body { margin: 0; padding:0;}
+			canvas { position:absolute }
+		</style>
+
+		<script type="text/javascript" src="libs/three.min.js"></script>
+		<script type="text/javascript" src="libs/jquery-3.1.1.min.js"></script>
+		<script>
+		var cameraSwitch = true;
+		var cameraOrtographic;
+		var cameraPerspective
+		var camera;
+		var objects = [];
+		var objectIndex = 0;
+
+		$(function(){
+			/* 3js allows to create the whole scene in WebGL using
+			a high level interface, without having to deal with al the "opengl" details
+			see the documentation at https://threejs.org/docs */
+
+			// now create the "renderer" who will draw things, and add it to the DOM
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor(0xffffff, 1);
+			document.body.appendChild( renderer.domElement );
+			var update = function( delta ) {
+
+				var moveMult = delta * this.movementSpeed;
+				var rotMult = delta * this.rollSpeed;
+
+				this.object.translateX( this.moveVector.x * moveMult );
+				this.object.translateY( this.moveVector.y * moveMult );
+				this.object.translateZ( this.moveVector.z * moveMult );
+
+				this.tmpQuaternion.set( this.rotationVector.x * rotMult, this.rotationVector.y * rotMult, this.rotationVector.z * rotMult, 1 ).normalize();
+				this.object.quaternion.multiply( this.tmpQuaternion );
+
+				// expose the rotation vector for convenience
+				this.object.rotation.setFromQuaternion( this.object.quaternion, this.object.rotation.order );
+
+
+			};
+			// create a scene object
+			 scene = new THREE.Scene();
+
+			var w = 10;
+			var h = window.innerHeight/window.innerWidth*w;
+			// var h = 1/Math.tan(75*Math.PI/180);
+			// var w = window.innerWidth/window.innerHeight*h;
+			cameraOrtographic = new THREE.OrthographicCamera( -w, w, h,-h, -1, 1000 );
+			cameraPerspective = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
+
+
+			var axisHelper = new THREE.AxisHelper( 5 );
+			scene.add( axisHelper );
+			var helper = new THREE.GridHelper( 20, 100);
+			// helper.position.y = - 199;
+			helper.material.opacity = 0.55;
+			helper.material.transparent = true;
+			scene.add( helper );
+
+			var initCamera = function(camera){
+				camera.position.set(5,5,5);
+				camera.up.set(0,1,0);
+				camera.lookAt(new THREE.Vector3(0,0,0));
+			}
+
+			var switchCamera = function(oldCamera,newCamera){
+				camera = newCamera;
+			}
+
+			camera = cameraPerspective;;
+			initCamera(cameraPerspective);
+			initCamera(cameraOrtographic);
+
+			// let there be light (point light)
+			var light = new THREE.PointLight( 0xffffff, 1, 0 ); //color, intensity, distance
+			light.position.set( 5, 2, 5 );
+			scene.add( light );
+
+			// create objects
+			var sphereGeometry = new THREE.SphereGeometry( 1, 32, 32 );
+			var sphereMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
+			sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
+			sphere.position.set(2,0,2);
+			sphere.ID = "sphere";
+			object = sphere;
+			objects.push(sphere);
+			scene.add( sphere );
+
+			var cubeGeometry = new THREE.BoxGeometry( 1, 1, 1 );
+			var cubeMaterial = new THREE.MeshLambertMaterial( {color: 0x00ff00} );
+			var cube = new THREE.Mesh( cubeGeometry, cubeMaterial );
+			cube.position.set(0,0,-2);
+			objects.push(cube);
+			scene.add( cube );
+
+			var geometry = new THREE.TorusKnotGeometry( 10*0.1, 3*0.1, 100, 16 );
+			var material = new THREE.MeshLambertMaterial( { color: 0xffff00 } );
+			var torusKnot = new THREE.Mesh( geometry, material );
+			objects.push(torusKnot);
+			scene.add( torusKnot );
+
+
+			var onKeyDown = function(event){
+				var q = camera.getWorldQuaternion();
+				var displacement = new THREE.Vector3(0,0,0);
+				var right = new THREE.Vector3(1,0,0);
+				right = right.applyQuaternion(q);
+				var up = new THREE.Vector3(0,1,0);
+				up = up.applyQuaternion(q);
+				var front = camera.getWorldDirection(new THREE.Vector3(0,0,-1));
+
+				var scale = 1.0;
+
+				switch ( event.keyCode ) {
+					case 67:// C
+						if(cameraSwitch){
+							switchCamera(camera,cameraOrtographic)
+						}
+						else{
+							switchCamera(camera,cameraPerspective)
+						}
+						cameraSwitch = !cameraSwitch;
+						break;
+					case 32:
+						objectIndex = (objectIndex+1)%objects.length;
+						object = objects[objectIndex];
+
+						break;
+					case 65: // A
+						displacement.addScaledVector(right,-scale);
+						break;
+					case 83: // S
+						displacement.addScaledVector(front,-scale);
+						break;
+					case 87:
+						displacement.addScaledVector(front,scale);
+						break;
+					case 68:
+						displacement.addScaledVector(right,scale);
+						break;
+					case 82:
+						displacement.addScaledVector(up,scale);
+						break;
+					case 70:
+						displacement.addScaledVector(up,-scale);
+						break;
+				}
+				object.translateX(displacement.x*0.1);
+				object.translateY(displacement.y*0.1);
+				object.translateZ(displacement.z*0.1);
+			}
+
+			document.addEventListener( 'keydown', onKeyDown, false );
+
+			function render() {
+
+				renderer.render(scene,camera);
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+
+			}
+
+			animate();
+
+
+
+
+		});
+	</script>
+
+	</head>
+
+	<body>
+	</body>
+</html>
