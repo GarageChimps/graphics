@@ -31,18 +31,35 @@ namespace raytracer
 
     public float GetRefractionIndex()
     {
-      if (Parameters.ContainsKey("refractionIndex"))
-        return GetFloatParam("refractionIndex");
+      if (Parameters.ContainsKey("refraction_index"))
+        return GetFloatParam("refraction_index");
       return 1.0f;
+    }
+
+    public int GetMaxNumberOfReflections()
+    {
+      if (Parameters.ContainsKey("max_reflections"))
+        return GetIntParam("max_reflections");
+      return 1;
+    }
+
+    public void SetMaxNumberOfReflections(int maxNumberOfReflections)
+    {
+      Parameters["max_reflections"] = maxNumberOfReflections;
     }
 
     public int GetSamplesPerPixel()
     {
-      if (Parameters.ContainsKey("samplesPerPixel"))
-        return GetIntParam("samplesPerPixel");
+      if (Parameters.ContainsKey("samples_per_pixel"))
+        return GetIntParam("samples_per_pixel");
       return 1;
     }
-    
+
+    public void SetSamplesPerPixel(int samplesPerPixel)
+    {
+      Parameters["samples_per_pixel"] = samplesPerPixel;
+    }
+
     public object GetParam(string paramName)
     {
       if (Parameters.ContainsKey(paramName))
@@ -188,18 +205,27 @@ namespace raytracer
             {
               var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
               var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
-              var lightSize = 0.0f;
-              if (dic.ContainsKey("lightSize"))
-                lightSize = Convert.ToSingle(dic["lightSize"]);
-              var lightNormal = new Vector();
-              if (dic.ContainsKey("lightNormal"))
-                lightNormal = new Vector(((List<object>)dic["position"]).Select(Convert.ToSingle).ToList());
-
+              
               return new PointLight(
                 new Vector(position), 
+                new Vector(color));
+            }
+            else if (dic["__type__"].ToString() == "area_light")
+            {
+              var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
+              var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
+              var sizeA = Convert.ToSingle(dic["sizeA"]);
+              var sizeB = Convert.ToSingle(dic["sizeB"]);
+              var directionA = new Vector(((List<object>)dic["directionA"]).Select(Convert.ToSingle).ToList());
+              var directionB = new Vector(((List<object>)dic["directionB"]).Select(Convert.ToSingle).ToList());
+
+              return new AreaLight(
+                new Vector(position),
                 new Vector(color),
-                lightSize,
-                lightNormal);
+                sizeA,
+                sizeB,
+                directionA,
+                directionB);
             }
             else if (dic["__type__"].ToString() == "directional_light")
             {

@@ -25,11 +25,13 @@
     ],
     "lights": [
 	   {
-          "__type__": "point_light",
-          "position": [0, 20, 00],
+          "__type__": "area_light",
+          "position": [0, 20, 0],
           "color": [0.5, 0.5, 0.5],
-		  "lightSize": 2,
-		  "lightNormal": [0.0, -1.0, 0.0]
+		      "sizeA": 2,
+		      "sizeB": 2,
+		      "directionA": [1.0, 0.0, 0.0],
+		      "directionB": [0.0, 0.0, 1.0]
         },
         {
           "__type__": "ambient_light",
@@ -37,7 +39,6 @@
         }
     ],
     "params": {
-        "background_color": [0.1,0.1,0.1],
-		"samplesPerPixel": 1
+        "background_color": [0.1,0.1,0.1]
     }
 }

@@ -20,28 +20,15 @@ namespace raytracer
   {
     public Vector Position { get; set; }
     public Vector Color { get; set; }
-    public float LightSize { get; set; }
-    public Vector LightNormal { get; set; }
-    public PointLight(Vector position, Vector color, float lightSize, Vector lightNormal)
+    public PointLight(Vector position, Vector color)
     {
       Position = position;
       Color = color;
-      LightSize = lightSize;
-      LightNormal = lightNormal;
     }
 
-    public Vector GetSampledDirection(Vector p, Random sampler)
+    public virtual Vector GetSampledDirection(Vector p, Random sampler)
     {
-      var d = (Position - p).Normalized;
-      if (LightNormal.Size == 0)
-        return d;
-      var perp = Vector.Perpendicular(LightNormal);
-      var perp2 = (LightNormal % perp).Normalized;
-
-      var uRand = LightSize * ((float)sampler.NextDouble() - 1.0f);
-      var vRand = LightSize * ((float)sampler.NextDouble() - 1.0f);
-
-      return (Position + uRand * perp + vRand * perp2 - p).Normalized;
+      return GetDirection(p);
     }
 
     public Vector GetDirection(Vector p)
@@ -60,12 +47,37 @@ namespace raytracer
     }
   }
 
+  class AreaLight : PointLight
+  {
+    public float SizeA { get; set; }
+    public float SizeB { get; set; }
+    public Vector DirA { get; set; }
+    public Vector DirB { get; set; }
+
+    public AreaLight(Vector position, Vector color, float sizeA, float sizeB, Vector dirA, Vector dirB) : 
+      base(position, color)
+    {
+      SizeA = sizeA;
+      SizeB = sizeB;
+      DirA = dirA;
+      DirB = dirB;
+    }
+
+    public override Vector GetSampledDirection(Vector p, Random sampler)
+    {
+      var aRand = SizeA * ((float)sampler.NextDouble() - 0.5f);
+      var bRand = SizeB  * ((float)sampler.NextDouble() - 0.5f);
+
+      return (Position + aRand * DirA + bRand * DirB - p).Normalized;
+    }
+  }
+
   class SpotLight : PointLight
   {
     public Vector Direction { get; set; }
     public float Angle { get; set; }
 
-    public SpotLight(Vector position, Vector color, Vector direction, float angle) : base(position, color, 0, new Vector())
+    public SpotLight(Vector position, Vector color, Vector direction, float angle) : base(position, color)
     {
       Direction = direction.Normalized;
       Angle = angle;

@@ -77,7 +77,7 @@ namespace raytracer
     // For a given ray, tests objects intersection and calculate corresponding color
     private static Vector IntersectAndShade(Ray ray, Scene scene, Resources resources, int recursion)
     {
-      if (recursion > scene.GetIntParam("maxReflectionRecursions"))
+      if (recursion > scene.GetMaxNumberOfReflections())
       {
         return scene.GetBackgroundColor();
       }
