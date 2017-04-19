@@ -155,15 +155,6 @@ namespace raytracer
             else if (dic["__type__"].ToString() == "camera")
             {
               var fov = Convert.ToSingle(dic["fov"]);
-              var near = 0.1f;
-              if(dic.ContainsKey("near"))
-                near = Convert.ToSingle(dic["near"]);
-              var lensSize = 0.0f;
-              if (dic.ContainsKey("lensSize"))
-                lensSize = Convert.ToSingle(dic["lensSize"]);
-              var exposure = 0.0f;
-              if (dic.ContainsKey("exposure"))
-                exposure = Convert.ToSingle(dic["exposure"]);
               var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
               var target = ((List<object>)dic["target"]).Select(Convert.ToSingle).ToList();
               var up = ((List<object>)dic["up"]).Select(Convert.ToSingle).ToList();
@@ -171,8 +162,29 @@ namespace raytracer
                 fov, 
                 new Vector(position), 
                 new Vector(up), 
+                new Vector(target));
+            }
+            else if (dic["__type__"].ToString() == "lens_camera")
+            {
+              var fov = Convert.ToSingle(dic["fov"]);
+              var focalDistance = 0.0f;
+              if (dic.ContainsKey("focal_distance"))
+                focalDistance = Convert.ToSingle(dic["focal_distance"]);
+              var lensSize = 0.0f;
+              if (dic.ContainsKey("lens_size"))
+                lensSize = Convert.ToSingle(dic["lens_size"]);
+              var exposure = 0.0f;
+              if (dic.ContainsKey("exposure"))
+                exposure = Convert.ToSingle(dic["exposure"]);
+              var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
+              var target = ((List<object>)dic["target"]).Select(Convert.ToSingle).ToList();
+              var up = ((List<object>)dic["up"]).Select(Convert.ToSingle).ToList();
+              return new LensCamera(
+                fov,
+                new Vector(position),
+                new Vector(up),
                 new Vector(target),
-                near,
+                focalDistance,
                 lensSize,
                 exposure);
             }

@@ -15,20 +15,16 @@ namespace raytracer
   {
     public float FOV { get; set; }
     public float Near { get; set; }
-    public float LensSize { get; set; }
-    public float Exposure { get; set; }
     public Vector Position { get; set; }
     public Vector Target { get; set; }
     public Vector Up { get; set; }
     public CameraBounds Bounds { get; set; }
     public List<Vector> CameraBasis { get; set; }
 
-    public Camera(float fov, Vector position, Vector up, Vector target, float near=0.1f, float lensSize=0.0f, float exposure=0.0f)
+    public Camera(float fov, Vector position, Vector up, Vector target, float near=0.1f)
     {
       FOV = fov;
       Near = near;
-      LensSize = lensSize;
-      Exposure = exposure;
       Position = position;
       Target = target;
       Up = up;
@@ -74,11 +70,39 @@ namespace raytracer
       return worldCoords;
     }
 
-    public Vector SampleCameraPosition(Random sampler)
+    public virtual Vector SampleCameraPosition(Random sampler)
     {
-      var uRand = LensSize * ((float)sampler.NextDouble() - 1.0f);
-      var vRand = LensSize * ((float)sampler.NextDouble() - 1.0f);
-      return Position + uRand* CameraBasis[0] + vRand* CameraBasis[1];
+      return Position;
+    }
+
+    public virtual float SampleTime(Random sampler)
+    {
+      return 0;
+    }
+  }
+
+  class LensCamera : Camera
+  {
+    public float LensSize { get; set; }
+    public float Exposure { get; set; }
+    
+    public LensCamera(float fov, Vector position, Vector up, Vector target, float focalDistance = 0.1f, float lensSize = 0, float exposure = 0) 
+      : base(fov, position, up, target, focalDistance)
+    {
+      LensSize = lensSize;
+      Exposure = exposure;
+    }
+
+    public override Vector SampleCameraPosition(Random sampler)
+    {
+      var uRand = LensSize * ((float)sampler.NextDouble() - 0.5f);
+      var vRand = LensSize * ((float)sampler.NextDouble() - 0.5f);
+      return Position + uRand * CameraBasis[0] + vRand * CameraBasis[1];
+    }
+
+    public override float SampleTime(Random sampler)
+    {
+      return Exposure * (float)sampler.NextDouble();
     }
   }
 }
