@@ -167,7 +167,7 @@ namespace raytracer
             else if (dic["__type__"].ToString() == "lens_camera")
             {
               var fov = Convert.ToSingle(dic["fov"]);
-              var focalDistance = 0.0f;
+              var focalDistance = 0.1f;
               if (dic.ContainsKey("focal_distance"))
                 focalDistance = Convert.ToSingle(dic["focal_distance"]);
               var lensSize = 0.0f;

@@ -3,11 +3,11 @@
   "camera": {
     "__type__": "lens_camera",
     "fov": 45.0,
-    "position": [ 0, 0.75, 1.2 ],
+    "position": [ 0, 0.5, 1.0 ],
     "up": [ 0, 1, 0 ],
     "target": [ 0, 0, 0 ],
-    "focal_distance": 2.0,
-    "lens_size": 0.05
+    "focal_distance": 1.0,
+    "lens_size": 0.04
   },
   "objects": [
     {
@@ -47,7 +47,6 @@
     }
   ],
   "params": {
-    "background_color": [ 0.1, 0.1, 0.1 ],
-    "samplesPerPixel": 256
+    "background_color": [ 0.1, 0.1, 0.1 ]
   }
 }

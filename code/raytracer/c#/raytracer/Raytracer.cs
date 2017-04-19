@@ -69,7 +69,7 @@ namespace raytracer
       var origin = camera.SampleCameraPosition(_sampler);
       var pixelDirection = (worldCoords - origin).Normalized;
       var time = camera.SampleTime(_sampler);
-      return new Ray { Position = worldCoords, Direction = pixelDirection, Time = time };
+      return new Ray { Position = origin, Direction = pixelDirection, Time = time };
     }
 
 

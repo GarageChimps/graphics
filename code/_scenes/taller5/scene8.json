@@ -3,58 +3,40 @@
   "camera": {
     "__type__": "camera",
     "fov": 45.0,
-    "position": [ 0, 0, 4 ],
-    "up": [ 0, 1, 0 ],
+    "position": [ 0, 2, 2 ],
+    "up": [ 0, 0, 1 ],
     "target": [ 0, 0, 0 ]
   },
   "objects": [
     {
       "__type__": "mesh",
-      "file_path": "box_back.obj",
-      "materials": [ "white_lambert"]
-    },
-    {
-      "__type__": "mesh",
-      "file_path": "box_right.obj",
-      "materials": [ "green_lambert"]
-    },
-    {
-      "__type__": "mesh",
-      "file_path": "box_left.obj",
-      "materials": [ "red_lambert"]
-    },
-    {
-      "__type__": "mesh",
-      "file_path": "box_top.obj",
-      "materials": [ "white_lambert"]
-    },
-    {
-      "__type__": "mesh",
-      "file_path": "box_bottom.obj",
-      "materials": [ "white_lambert"]
+      "file_path": "plane.obj",
+      "materials": [ "white_glossy_mirror", "gray_lambert"]
     },
     {
       "__type__": "sphere",
-      "radius": "0.4",
-      "position": [ 0.5, -0.55, 0.6 ],
-      "materials": [ "yellow_lambert" ]
+      "radius": "0.2",
+      "position": [ 0, 0, 0.5 ],
+      "materials": [ "green_lambert", "white_bph_100" ]
     },
     {
       "__type__": "sphere",
-      "radius": "0.4",
-      "position": [ -0.5, -0.55, 0.4 ],
-      "materials": [ "blue_lambert", "white_bph_1000"]
+      "radius": "0.15",
+      "position": [ 0.5, 0.5, 0.4 ],
+      "materials": [ "red_lambert" ]
+    },
+    {
+      "__type__": "sphere",
+      "radius": "0.15",
+      "position": [ -0.5, -0.5, 0.4 ],
+      "materials": [ "blue_lambert", "white_bph_1000" ]
     }
   ],
   "lights": [
     {
-      "__type__": "area_light",
-      "position": [ 0.0, 0.9, 0.5 ],
-      "color": [ 0.5, 0.5, 0.5 ],
-	  "sizeA" : 0.2,
-	  "sizeB" : 0.1,
-	  "directionA" : [1,0,0],
-	  "directionB" : [0,0,1]
+      "__type__": "directional_light",
+      "direction": [ 0, 0, 1 ],
+      "color": [ 0.5, 0.5, 0.5 ]
     },
     {
       "__type__": "ambient_light",
@@ -62,7 +44,6 @@
     }
   ],
   "params": {
-    "background_color": [ 0.0, 0.0, 0.0 ],
-    "max_reflections": 1
+    "background_color": [ 0.1, 0.1, 0.1 ]
   }
 }
