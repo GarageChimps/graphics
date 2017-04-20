@@ -10,13 +10,13 @@
   "objects": [
     {
       "__type__": "sphere",
-      "radius": "10",
+      "radius": 10,
       "position": [ 0, -10.0, 0.0 ],
       "materials": [ "white_lambert" ]
     },
     {
       "__type__": "sphere",
-      "radius": "0.3",
+      "radius": 0.3,
       "position": [ 0, 0.35, 0.0 ],
       "materials": [ "green_lambert", "white_bph_100" ]
     }

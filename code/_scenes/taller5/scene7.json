@@ -11,27 +11,27 @@
   "objects": [
     {
       "__type__": "sphere",
-      "radius": "10",
+      "radius": 10,
       "position": [ 0, -10.0, 0.0 ],
       "materials": [ "white_lambert" ]
     },
     {
       "__type__": "sphere",
-      "radius": "0.05",
+      "radius": 0.05,
       "position": [ 0, 0.05, 0.0 ],
       "velocity": [ 0.2, 0.00, 0.0 ],
       "materials": [ "green_lambert", "white_bph_100" ]
     },
     {
       "__type__": "sphere",
-      "radius": "0.05",
+      "radius": 0.05,
       "position": [ 0.0, 0.05, 0.5 ],
       "velocity": [ 0.1, 0.00, 0.0 ],
       "materials": [ "red_lambert", "white_bph_100" ]
     },
     {
       "__type__": "sphere",
-      "radius": "0.05",
+      "radius": 0.05,
       "position": [ 0.0, 0.05, -0.8 ],
       "velocity": [ 0.3, 0.00, 0.0 ],
       "materials": [ "yellow_lambert", "white_bph_100" ]

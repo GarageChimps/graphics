@@ -35,13 +35,13 @@
     },
     {
       "__type__": "sphere",
-      "radius": "0.4",
+      "radius": 0.4,
       "position": [ 0.5, -0.55, 0.6 ],
       "materials": [ "yellow_lambert" ]
     },
     {
       "__type__": "sphere",
-      "radius": "0.4",
+      "radius": 0.4,
       "position": [ -0.5, -0.55, 0.4 ],
       "materials": [ "blue_lambert", "white_bph_1000" ]
     }
