@@ -209,9 +209,9 @@ void main(void)
   float exposureTime = 0.0;
   float deltaTime = 0.0;
   float speed = 0;
-  if(key == 101)
+  if(key == 101) //s
 	speed = 2;
-  if(key == 95)
+  if(key == 95) //m
   {
 	speed = 2;
     exposureTime = 0.3;

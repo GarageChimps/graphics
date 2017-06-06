@@ -3,17 +3,14 @@
 precision highp float;
 
 in vec3 inPosition;
-in vec3 inNormal;
+in vec3 inColor;
 
-out vec3 outNormal;
-out vec3 outPosition;
+out vec3 outColor;
 
 uniform mat4x4 transformationMatrix;
 
 void main(void)
 {
 	gl_Position = transformationMatrix * vec4(inPosition, 1);
-	//gl_Position.z = -gl_Position.z;
-	outNormal = inNormal;
-	outPosition = inPosition;
+	outColor = inColor;
 }

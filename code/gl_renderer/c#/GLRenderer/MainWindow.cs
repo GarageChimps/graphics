@@ -82,10 +82,10 @@ namespace PixelShader
           new Vector3(-1.0f,  1.0f,  0.9f)
         },
         new[] {
-          new Vector3(0.0f, 0.0f,  0.0f),
           new Vector3(1.0f, 0.0f,  0.0f),
-          new Vector3(1.0f, 1.0f,  1.0f),
-          new Vector3(0.0f, 1.0f,  1.0f)
+          new Vector3(0.0f, 1.0f,  0.0f),
+          new Vector3(1.0f, 0.0f,  1.0f),
+          new Vector3(1.0f, 1.0f,  0.0f)
         },
         new uint[]{
           0, 1, 2, //face 1
@@ -108,10 +108,10 @@ namespace PixelShader
           new Vector3(-1.0f,  1.0f,  -0.9f)
         },
         new[] {
-          new Vector3(1.0f, 0.0f,  0.0f),
-          new Vector3(0.0f, 1.0f,  0.0f),
           new Vector3(0.0f, 0.0f,  1.0f),
-          new Vector3(1.0f, 0.0f,  1.0f)
+          new Vector3(0.0f, 0.0f,  1.0f),
+          new Vector3(0.0f, 0.0f,  1.0f),
+          new Vector3(0.0f, 0.0f,  1.0f)
         },
         new uint[]{
           0, 1, 2, //face 1
@@ -247,7 +247,7 @@ namespace PixelShader
         GL.EnableVertexAttribArray(1);
         GL.BindBuffer(BufferTarget.ArrayBuffer, obj.VertexNormalBufferHandle);
         GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, true, Vector3.SizeInBytes, 0);
-        GL.BindAttribLocation(_shaderProgramHandle, 1, "inNormal");
+        GL.BindAttribLocation(_shaderProgramHandle, 1, "inColor");
 
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, obj.FacesBufferHandle);
         obj.ObjectHandle = objectHandle;
