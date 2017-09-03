@@ -148,43 +148,55 @@ namespace raytracer
             continue;
 
           if (parts[0] == "v")
-          {
             Positions.Add(new Vector(float.Parse(parts[1]), float.Parse(parts[2]), float.Parse(parts[3])));
-          }
           else if (parts[0] == "vt")
-          {
             TexCoords.Add(new Vector(float.Parse(parts[1]), float.Parse(parts[2]), 0));
-          }
           else if (parts[0] == "vn")
-          {
             Normals.Add(new Vector(float.Parse(parts[1]), float.Parse(parts[2]), float.Parse(parts[3])));
-          }
           else if (parts[0] == "f")
           {
-            var positionIndices = new List<int>();
-            var texCoordIndices = new List<int>();
-            var normalIndices = new List<int>();
-            for (int i = 1; i < 4; i++)
-            {
-              var indices = parts[i].Split(new [] { '/'}, StringSplitOptions.None);
-              if(indices.Length > 0 && indices[0] != "")
-                positionIndices.Add(int.Parse(indices[0]) - 1);
-              if (indices.Length > 1 && indices[1] != "")
-                texCoordIndices.Add(int.Parse(indices[1]) - 1);
-              if (indices.Length > 2 && indices[2] != "")
-                normalIndices.Add(int.Parse(indices[2]) - 1);
-            }
-            Faces.Add(new Face(positionIndices, texCoordIndices, normalIndices, this));
+            ParseFace(parts);
           }
         }
       }
+    }
+
+    private void ParseFace(string[] parts)
+    {
+      var positionIndices = new List<int>();
+      var texCoordIndices = new List<int>();
+      var normalIndices = new List<int>();
+      for (int i = 1; i < 4; i++)
+      {
+        var indices = parts[i].Split(new[] { '/' }, StringSplitOptions.None);
+        if (indices.Length > 0 && indices[0] != "")
+          positionIndices.Add(int.Parse(indices[0]) - 1);
+        if (indices.Length > 1 && indices[1] != "")
+          texCoordIndices.Add(int.Parse(indices[1]) - 1);
+        if (indices.Length > 2 && indices[2] != "")
+          normalIndices.Add(int.Parse(indices[2]) - 1);
+      }
+      Faces.Add(new Face(positionIndices, texCoordIndices, normalIndices, this));
     }
 
     private void ComputeVertexNormals()
     {
       if (Normals.Count > 0)
         return;
+      List<List<Face>> facesForVertices = GetFacesForVertices();
+      foreach (var facesForVertex in facesForVertices)
+      {
+        Vector normal = facesForVertex.Select(f => f.FaceNormal).Aggregate((acc, v) => acc + v).Normalized;
+        Normals.Add(normal.Normalized);
+      }
+      foreach (var face in Faces)
+      {
+        face.NormalIndices = face.PositionIndices.ToList();
+      }
+    }
 
+    private List<List<Face>> GetFacesForVertices()
+    {
       var facesForVertices = new List<List<Face>>();
       foreach (var position in Positions)
       {
@@ -197,20 +209,8 @@ namespace raytracer
           facesForVertices[positionIndex].Add(face);
         }
       }
-      foreach (var facesForVertex in facesForVertices)
-      {
-        var normal = new Vector();
-        foreach (var face in facesForVertex)
-        {
-          var fn = face.FaceNormal;
-          normal = normal + fn;
-        }
-        Normals.Add(normal.Normalized);
-      }
-      foreach (var face in Faces)
-      {
-        face.NormalIndices = face.PositionIndices.ToList();
-      }
+
+      return facesForVertices;
     }
 
     public Tuple<float, IObject> Intersect(Ray ray)
