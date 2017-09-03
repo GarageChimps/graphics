@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace raytracer
 {
@@ -18,8 +19,10 @@ namespace raytracer
     {
       scene.Camera.SetCameraBounds(width, height);
       var image = CreateImage(scene, width, height);
-      for (int i = 0; i < width; i++)
-      {
+
+      var currentTime = DateTime.Now.Ticks;
+
+      Enumerable.Range(0, width).ToList().AsParallel().ForAll((i) => {
         for (int j = 0; j < height; j++)
         {
           var samplesPerPixel = scene.GetSamplesPerPixel();
@@ -36,12 +39,12 @@ namespace raytracer
               pixelColor += sampleColor;
             }
           }
-
-          
           image[i, j] = pixelColor / samplesPerPixel;
         }
-      }
+      });
 
+      var totalTime = TimeSpan.FromTicks(DateTime.Now.Ticks - currentTime).TotalSeconds;
+      Console.WriteLine(totalTime + " s");
       return image;
     }
     
