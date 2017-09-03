@@ -6,9 +6,9 @@
     {
       var imageFile = "image.png";
       var resourcesFile = "resources.json";
-      var sceneFile = "taller5/scene1.json";
-      var width = 512;
-      var height = 512;
+      var sceneFile = "taller1/scene4.json";
+      var width = 256;
+      var height = 128;
 
       var index = 0;
       var maxReflectionRecursions = 1;

@@ -104,12 +104,12 @@ namespace raytracer
 
     public Vector GetSampledDirection(Vector p, Random sampler)
     {
-      return Direction;
+      return -1f * Direction;
     }
 
     public Vector GetDirection(Vector p)
     {
-      return Direction;
+      return -1f * Direction;
     }
 
     public float GetDistance(Vector p)
