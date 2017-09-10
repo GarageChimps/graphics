@@ -252,7 +252,7 @@ namespace raytracer
       return new Ray { Position = q, Direction = t };
     }
 
-    private static Vector? GetTransmisionDirection(Vector n, Vector d, float refIndexIncoming, float  refIndexOutgoing)
+    private static Vector GetTransmisionDirection(Vector n, Vector d, float refIndexIncoming, float  refIndexOutgoing)
     {
       float dDotN = d ^ n;
       float a = 1 - (refIndexIncoming*refIndexIncoming/(refIndexOutgoing*refIndexOutgoing))*(1 - dDotN*dDotN);
@@ -280,7 +280,7 @@ namespace raytracer
           totalInternalReflection = true;
         else
         {
-          transmisionDirection = t.Value;
+          transmisionDirection = t;
           
         }
         
@@ -293,7 +293,7 @@ namespace raytracer
           totalInternalReflection = true;
         else
         {
-          transmisionDirection = t.Value;
+          transmisionDirection = t;
           cosine = (transmisionDirection ^ n);
         }
       }

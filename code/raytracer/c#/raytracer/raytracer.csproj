@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="BoundingBox.cs" />
     <Compile Include="BRDF.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Display.cs" />

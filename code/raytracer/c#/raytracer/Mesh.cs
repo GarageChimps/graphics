@@ -110,6 +110,7 @@ namespace raytracer
   {
     private readonly bool _computeVertexNormals;
     private Transform _transform;
+    private Box _boundingBox;
 
     public string FilePath { get; set; }
     public List<string> Materials { get; set; }
@@ -119,10 +120,14 @@ namespace raytracer
     public List<Vector> TexCoords { get; private set; } 
     public List<Face> Faces { get; private set; } 
 
+
+
     public Mesh(string filePath, List<string> materials, bool computeVertexNormals, Transform transform)
     {
       _computeVertexNormals = computeVertexNormals;
       _transform = transform;
+      _boundingBox = new Box(new Vector(float.MaxValue, float.MaxValue, float.MaxValue), new Vector(float.MinValue, float.MinValue, float.MinValue));
+
       FilePath = filePath;
       Materials = materials;
 
@@ -153,7 +158,9 @@ namespace raytracer
           if (parts[0] == "v")
           {
             var vp = new Vector(float.Parse(parts[1]), float.Parse(parts[2]), float.Parse(parts[3]));
-            Positions.Add(_transform.TransformPosition(vp));
+            var tvp = _transform.TransformPosition(vp);
+            Positions.Add(tvp);
+            _boundingBox.Update(tvp);
           }
           else if (parts[0] == "vt")
             TexCoords.Add(new Vector(float.Parse(parts[1]), float.Parse(parts[2]), 0));
@@ -226,13 +233,16 @@ namespace raytracer
     {
       var tMin = float.PositiveInfinity;
       Face intersectedFace = null;
-      foreach (var face in Faces)
-      {
-        var intersectResult = face.Intersect(ray);
-        if (intersectResult.Item1 < tMin)
+      if(_boundingBox.TestIntersection(ray))
+      { 
+        foreach (var face in Faces)
         {
-          tMin = intersectResult.Item1;
-          intersectedFace = face;
+          var intersectResult = face.Intersect(ray);
+          if (intersectResult.Item1 < tMin)
+          {
+            tMin = intersectResult.Item1;
+            intersectedFace = face;
+          }
         }
       }
       return new Tuple<float, IObject>(tMin, intersectedFace);

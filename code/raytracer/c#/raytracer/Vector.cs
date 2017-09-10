@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace raytracer
 {
-  struct Vector
+  class Vector
   {
     /// <summary>
     /// Magnitude of the vector
@@ -122,6 +122,13 @@ namespace raytracer
       this.R = coords[0];
       this.G = coords[1];
       this.B = coords[2];
+    }
+
+    public Vector()
+    {
+      this.R = 0;
+      this.G = 0;
+      this.B = 0;
     }
 
     /// <summary>
