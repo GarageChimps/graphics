@@ -109,6 +109,8 @@ namespace raytracer
   class Mesh : IObject
   {
     private readonly bool _computeVertexNormals;
+    private Transform _transform;
+
     public string FilePath { get; set; }
     public List<string> Materials { get; set; }
     
@@ -117,9 +119,10 @@ namespace raytracer
     public List<Vector> TexCoords { get; private set; } 
     public List<Face> Faces { get; private set; } 
 
-    public Mesh(string filePath, List<string> materials, bool computeVertexNormals)
+    public Mesh(string filePath, List<string> materials, bool computeVertexNormals, Transform transform)
     {
       _computeVertexNormals = computeVertexNormals;
+      _transform = transform;
       FilePath = filePath;
       Materials = materials;
 
@@ -148,11 +151,17 @@ namespace raytracer
             continue;
 
           if (parts[0] == "v")
-            Positions.Add(new Vector(float.Parse(parts[1]), float.Parse(parts[2]), float.Parse(parts[3])));
+          {
+            var vp = new Vector(float.Parse(parts[1]), float.Parse(parts[2]), float.Parse(parts[3]));
+            Positions.Add(_transform.TransformPosition(vp));
+          }
           else if (parts[0] == "vt")
             TexCoords.Add(new Vector(float.Parse(parts[1]), float.Parse(parts[2]), 0));
           else if (parts[0] == "vn")
-            Normals.Add(new Vector(float.Parse(parts[1]), float.Parse(parts[2]), float.Parse(parts[3])));
+          {
+            var vn = new Vector(float.Parse(parts[1]), float.Parse(parts[2]), float.Parse(parts[3]));
+            Normals.Add(_transform.TransformDirection(vn).Normalized);
+          }
           else if (parts[0] == "f")
           {
             ParseFace(parts);

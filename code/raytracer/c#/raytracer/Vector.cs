@@ -42,15 +42,21 @@ namespace raytracer
           clamped.R = 1.0f;
         else if (clamped.R < 0.0f)
           clamped.R = 0.0f;
+        else if (float.IsNaN(clamped.R))
+          clamped.R = 0.0f;
 
         if (clamped.G > 1.0f)
           clamped.G = 1.0f;
         else if (clamped.G < 0.0f)
           clamped.G = 0.0f;
+        else if (float.IsNaN(clamped.G))
+          clamped.G = 0.0f;
 
         if (clamped.B > 1.0f)
           clamped.B = 1.0f;
         else if (clamped.B < 0.0f)
+          clamped.B = 0.0f;
+        else if (float.IsNaN(clamped.B))
           clamped.B = 0.0f;
 
         return clamped;

@@ -20,6 +20,7 @@ namespace raytracer
           var color = imageData[i, height - j - 1];
           color = color.Clamped;
           int[] rgb = dither ? Dither(color, multiplier, i, height - j - 1, imageData) : Quantize(color, multiplier);
+            
           image.SetPixel(i, j, Color.FromArgb(rgb[0], rgb[1], rgb[2]));
         }
       }

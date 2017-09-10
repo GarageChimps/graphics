@@ -191,45 +191,55 @@ namespace raytracer
             else if (dic["__type__"].ToString() == "sphere")
             {
               var radius = Convert.ToSingle(dic["radius"]);
-              var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
+              var position = ((List<object>) dic["position"]).Select(Convert.ToSingle).ToList();
               var velocity = new Vector();
               if (dic.ContainsKey("velocity"))
-                velocity = new Vector(((List<object>)dic["velocity"]).Select(Convert.ToSingle).ToList());
-              var materials = ((List<object>)dic["materials"]).Select(c => c.ToString()).ToList();
+                velocity = new Vector(((List<object>) dic["velocity"]).Select(Convert.ToSingle).ToList());
+              var materials = ((List<object>) dic["materials"]).Select(c => c.ToString()).ToList();
               return new Sphere(
-                radius, 
-                new Vector(position), 
+                radius,
+                new Vector(position),
                 materials,
                 velocity);
             }
             else if (dic["__type__"].ToString() == "mesh")
             {
               var filePath = dic["file_path"].ToString();
-              var materials = ((List<object>)dic["materials"]).Select(c => c.ToString()).ToList();
+              var materials = ((List<object>) dic["materials"]).Select(c => c.ToString()).ToList();
               var computeVertexNormals = false;
               if (dic.ContainsKey("compute_vertex_normals"))
                 computeVertexNormals = Convert.ToBoolean(dic["compute_vertex_normals"]);
-              var mesh = new Mesh(filePath, materials, computeVertexNormals);
+              var translation = new Vector(0,0,0);
+              var scaling = new Vector(1,1,1);
+              var rotation = new Vector(0,0,0);
+              if (dic.ContainsKey("translation"))
+                translation = new Vector(((List<object>)dic["translation"]).Select(Convert.ToSingle).ToList());
+              if (dic.ContainsKey("scaling"))
+                scaling = new Vector(((List<object>)dic["scaling"]).Select(Convert.ToSingle).ToList());
+              if (dic.ContainsKey("rotation"))
+                rotation = new Vector(((List<object>)dic["rotation"]).Select(a => Convert.ToSingle(a) * Math.PI / 180.0f).Select(Convert.ToSingle).ToList());
+              var transform = new Transform(translation, scaling, rotation);
+              var mesh = new Mesh(filePath, materials, computeVertexNormals, transform);
               mesh.Init();
               return mesh;
             }
             else if (dic["__type__"].ToString() == "point_light")
             {
-              var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
-              var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
-              
+              var position = ((List<object>) dic["position"]).Select(Convert.ToSingle).ToList();
+              var color = ((List<object>) dic["color"]).Select(Convert.ToSingle).ToList();
+
               return new PointLight(
-                new Vector(position), 
+                new Vector(position),
                 new Vector(color));
             }
             else if (dic["__type__"].ToString() == "area_light")
             {
-              var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
-              var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
+              var position = ((List<object>) dic["position"]).Select(Convert.ToSingle).ToList();
+              var color = ((List<object>) dic["color"]).Select(Convert.ToSingle).ToList();
               var sizeA = Convert.ToSingle(dic["sizeA"]);
               var sizeB = Convert.ToSingle(dic["sizeB"]);
-              var directionA = new Vector(((List<object>)dic["directionA"]).Select(Convert.ToSingle).ToList());
-              var directionB = new Vector(((List<object>)dic["directionB"]).Select(Convert.ToSingle).ToList());
+              var directionA = new Vector(((List<object>) dic["directionA"]).Select(Convert.ToSingle).ToList());
+              var directionB = new Vector(((List<object>) dic["directionB"]).Select(Convert.ToSingle).ToList());
 
               return new AreaLight(
                 new Vector(position),
@@ -241,18 +251,18 @@ namespace raytracer
             }
             else if (dic["__type__"].ToString() == "directional_light")
             {
-              var direction = ((List<object>)dic["direction"]).Select(Convert.ToSingle).ToList();
-              var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
+              var direction = ((List<object>) dic["direction"]).Select(Convert.ToSingle).ToList();
+              var color = ((List<object>) dic["color"]).Select(Convert.ToSingle).ToList();
               return new DirectionalLight(
-                new Vector(direction), 
+                new Vector(direction),
                 new Vector(color));
             }
             else if (dic["__type__"].ToString() == "spot_light")
             {
-              var angle = (float)(Convert.ToSingle(dic["angle"]) * Math.PI / 180.0f);
-              var position = ((List<object>)dic["position"]).Select(Convert.ToSingle).ToList();
-              var direction = ((List<object>)dic["direction"]).Select(Convert.ToSingle).ToList();
-              var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
+              var angle = (float) (Convert.ToSingle(dic["angle"])*Math.PI/180.0f);
+              var position = ((List<object>) dic["position"]).Select(Convert.ToSingle).ToList();
+              var direction = ((List<object>) dic["direction"]).Select(Convert.ToSingle).ToList();
+              var color = ((List<object>) dic["color"]).Select(Convert.ToSingle).ToList();
               return new SpotLight(
                 new Vector(position),
                 new Vector(color),
@@ -260,7 +270,7 @@ namespace raytracer
             }
             else if (dic["__type__"].ToString() == "ambient_light")
             {
-              var color = ((List<object>)dic["color"]).Select(Convert.ToSingle).ToList();
+              var color = ((List<object>) dic["color"]).Select(Convert.ToSingle).ToList();
               return new AmbientLight(
                 new Vector(color));
             }

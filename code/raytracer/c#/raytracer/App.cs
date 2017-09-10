@@ -4,14 +4,14 @@
   {
     static void Main(string[] args)
     {
-      var imageFile = "image.png";
+      var imageFile = "scene1.png";
       var resourcesFile = "resources.json";
-      var sceneFile = "taller1/scene4.json";
-      var width = 256;
-      var height = 128;
+      var sceneFile = "scene1.json";
+      var width = 32;
+      var height = 32;
 
       var index = 0;
-      var maxReflectionRecursions = 1;
+      var maxReflectionRecursions = 3;
       var samplesPerPixel = 1;
       var bitResolution = 8;
       var dither = false;
