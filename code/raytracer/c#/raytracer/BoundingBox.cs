@@ -59,7 +59,7 @@ namespace raytracer
       return boxes;
     }
 
-    private List<Vector> GetCorners()
+    public List<Vector> GetCorners()
     {
       var corners = new List<Vector>();
       corners.Add(new Vector(Min.X, Min.Y, Min.Z));
@@ -137,5 +137,10 @@ namespace raytracer
 
       return new Tuple<float, bool>(tmin, true);
     }
+
+    public List<Vector> GetAxes()
+    {
+      return new List<Vector>() {new Vector(1, 0, 0), new Vector(0, 1, 0), new Vector(0, 0, 1)};
+    } 
   }
 }
