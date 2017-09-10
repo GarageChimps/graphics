@@ -111,6 +111,7 @@ namespace raytracer
     private readonly bool _computeVertexNormals;
     private Transform _transform;
     private Box _boundingBox;
+    private OctTreeNode _octTree;
 
     public string FilePath { get; set; }
     public List<string> Materials { get; set; }
@@ -140,6 +141,8 @@ namespace raytracer
     public void Init()
     {
       LoadFromObj(FilePath);
+      _octTree = OctTreeNode.GenerateOctTree(_boundingBox, 0, 3);
+      _octTree.Initialize(this);
       if (_computeVertexNormals)
         ComputeVertexNormals();
     }
@@ -231,10 +234,12 @@ namespace raytracer
 
     public Tuple<float, IObject> Intersect(Ray ray)
     {
+      return _octTree.Intersect(ray);
       var tMin = float.PositiveInfinity;
       Face intersectedFace = null;
-      if(_boundingBox.TestIntersection(ray))
-      { 
+      var result = _boundingBox.TestIntersection(ray);
+      if (result.Item2)
+      {
         foreach (var face in Faces)
         {
           var intersectResult = face.Intersect(ray);

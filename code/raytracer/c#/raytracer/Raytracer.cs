@@ -44,7 +44,7 @@ namespace raytracer
       });
 
       var totalTime = TimeSpan.FromTicks(DateTime.Now.Ticks - currentTime).TotalSeconds;
-      Console.WriteLine(totalTime + " s");
+      Console.WriteLine("Raytrace time: " + totalTime + " s");
       return image;
     }
     

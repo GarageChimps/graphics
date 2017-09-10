@@ -1,14 +1,17 @@
-﻿namespace raytracer
+﻿using System;
+
+namespace raytracer
 {
   class App
   {
     static void Main(string[] args)
     {
+      var currentTime = DateTime.Now.Ticks;
       var imageFile = "scene1.png";
       var resourcesFile = "resources.json";
       var sceneFile = "scene1.json";
-      var width = 32;
-      var height = 32;
+      var width = 256;
+      var height = 256;
 
       var index = 0;
       var maxReflectionRecursions = 3;
@@ -47,6 +50,10 @@
       scene.SetSamplesPerPixel(samplesPerPixel);
       var image = Raytracer.RayTrace(scene, resources, width, height);
       Display.GenerateImage(image, width, height, imageFile, bitResolution, dither);
+
+      var totalTime = TimeSpan.FromTicks(DateTime.Now.Ticks - currentTime).TotalSeconds;
+      Console.WriteLine("Total time: " + totalTime + " s");
+
     }
   }
 }

@@ -76,6 +76,7 @@
     <Compile Include="Display.cs" />
     <Compile Include="Lights.cs" />
     <Compile Include="Matrix.cs" />
+    <Compile Include="OctTreeNode.cs" />
     <Compile Include="Sphere.cs" />
     <Compile Include="Transform.cs" />
     <Compile Include="Vector.cs" />
