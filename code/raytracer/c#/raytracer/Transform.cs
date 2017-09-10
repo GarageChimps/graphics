@@ -7,7 +7,7 @@
       Translation = translation;
       Scaling = scaling;
       Rotation = rotation;
-      RotationMatrix = Matrix.RotationX(Rotation[0]) * Matrix.RotationY(Rotation[1]) * Matrix.RotationZ(Rotation[2]);
+      RotationMatrix = Matrix.RotationZ(Rotation[2]) * Matrix.RotationY(Rotation[1]) * Matrix.RotationX(Rotation[0]);
     }
 
     private Vector Translation { get; }
