@@ -132,22 +132,6 @@ namespace raytracer
     public Tuple<float, IObject> Intersect(Ray ray)
     {
       return _octTree.Intersect(ray);
-      var tMin = float.PositiveInfinity;
-      Face intersectedFace = null;
-      var result = _boundingBox.TestIntersection(ray);
-      if (result.Item2)
-      {
-        foreach (var face in Faces)
-        {
-          var intersectResult = face.Intersect(ray);
-          if (intersectResult.Item1 < tMin)
-          {
-            tMin = intersectResult.Item1;
-            intersectedFace = face;
-          }
-        }
-      }
-      return new Tuple<float, IObject>(tMin, intersectedFace);
     }
 
     public Vector GetNormal(Vector p, float time)

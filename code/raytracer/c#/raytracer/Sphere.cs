@@ -68,8 +68,10 @@ namespace raytracer
       var theta = (float)Math.Acos((p.Y - c.Y)/Radius);
       var phi = (float)Math.Atan2(p.Z - c.Z, p.X - c.X);
 
-      var u = (float) (1.0 - (phi + Math.PI )/ (2.0*Math.PI));
-      var v = (float) ((Math.PI - theta) / (Math.PI));
+      //var u = (float) (1.0 - (phi + Math.PI )/ (2.0*Math.PI));
+      var u = (float) (0.5 - (phi/ (2.0*Math.PI)));
+      //var v = (float) ((Math.PI - theta) / (Math.PI));
+      var v = (float) (1.0 - (theta) / (Math.PI));
       return new Vector(u,v,0);
     }
   }

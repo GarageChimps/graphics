@@ -3,7 +3,7 @@
   "camera": {
     "__type__": "camera",
     "fov": 45.0,
-    "position": [ 0, 0.5, 0.5 ],
+    "position": [ 0, 2, 2 ],
     "up": [ 0, 0, 1 ],
     "target": [ 0, 0, 0 ]
   },
@@ -35,7 +35,7 @@
   "lights": [
     {
       "__type__": "directional_light",
-      "direction": [ 0, 0, 1 ],
+      "direction": [ 0, 0, -1 ],
       "color": [ 0.5, 0.5, 0.5 ]
     },
     {
